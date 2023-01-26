@@ -1,13 +1,25 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { store } from './redux/store';
+import { FirebaseAppProvider } from 'reactfire';
+import firebaseConfig from './helpers/firebaseConfig';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <Provider store={store}>
+      <FirebaseAppProvider firebaseConfig={firebaseConfig}>
+        <Suspense fallback={<p>Cargando...</p>}>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </Suspense>
+      </FirebaseAppProvider>
+    </Provider>
   </React.StrictMode>
 );
 
