@@ -1,17 +1,17 @@
-import { Route, Routes } from "react-router-dom";
-import Landing from "./components/Home/Landing";
-import Login from './components/UserSesion/Login'
 import './App.scss'
 import 'sweetalert2/src/sweetalert2.scss'
-import Register from "./components/UserSesion/Register";
+import { Route, Routes } from "react-router-dom";
+import Landing from "./components/Home/Landing";
+import Products from "./components/Product/Products";
+import Nav from './components/Home/Nav';
 
 function App() {
   return (
     <div className="App">
+      <Nav />
       <Routes>
         <Route exact path="/" element={<Landing />} />
-        <Route exact path="/login" element={<Login />} />
-        <Route exact path="/register" element={<Register />} />
+        <Route exact path="/productos" element={<Products />} />
       </Routes>
     </div>
   );

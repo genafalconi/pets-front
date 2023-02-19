@@ -6,12 +6,12 @@ import { Link } from 'react-router-dom'
 import Login from '../UserSesion/Login'
 import UserOptions from './UserOptions'
 import Register from '../UserSesion/Register'
+import Cart from './Cart'
 
 export default function Nav() {
 
   const [modalLogin, setModalLogin] = useState(false)
   const [activeSesion, setActiveSesion] = useState(false)
-
   const [modalRegister, setModalRegister] = useState(false)
 
   const token = localStorage.getItem('token')
@@ -27,7 +27,7 @@ export default function Nav() {
         setActiveSesion(true)
       }
     }
-  }, [token, userLocal, modalLogin])
+  }, [token, userLocal, modalLogin, modalRegister])
 
   return (
     <>
@@ -44,10 +44,11 @@ export default function Nav() {
                 <UserOptions />
               </div>
               :
-              <Link className='link-modal'>
+              <div className='link-modal'>
                 <FiLogIn className='icon-nav' size={30} onClick={handleLogin} />
-              </Link>
+              </div>
           }
+          <Cart />
         </div>
       </nav>
       <Login

@@ -1,11 +1,18 @@
+import { useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import '../../App.scss'
-import Nav from './Nav'
 
 export default function Landing() {
 
+
+  useEffect(() => {
+  }, [])
+
   return (
     <>
-      <Nav />
+      <Link to={'/productos'}>
+        <button>Products</button>
+      </Link>
     </>
   )
 
