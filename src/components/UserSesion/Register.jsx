@@ -4,7 +4,6 @@ import { firebaseAuth, providerGoogle } from "../../firebase";
 import { LOGIN_WITH_GOOGLE, REGISTER_WITH_EMAIL } from "../../redux/actions";
 import googleImage from '../../google.png';
 import { signInWithPopup } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Spinner from 'react-bootstrap/Spinner';
@@ -15,8 +14,6 @@ import '../../styles/modals/modalRegister.scss';
 export default function Register({ show, onHideLogin, onHideRegister }) {
 
   const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const [activeSesion, setActiveSesion] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [register, setRegister] = useState({
     email: '',
@@ -48,10 +45,14 @@ export default function Register({ show, onHideLogin, onHideRegister }) {
           onHideRegister()
         }
         setIsLoading(false)
-      })
+      }).catch((error) => {
+        const errorMessage = error.message;
+        return errorMessage
+      });
   }
 
   const registerWithGoogle = () => {
+    setIsLoading(true)
     signInWithPopup(firebaseAuth, providerGoogle)
       .then((result) => {
         // const credential = GoogleAuthProvider.credentialFromResult(result);
@@ -65,7 +66,7 @@ export default function Register({ show, onHideLogin, onHideRegister }) {
         localStorage.setItem('user', JSON.stringify(userLocal))
         localStorage.setItem('token', user.accessToken)
         dispatch(LOGIN_WITH_GOOGLE(userLocal))
-        setActiveSesion(user)
+        onHideRegister()
       }).catch((error) => {
         const errorMessage = error.message;
         // const credential = GoogleAuthProvider.credentialFromError(error);
@@ -79,15 +80,8 @@ export default function Register({ show, onHideLogin, onHideRegister }) {
   }
 
   useEffect(() => {
-    if (token && userLocal) {
-      if (Object.keys(userLocal).length !== 0) {
-        setActiveSesion(true)
-      }
-    }
-    if (activeSesion) {
-      navigate('/')
-    }
-  }, [token, userLocal, activeSesion, navigate])
+
+  }, [token, userLocal, isLoading])
 
   return (
     <Modal
@@ -107,13 +101,13 @@ export default function Register({ show, onHideLogin, onHideRegister }) {
         <Form className="register-form" onSubmit={registerUser}>
           <Form.Group className="register-form_group">
             <Form.Label>Email</Form.Label>
-            <Form.Control type="email" name="email" placeholder='Email' onChange={handleChange} />
+            <Form.Control type="email" name="email" placeholder='Email' defaultValue='' onChange={handleChange} />
             <Form.Label>Nombre y Apellido</Form.Label>
-            <Form.Control type="text" name="fullName" placeholder='Nombre y Apellido' onChange={handleChange} />
+            <Form.Control type="text" name="fullName" placeholder='Nombre y Apellido' defaultValue='' onChange={handleChange} />
             <Form.Label>Telefono</Form.Label>
-            <Form.Control type="text" name="phone" placeholder='Telefono' onChange={handleChange} />
+            <Form.Control type="text" name="phone" placeholder='Telefono' defaultValue='' onChange={handleChange} />
             <Form.Label>Contraseña</Form.Label>
-            <Form.Control type="password" name="password" onChange={handleChange} />
+            <Form.Control type="password" name="password" defaultValue='' onChange={handleChange} />
           </Form.Group>
         </Form>
         {

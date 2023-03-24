@@ -1,5 +1,6 @@
 export const constants = {
   POST: 'POST',
   GET: 'GET',
-  PUT: 'PUT'
+  PUT: 'PUT',
+  DELETE: 'DELETE'
 }

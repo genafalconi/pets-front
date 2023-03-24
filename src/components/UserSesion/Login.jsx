@@ -3,20 +3,21 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { firebaseAuth, providerGoogle } from '../../firebase';
 import googleImage from '../../google.png';
-import { LOGIN_WITH_EMAIL, LOGIN_WITH_GOOGLE } from '../../redux/actions';
+import { LOGIN_WITH_EMAIL, LOGIN_WITH_GOOGLE, SAVE_LOCAL_CART } from '../../redux/actions';
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
 import Modal from 'react-bootstrap/Modal';
 import Logo from '../../logo.png'
 import '../../styles/modals/modalLogin.scss';
 
-export default function Login({ show, onHideLogin, onHideRegister }) {
+export default function Login({ show, onHideLogin, onHideRegister, onModalClose }) {
 
   const dispatch = useDispatch()
+
   const token = localStorage.getItem('token')
   const userLocal = localStorage.getItem('user')
+  const cartLocal = localStorage.getItem('cart')
 
-  const [activeSesion, setActiveSesion] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [user, setUser] = useState({
     email: '',
@@ -34,11 +35,17 @@ export default function Login({ show, onHideLogin, onHideRegister }) {
           id: user.uid,
           phoneNumber: user.phoneNumber
         }
-        localStorage.setItem('user', JSON.stringify(userLocal))
-        localStorage.setItem('token', user.accessToken)
+        setIsLoading(true)
         dispatch(LOGIN_WITH_GOOGLE(userLocal))
-        setActiveSesion(user)
-        onHideLogin()
+          .then((response) => {
+            if (response.payload.status === 201) {
+              dispatch(SAVE_LOCAL_CART(cartLocal)).then((res) => {
+                localStorage.setItem('token', user.accessToken)
+                onHideLogin()
+              })
+            }
+            setIsLoading(false)
+          })
       }).catch((error) => {
         const errorMessage = error.message;
         // const credential = GoogleAuthProvider.credentialFromError(error);
@@ -53,15 +60,24 @@ export default function Login({ show, onHideLogin, onHideRegister }) {
     })
   }
 
+  const handleHide = () => {
+    onHideLogin();
+    if (onModalClose) {
+      onModalClose();
+    }
+  };
+
   const loginWithEmail = (event) => {
     event.preventDefault()
     setIsLoading(true)
     dispatch(LOGIN_WITH_EMAIL(user))
       .then((response) => {
-        setIsLoading(false)
         if (response.payload.status === 201) {
-          onHideLogin()
+          dispatch(SAVE_LOCAL_CART(cartLocal)).then((res) => {
+            onHideLogin()
+          })
         }
+        setIsLoading(false)
       })
     setUser({
       email: '',
@@ -73,22 +89,17 @@ export default function Login({ show, onHideLogin, onHideRegister }) {
     onHideLogin()
     onHideRegister()
   }
+
   useEffect(() => {
-    if (token && userLocal) {
-      if (Object.keys(userLocal).length !== 0) {
-        setActiveSesion(true)
-      }
-    }
-  }, [token, userLocal, activeSesion])
+
+  }, [token, userLocal, dispatch])
 
   return (
     <Modal
       show={show}
-      onHide={onHideLogin}
-      size="lg"
+      onHide={handleHide}
       aria-labelledby="contained-modal-title-vcenter"
       centered
-      className='modal-login'
     >
       <Modal.Header closeButton>
         <Modal.Title id="contained-modal-title-vcenter" >
@@ -98,8 +109,8 @@ export default function Login({ show, onHideLogin, onHideRegister }) {
       <Modal.Body className='modal-login-body'>
         <img className='modal-body_logo' src={Logo} alt="logo-pets" />
         <form className='modal-body_form'>
-          <input type="text" placeholder='email' name='email' onChange={handleChange} />
-          <input type="password" placeholder='password' name='password' onChange={handleChange} />
+          <input type="text" placeholder='email' name='email' defaultValue='' onChange={handleChange} />
+          <input type="password" placeholder='password' defaultValue='' name='password' onChange={handleChange} />
         </form>
         {
           isLoading ?

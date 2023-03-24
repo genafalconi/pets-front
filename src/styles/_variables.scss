@@ -1,11 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400&display=swap');
-$background-color: #F8FFFF;
-$text-color: #191919;
+$background-color: #FAFAFA;
+$text-color: #101010;
 $pets-red: #D00000;
 $pets-blue: #666ADD;
 $pets-yellow: #F5C12D;
 $font-family: 'Source Sans Pro', sans-serif;
-$border: black solid 2px;
+$border: $text-color solid 2px;
 $border-radius: 10px;
 $padding: 1%;
 $margin-input: 2%;
+$margin-button: 2%;
+$primary-button-color: #0D6EFD;
+$secondary-button-color: #FAFAFA;
+$primary-text-button-color: #FAFAFA;
+$secondary-text-button-color: #0D6EFD;
+

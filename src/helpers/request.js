@@ -1,8 +1,9 @@
 import axios from "axios";
+import Swal from 'sweetalert2';
 
-export const request = (method, url, params, data, token) => {
+export const request = async (method, url, params, data, token) => {
 
-  const res = axios({
+  const config = {
     method: method,
     url: url,
     params: params,
@@ -10,7 +11,33 @@ export const request = (method, url, params, data, token) => {
     headers: {
       'Authorization': `Bearer ${token}`
     }
-  })
+  }
 
-  return res
+  try {
+    const response = await axios(config);
+    return response;
+  } catch (error) {
+    if (error.response) {
+      Swal.fire({
+        title: 'Error!',
+        text: `${error.response}`,
+        icon: 'error'
+      })
+      throw new Error(error.response);
+    } else if (error.request) {
+      Swal.fire({
+        title: 'Error!',
+        text: `Error del servidor!`,
+        icon: 'error'
+      })
+      throw new Error(error.request);
+    } else {
+      Swal.fire({
+        title: 'Error!',
+        text: `Ocurrio un error inesperado!`,
+        icon: 'error'
+      })
+      throw new Error(error);
+    }
+  }
 }

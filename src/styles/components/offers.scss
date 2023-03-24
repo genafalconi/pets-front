@@ -1,0 +1,47 @@
+.offers-table {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+thead {
+  background-color: #f2f2f2;
+  border: 1px solid #ddd;
+}
+
+th {
+  text-align: center;
+  padding: 8px;
+  flex: 1;
+}
+
+tbody td {
+  display: flex;
+  justify-content: space-around;
+  padding: 8px;
+  border: 1px solid #ddd;
+  text-align: center;
+
+  p {
+    margin: 0;
+  }
+}
+
+tbody:hover {
+  background-color: rgb(128, 128, 128, 0.6);
+  cursor: pointer;
+}
+
+/* Optional: add some spacing between the table rows */
+tbody:not(:last-child) {
+  margin-bottom: 8px;
+}
+
+.selected-offer {
+  background-color: grey;
+}

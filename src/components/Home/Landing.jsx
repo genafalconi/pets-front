@@ -1,11 +1,13 @@
+import { Link } from 'react-router-dom'
 import '../../App.scss'
-import Nav from './Nav'
 
 export default function Landing() {
 
   return (
     <>
-      <Nav />
+      <Link to={'/products'}>
+        <button>Products</button>
+      </Link>
     </>
   )
 

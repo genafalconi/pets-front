@@ -1,10 +1,5 @@
 @import '../variables';
 
-.modal.show .modal-dialog {
-  transform: none;
-  width: 50%;
-}
-
 .modal-login-body {
   display: flex;
   height: 60%;
@@ -20,9 +15,10 @@
     border: $border;
     border-radius: $border-radius;
     margin-bottom: $margin-input;
-    cursor: pointer;    
-    
+    cursor: pointer;
+
   }
+
   .modal-body_google:hover {
     filter: opacity(.8);
     transition: 1s;
@@ -35,7 +31,6 @@
 
     input {
       margin: $margin-input;
-      width: 30vw;
       border: 1px solid black;
       border-radius: 5px;
       text-align: center;
@@ -45,5 +40,32 @@
 
   .modal-body_login {
     margin: 3% 0 5% 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .modal-login-body {
+    height: auto;
+  }
+
+  .modal-body_logo {
+    max-width: 30%;
+  }
+
+  .modal-body_google {
+    max-width: 15%;
+  }
+
+  .modal-body_form {
+    width: 100%;
+  }
+
+  .modal-body_form input {
+    width: 80%;
+    font-size: 16px;
+  }
+
+  .modal-body_login {
+    margin: 5% 0;
   }
 }

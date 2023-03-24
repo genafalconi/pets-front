@@ -8,7 +8,10 @@
   flex-direction: row;
   flex-wrap: nowrap;
   background-color: $pets-yellow;
-  border-radius: 5px;
+  position: sticky;
+  top: 0%;
+  width: 100%;
+  z-index: 100;
 
   .logo-nav {
     align-items: center;
@@ -28,15 +31,29 @@
   .user-nav {
     align-items: center;
     display: flex;
-    flex-direction: column;
-    margin-right: 5%;
     height: 12vh;
     justify-content: center;
+    margin-right: 5%;
 
     .user-nav_sesion {
       padding-right: 1.5%;
       min-height: max-content;
-      position: fixed;
+
+      .user-nav_sesion_options {
+        display: flex;
+
+        .d-inline_mx-2:active {
+          box-shadow: none !important;
+        }
+
+        .dropdown-custom:active {
+          box-shadow: none !important;
+        }
+
+        .user-nav_sesion_icon:active {
+          box-shadow: none !important;
+        }
+      }
     }
 
     .link-modal {
@@ -48,8 +65,16 @@
         color: $background-color;
       }
 
+      .icon-nav:active {
+        color: $background-color;
+      }
+
       .icon-nav:hover {
         filter: opacity(.5);
+      }
+
+      .icon-nav:active {
+        box-shadow: none !important;
       }
     }
 
@@ -59,6 +84,10 @@
   .dropdown-custom {
     background-color: $pets-yellow;
     border: none;
+  }
+
+  .dropdown-custom:active {
+    background-color: $pets-blue;
   }
 
   .dropdown-toggle::after {
