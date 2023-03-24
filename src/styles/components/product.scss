@@ -1,0 +1,252 @@
+@import '../variables';
+
+@import '../variables';
+
+.products-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.list-products {
+  display: flex;
+  flex-wrap: wrap;
+  overflow-x: auto;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  margin: 20px;
+  width: calc(50% - 40px);
+  max-width: 200px;
+  height: 400px;
+  background-color: $background-color;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  box-sizing: border-box;
+  overflow: hidden;
+  z-index: 80;
+}
+
+.product-card:hover {
+  transform: scale(1.05);
+}
+
+.product-card__img {
+  width: 100%;
+  height: 200px;
+  background-size: cover;
+  background-position: center;
+  margin-bottom: 10px;
+}
+
+.product-card__name {
+  height: 5rem;
+  padding: 0.5rem;
+}
+
+.product-card__name h3 {
+  font-size: calc(1.3rem + 0.05vw);
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.subprod__price {
+  p {
+    font-size: calc(1.3rem + 0.05vw);
+  }
+}
+
+.subprod__button {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: $padding;
+
+  button {
+    background-color: $secondary-button-color;
+    border: none;
+    border-radius: 5px;
+    color: $secondary-text-button-color;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 5px 10px;
+    transition: background-color 0.2s ease-in-out;
+    margin: $margin-button;
+  }
+}
+
+.product-card__quantity {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.product-card__quantity button {
+  background-color: $secondary-button-color;
+  border: none;
+  border-radius: 50%;
+  color: $secondary-text-button-color;
+  cursor: pointer;
+  font-size: 1.2rem;
+  height: 30px;
+  margin: 0 10px;
+  width: 30px;
+}
+
+.product-card__quantity .number {
+  font-size: 1.2rem;
+  margin: 0 10px;
+}
+
+.product-card_add button {
+  background-color: $primary-button-color;
+  border: none;
+  border-radius: 5px;
+  color: $primary-text-button-color;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 10px 20px;
+  width: 100%;
+}
+
+.product-card_add button:hover {
+  transform: scale(1.05);
+}
+
+@media only screen and (min-width: 480px) {
+  .list-products {
+    justify-content: space-between;
+  }
+
+  .cart-item-added {
+    position: absolute;
+    top: 5%;
+    left: 50%;
+  }
+}
+
+@media only screen and (min-width: 769px) {
+
+  /* On larger screens, divide the available space equally between the cards */
+  .product-card {
+    flex-basis: calc(20% - 10px);
+    max-width: calc(19% - 10px);
+    /* Sets a maximum width of 25% minus padding and margin to fit up to 4 products per line */
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .product-card {
+    max-width: 30%;
+  }
+
+  .cart-item-added {
+    position: absolute;
+    top: 5%;
+    left: 80%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .product-card {
+    max-width: 45%;
+  }
+
+  .cart-item-added {
+    position: absolute;
+    top: 5%;
+    left: 80%;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .product-card {
+    max-width: 80%;
+  }
+
+  .cart-item-added {
+    position: absolute;
+    top: 5%;
+    left: 80%;
+  }
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+
+  &__item {
+    margin: 0 10px;
+    cursor: pointer;
+
+    &--active {
+      font-weight: bold;
+    }
+
+    &--disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    &__link {
+      display: inline-block;
+      padding: 10px;
+      border: 1px solid gray;
+      border-radius: 5px;
+      color: gray;
+      text-decoration: none;
+
+      &:hover {
+        background-color: gray;
+        color: white;
+      }
+    }
+  }
+}
+
+
+.cart-item-added {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  margin-bottom: 2px;
+  position: absolute;
+  top: 5%;
+  left: 80%;
+  background-color: $background-color;
+  width: max-content;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  transform: translateX(-50%);
+  animation: slide-down 2s ease forwards;
+  z-index: 120;
+
+  .product-quantity {
+    border: none;
+  }
+
+}
+
+@keyframes slide-down {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, 100%);
+  }
+}

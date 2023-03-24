@@ -1,12 +1,11 @@
-export const fillCart = (subProduct, cart) => {
-  const existSubProd = cart?.products?.findIndex((elem) => subProduct.id === elem.id)
+export const removeFromCart = (subprod, cart) => {
+  const updatedProds = cart.products.filter((elem) => elem.id !== subprod.id)
+  cart.products = updatedProds
 
-  if (existSubProd !== -1) {
-    cart.products[existSubProd].quantity += subProduct.quantity
-  } else {
-    cart.products.push(subProduct)
+  if(cart.products.length === 0) {
+    return cart = null
   }
-
+  // eslint-disable-next-line
   let newTotalP = 0, newCant = 0
   // eslint-disable-next-line
   cart?.products?.map((elem) => {

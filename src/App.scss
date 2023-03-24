@@ -1,4 +1,5 @@
 @import './styles/variables';
+@import './styles/mixins.scss';
 @import "~bootstrap/scss/bootstrap";
 
 .App {
@@ -30,7 +31,7 @@ body {
   background-color: $background-color;
   font-family: $font-family;
   color: $text-color;
-  padding: $padding;
+  // padding: $padding;
 }
 
 .swal2-container.swal2-center > .swal2-popup {

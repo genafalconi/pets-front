@@ -1,14 +1,8 @@
 @import '../variables';
 @import '../variables';
 
-.modal.show .modal-dialog {
-  transform: none;
-  width: 45%;
-}
-
 .modal-register-body {
   display: flex;
-  height: 65vh;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -32,14 +26,15 @@
   }
 
   .register-form {
-    align-items: center;
     display: flex;
+    align-items: center;
     flex-direction: column;
 
     .register-form_group {
+      width: 100%;
+
       input {
         margin: 0 0 $margin-input 0;
-        width: 25vw;
         height: 5vh;
         border: 1px solid black;
         border-radius: 5px;
@@ -53,5 +48,28 @@
 
   .modal-body_register {
     margin: 3% 0 5% 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .modal-register-body {
+    height: auto;
+  }
+
+  .modal-body_logo {
+    max-width: 30%;
+  }
+
+  .modal-body_google {
+    max-width: 15%;
+  }
+
+  .register-form_group input {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  .modal-body_register {
+    margin: 5% 0;
   }
 }

@@ -10,9 +10,10 @@ import Modal from 'react-bootstrap/Modal';
 import Logo from '../../logo.png'
 import '../../styles/modals/modalLogin.scss';
 
-export default function Login({ show, onHideLogin, onHideRegister }) {
+export default function Login({ show, onHideLogin, onHideRegister, onModalClose }) {
 
   const dispatch = useDispatch()
+
   const token = localStorage.getItem('token')
   const userLocal = localStorage.getItem('user')
   const cartLocal = localStorage.getItem('cart')
@@ -34,12 +35,12 @@ export default function Login({ show, onHideLogin, onHideRegister }) {
           id: user.uid,
           phoneNumber: user.phoneNumber
         }
-        localStorage.setItem('token', user.accessToken)
         setIsLoading(true)
         dispatch(LOGIN_WITH_GOOGLE(userLocal))
           .then((response) => {
             if (response.payload.status === 201) {
               dispatch(SAVE_LOCAL_CART(cartLocal)).then((res) => {
+                localStorage.setItem('token', user.accessToken)
                 onHideLogin()
               })
             }
@@ -58,6 +59,13 @@ export default function Login({ show, onHideLogin, onHideRegister }) {
       [event.target.name]: event.target.value
     })
   }
+
+  const handleHide = () => {
+    onHideLogin();
+    if (onModalClose) {
+      onModalClose();
+    }
+  };
 
   const loginWithEmail = (event) => {
     event.preventDefault()
@@ -89,11 +97,9 @@ export default function Login({ show, onHideLogin, onHideRegister }) {
   return (
     <Modal
       show={show}
-      onHide={onHideLogin}
-      size="lg"
+      onHide={handleHide}
       aria-labelledby="contained-modal-title-vcenter"
       centered
-      className='modal-login'
     >
       <Modal.Header closeButton>
         <Modal.Title id="contained-modal-title-vcenter" >
@@ -103,8 +109,8 @@ export default function Login({ show, onHideLogin, onHideRegister }) {
       <Modal.Body className='modal-login-body'>
         <img className='modal-body_logo' src={Logo} alt="logo-pets" />
         <form className='modal-body_form'>
-          <input type="text" placeholder='email' name='email' onChange={handleChange} />
-          <input type="password" placeholder='password' name='password' onChange={handleChange} />
+          <input type="text" placeholder='email' name='email' defaultValue='' onChange={handleChange} />
+          <input type="password" placeholder='password' defaultValue='' name='password' onChange={handleChange} />
         </form>
         {
           isLoading ?

@@ -101,13 +101,13 @@ export default function Register({ show, onHideLogin, onHideRegister }) {
         <Form className="register-form" onSubmit={registerUser}>
           <Form.Group className="register-form_group">
             <Form.Label>Email</Form.Label>
-            <Form.Control type="email" name="email" placeholder='Email' onChange={handleChange} />
+            <Form.Control type="email" name="email" placeholder='Email' defaultValue='' onChange={handleChange} />
             <Form.Label>Nombre y Apellido</Form.Label>
-            <Form.Control type="text" name="fullName" placeholder='Nombre y Apellido' onChange={handleChange} />
+            <Form.Control type="text" name="fullName" placeholder='Nombre y Apellido' defaultValue='' onChange={handleChange} />
             <Form.Label>Telefono</Form.Label>
-            <Form.Control type="text" name="phone" placeholder='Telefono' onChange={handleChange} />
+            <Form.Control type="text" name="phone" placeholder='Telefono' defaultValue='' onChange={handleChange} />
             <Form.Label>Contraseña</Form.Label>
-            <Form.Control type="password" name="password" onChange={handleChange} />
+            <Form.Control type="password" name="password" defaultValue='' onChange={handleChange} />
           </Form.Group>
         </Form>
         {

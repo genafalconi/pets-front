@@ -1,0 +1,96 @@
+@import '../variables';
+
+.coordinate-container {
+  display: flex;
+  justify-content: flex-start;
+  margin-left: 10%;
+  z-index: 90;
+}
+
+.date {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  margin-right: 10%;
+}
+
+.coordinate-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2.5%;
+}
+
+.primary-button {
+  margin-left: 1%;
+}
+
+.secondary-button {
+  margin-right: 1%;
+}
+
+.date-label {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.date-input {
+  border: 2px solid gray;
+  border-radius: 5px;
+  padding: 0.5rem;
+  font-size: 1.2rem;
+  color: gray;
+}
+
+.payment {
+  img {
+    max-width: 5rem;
+    height: 100%;
+    margin: 10px;
+    padding: 2.5%;
+    border: 1px solid black;
+    border-radius: 10px;
+  }
+
+  img:hover {
+    background-color: rgb(128, 128, 128, 0.6);
+    cursor: pointer;
+  }
+}
+
+.selected-payment {
+  background-color: grey;
+}
+
+.selected-payment:hover {
+  background-color: rgb(128, 128, 128, 0.6);
+}
+
+@media screen and (max-width: 767px) {
+  .coordinate-container {
+    flex-direction: column;
+    align-items: center;
+    margin-left: 5%;
+    margin-right: 5%;
+  }
+
+  .date, .payment {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 20px;
+  }
+
+  .coordinate-buttons {
+    flex-direction: column;
+    margin: 0;
+  }
+
+  .primary-button {
+    margin-left: 0;
+    margin-top: 5%;
+  }
+
+  .secondary-button {
+    margin-right: 0;
+  }
+}
