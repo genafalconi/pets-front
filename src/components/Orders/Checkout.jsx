@@ -21,6 +21,7 @@ export default function Checkout() {
   const user = localStorage.getItem('user')
 
   const [isLoading, setIsLoading] = useState(false)
+  const [validContinue, setValidContinue] = useState(false)
   const [modalAddress, setModalAddress] = useState(false)
   const [showPaymentDate, setShowPaymentDate] = useState(false)
   const [showCheckout, setShowCheckout] = useState(true)
@@ -60,8 +61,14 @@ export default function Checkout() {
   }
 
   useEffect(() => {
-    const selectedAddress = addresses.find((elem) => elem.id === settedAddress)
-    dispatch(SET_USER_ADDRESS(selectedAddress))
+    const selectedAddress = addresses?.find((elem) => elem.id === settedAddress)
+
+    if (selectedAddress) {
+      dispatch(SET_USER_ADDRESS(selectedAddress))
+      setValidContinue(true)
+    } else {
+      setValidContinue(false)
+    }
   }, [settedAddress, dispatch, addresses])
 
   useEffect(() => {
@@ -149,8 +156,8 @@ export default function Checkout() {
                   </div>
                   <Timer />
                 </div>
-                <div className="primary-button">
-                  <button onClick={handleCoordinate}>Continuar</button>
+                <div className={validContinue ? "primary-button" : "disabled-button"}>
+                  <button disabled={!validContinue} onClick={handleCoordinate}>Continuar</button>
                 </div>
               </>
             ) : (

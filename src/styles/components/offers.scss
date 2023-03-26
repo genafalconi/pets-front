@@ -33,7 +33,6 @@ tbody td {
 }
 
 tbody:hover {
-  background-color: rgb(128, 128, 128, 0.6);
   cursor: pointer;
 }
 
@@ -43,5 +42,43 @@ tbody:not(:last-child) {
 }
 
 .selected-offer {
-  background-color: grey;
+  border: 2px solid blue;
+}
+
+/* Media queries for responsive design */
+
+@media only screen and (max-width: 768px) {
+
+  /* Adjust table styles for small screens */
+  table {
+    font-size: 16px;
+    width: 80%;
+  }
+
+  th,
+  td {
+    padding: 6px;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+
+  /* Adjust table styles for phones */
+  table {
+    font-size: 14px;
+    width: 80%;
+  }
+
+  th,
+  td {
+    padding: 4px;
+  }
+
+  .offers-table {
+    flex-direction: column;
+  }
+
+  tbody td {
+    align-items: center;
+  }
 }

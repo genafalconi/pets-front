@@ -48,22 +48,16 @@
     height: 100%;
     margin: 10px;
     padding: 2.5%;
-    border: 1px solid black;
     border-radius: 10px;
   }
 
   img:hover {
-    background-color: rgb(128, 128, 128, 0.6);
     cursor: pointer;
   }
 }
 
 .selected-payment {
-  background-color: grey;
-}
-
-.selected-payment:hover {
-  background-color: rgb(128, 128, 128, 0.6);
+  border: 2px solid blue;
 }
 
 @media screen and (max-width: 767px) {

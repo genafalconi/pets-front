@@ -6,13 +6,18 @@ export default function Offers({ offers, setSelectedOfferData }) {
   const [selectedOffer, setSelectedOffer] = useState(null);
 
   const handleOfferClick = (offer) => {
-    setSelectedOffer(offer)
-    setSelectedOfferData(offer)
+    if (selectedOffer === offer) {
+      setSelectedOffer(null);
+      setSelectedOfferData(null);
+    } else {
+      setSelectedOffer(offer);
+      setSelectedOfferData(offer);
+    }
   };
 
   return (
     <div className='offers-table'>
-      {offers.map((offer) => (
+      {offers?.map((offer) => (
         <table key={offer.id}>
           <thead>
             <tr>

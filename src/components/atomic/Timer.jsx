@@ -46,7 +46,7 @@ export default function Timer() {
 
   return (
     <div className='timer'>
-      {formattedTime}
+      Tiempo restante: {formattedTime}
     </div>
   );
 }
