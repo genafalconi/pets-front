@@ -7,32 +7,44 @@ export default function AddressList({ id, modal, street, number, floor, flat, ci
   const [selectedAddress, setSelectedAddress] = useState()
 
   const handleSelectedAddress = (address) => {
-    setSelectedAddress(address)
-    setSettedAddress(address)
+    if (selectedAddress === address) {
+      // If the address is already selected, unselect it
+      setSelectedAddress(null)
+      setSettedAddress(null)
+    } else {
+      // Otherwise, select the clicked address
+      setSelectedAddress(address)
+      setSettedAddress(address)
+    }
   }
 
   useEffect(() => {
   }, [selectedAddress]);
 
   return (
-    <div className={modal ? "container-address-modal" : "container-address"} onClick={() => handleSelectedAddress(id)}>
-      <div className="address-details">
-        <h5>{street}</h5>
-        <h5>{number}</h5>
-      </div>
-      <div className="address-sec-details">
-        <div className="col1">
-          <p>Piso: {floor ? floor : '-'}</p>
-          <p>Departamento: {flat ? flat : '-'}</p>
+    <>
+      <div className={modal ? "container-address-modal" : `container-address ${selectedAddress === id ? 'selected' : ''}`} onClick={() => handleSelectedAddress(id)}>
+        <div className="address-details">
+          <h5>{street}</h5>
+          <h5>{number}</h5>
         </div>
-        <div className="col2">
-          <p>Ciudad: {city}</p>
-          <p>Provincia: {province}</p>
+        <div className="address-sec-details">
+          <div className="col1">
+            <p>Piso: {floor ? floor : '-'}</p>
+            <p>Departamento: {flat ? flat : '-'}</p>
+          </div>
+          <div className="col2">
+            <p>Ciudad: {city}</p>
+            <p>Provincia: {province}</p>
+          </div>
+        </div>
+        <div className="extra">
+          <p>{extra}</p>
         </div>
       </div>
-      <div className="extra">
-        <p>{extra}</p>
-      </div>
-    </div>
+      {
+        selectedAddress ? '' : <p>Selecciona una direccion</p>
+      }
+    </>
   )
 }

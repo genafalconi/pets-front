@@ -22,12 +22,18 @@ export default function PaymentDate() {
   const user = localStorage.getItem('user')
 
   const [isLoading, setIsLoading] = useState(true)
-  const [selectedPaymentType, setSelectedPaymentType] = useState('');
+  const [selectedPaymentType, setSelectedPaymentType] = useState(null);
   const [selectedOfferData, setSelectedOfferData] = useState('');
+  const [hasFetchedOffers, setHasFetchedOffers] = useState(false);
+  const [validContinue, setValidContinue] = useState(false)
 
   const handlePaymentType = (event) => {
     const selectedType = event.target.name;
-    setSelectedPaymentType(selectedType);
+    if (selectedType === selectedPaymentType) {
+      setSelectedPaymentType(null);
+    } else {
+      setSelectedPaymentType(selectedType);
+    }
   };
 
   const handleGoBack = () => {
@@ -44,7 +50,7 @@ export default function PaymentDate() {
     }
     dispatch(CREATE_USER_ORDER(orderToCreate))
       .then((res) => {
-        if(res.payload.id) {
+        if (res.payload.id) {
           Swal.fire({
             title: 'Pedido realizado con exito!',
             text: `Numero de orden: ${res.payload.id}`,
@@ -58,19 +64,26 @@ export default function PaymentDate() {
   };
 
   useEffect(() => {
-  }, [selectedOfferData])
+    if(selectedPaymentType && selectedOfferData) {
+      setValidContinue(true)
+    } else {
+      setValidContinue(false)
+    }
+
+  }, [selectedOfferData, selectedPaymentType])
 
   useEffect(() => {
     const handleOpenOffers = async () => {
-      if (offers.length === 0) {
+      if (!hasFetchedOffers) {
         await dispatch(GET_OPEN_OFFERS())
           .then((res) => {
-            setIsLoading(false)
-          })
+            setIsLoading(false);
+            setHasFetchedOffers(true);
+          });
       }
-    }
-    handleOpenOffers()
-  }, [offers, dispatch])
+    };
+    handleOpenOffers();
+  }, [dispatch, hasFetchedOffers]);
 
   return (
     <>
@@ -100,14 +113,15 @@ export default function PaymentDate() {
                   <img src={Mp} alt="mp" name='mp' className={selectedPaymentType === 'mp' ? 'selected-payment' : ''} onClick={handlePaymentType} />
                   <img src={Trans} alt="transferencia" name='transferencia' className={selectedPaymentType === 'transferencia' ? 'selected-payment' : ''} onClick={handlePaymentType} />
                 </div>
+                <p></p>
               </div>
             </div>
             <div className='coordinate-buttons'>
               <div className="secondary-button">
                 <button onClick={handleGoBack}>Volver</button>
               </div>
-              <div className="primary-button">
-                <button onClick={handleConfirm} disabled={!selectedPaymentType || !selectedOfferData}>Confirmar</button>
+              <div className={ validContinue ? "primary-button": "disabled-button"}>
+                <button onClick={handleConfirm} disabled={!validContinue}>Confirmar</button>
               </div>
             </div>
           </>
