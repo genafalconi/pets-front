@@ -1,5 +1,6 @@
 import axios from "axios";
 import Swal from 'sweetalert2';
+import eventBus from "./event-bus";
 
 export const request = async (method, url, params, data, token) => {
 
@@ -12,25 +13,19 @@ export const request = async (method, url, params, data, token) => {
       'Authorization': `Bearer ${token}`
     }
   }
-
+  
   try {
     const response = await axios(config);
     return response;
   } catch (error) {
-    if (error.response) {
+    console.log(error)
+    if (error.response && error.response.status === 401) {
       Swal.fire({
         title: 'Error!',
-        text: `${error.response}`,
+        text: `Sesion inactiva`,
         icon: 'error'
       })
-      throw new Error(error.response);
-    } else if (error.request) {
-      Swal.fire({
-        title: 'Error!',
-        text: `Error del servidor!`,
-        icon: 'error'
-      })
-      throw new Error(error.request);
+      eventBus.emit('expired-sesion', true)
     } else {
       Swal.fire({
         title: 'Error!',

@@ -23,7 +23,7 @@ export default function Cart() {
       dispatch(REMOVE_FROM_CART(subprod))
     } else {
       await dispatch(REMOVE_FROM_LOCAL_CART(subprod)).then((res) => {
-        if (res.payload?.products.length === 0) {
+        if (res.payload?.subproducts?.length === 0) {
           setEmptyCart(true)
         }
       })
@@ -35,10 +35,10 @@ export default function Cart() {
   }
 
   useEffect(() => {
-    if (!cartStorage) {
+    if (Object.keys(cartReducer).length === 0) {
       setEmptyCart(true)
     } else {
-      if (cartStorage && Object.keys(cartStorage).length === 0) {
+      if (cartStorage && cartStorage.subproducts?.length === 0) {
         setEmptyCart(true)
       } else {
         setEmptyCart(false)
@@ -50,7 +50,7 @@ export default function Cart() {
     <Dropdown className={`dropdown-cart${window.location.pathname === '/checkout' ? ' d-none' : ''}`}>
       <Dropdown.Toggle id="dropdown-autoclose-true" className='dropdown-custom'>
         <div className="total-cart-icon">
-          <span>{cartStorage?.totalProducts > 0 ? cartStorage?.totalProducts : 0}</span>
+          <span>{cartStorage?.total_products > 0 ? cartStorage?.total_products : 0}</span>
         </div>
         <FaShoppingCart className='user-nav_cart_icon' size={30} />
       </Dropdown.Toggle>
@@ -62,22 +62,22 @@ export default function Cart() {
             </Dropdown.Item>
             : <>
               {
-                cartStorage?.products?.map((elem) => (
-                  <Dropdown.Item key={elem.id} className="cart-item" onClick={(e) => e.stopPropagation()}>
+                cartStorage?.subproducts?.map((elem) => (
+                  <Dropdown.Item key={elem.subproduct?._id} className="cart-item" onClick={(e) => e.stopPropagation()}>
                     <div className="cart-product-card">
                       <div className="product-name">
-                        <h3>{elem.productName}</h3>
+                        <h3>{user ? elem.subproduct?.product?.name : elem?.subproduct?.name}</h3>
                       </div>
                       <div className="product-details">
                         <div className="product-size">
-                          {elem.size}kg
+                          {elem.subproduct?.size}kg
                         </div>
-                        <ProductQuantity quantity={elem.quantity} idSubprod={elem.id} stock={elem.stock} />
+                        <ProductQuantity quantity={elem.quantity} idSubprod={elem.subproduct?._id} stock={elem.subproduct?.stock} />
                         <div className="product-price">
-                          ${elem.price}
+                          ${elem.subproduct?.sell_price}
                         </div>
                         <div className="product-remove">
-                          <MdOutlineDelete onClick={() => removeFromCart(elem)} />
+                          <MdOutlineDelete onClick={() => removeFromCart(elem.subproduct)} />
                         </div>
                       </div>
                     </div>
@@ -88,7 +88,7 @@ export default function Cart() {
               <Dropdown.Item className="cart-final-item">
                 <div className="cart-total-price" onClick={(e) => e.stopPropagation()}>
                   <p>Total:</p>
-                  <p>${cartStorage?.totalPrice ? cartStorage?.totalPrice : 0}</p>
+                  <p>${cartStorage?.total_price ? cartStorage?.total_price : 0}</p>
                 </div>
                 {
                   emptyCart ? ''

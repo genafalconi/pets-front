@@ -1,26 +1,25 @@
 export const addLocalCart = (subProduct) => {
 
-  cart.products.push(subProduct)
+  cart?.subproducts?.push({ subproduct: subProduct, quantity: subProduct.quantity })
   let newTotalP = 0, newCant = 0
   // eslint-disable-next-line
-  cart.products.map((elem) => {
-    let subProdTotal = elem.quantity * elem.price
+  cart?.subproducts?.map((elem) => {
+    let subProdTotal = elem.quantity * elem.subproduct.sell_price
     newTotalP += subProdTotal
     newCant += elem.quantity
   })
 
-  cart.totalPrice = newTotalP
-  cart.totalProducts = newCant
-  cart.created_at = new Date().toISOString()
-  
+  cart.active = true
+  cart.total_price = newTotalP
+  cart.total_products = newCant
+
   return cart
 }
 
 const cart = {
-  products: [],
-  totalProducts: 0,
-  totalPrice: 0,
+  subproducts: [],
+  total_products: 0,
+  total_price: 0,
   user: '',
-  created_at: '',
-  updated_at: ''
+  active: false
 }

@@ -1,4 +1,4 @@
-@import './variables';
+@import '../variables';
 
 .nav {
   display: flex;
@@ -11,7 +11,7 @@
   position: sticky;
   top: 0%;
   width: 100%;
-  z-index: 100;
+  z-index: 300;
 
   .logo-nav {
     align-items: center;
@@ -19,7 +19,7 @@
     font-weight: bold;
     justify-content: flex-start;
     font-size: 1.5rem;
-    width: 10vw;
+    width: fit-content;
 
     img {
       max-height: 12vh;
@@ -34,6 +34,7 @@
     height: 12vh;
     justify-content: center;
     margin-right: 5%;
+    width: max-content;
 
     .user-nav_sesion {
       padding-right: 1.5%;
@@ -44,29 +45,32 @@
 
         .d-inline_mx-2:active {
           box-shadow: none !important;
+          background-color: $pets-yellow !important;
         }
 
         .dropdown-custom:active {
           box-shadow: none !important;
+          background-color: $pets-yellow !important;
         }
 
         .user-nav_sesion_icon:active {
           box-shadow: none !important;
+          background-color: $pets-yellow !important;
         }
       }
     }
 
     .link-modal {
       padding: 10%;
-      border: 1px solid $background-color;
-      border-radius: 5px;
 
       .icon-nav {
         color: $background-color;
+        background-color: $pets-yellow;
       }
 
       .icon-nav:active {
         color: $background-color;
+        background-color: $pets-yellow;
       }
 
       .icon-nav:hover {
@@ -75,22 +79,55 @@
 
       .icon-nav:active {
         box-shadow: none !important;
+        background-color: $pets-yellow;
+      }
+
+      .user-nav_cart_icon {
+        color: $background-color;
       }
     }
-
   }
 
+  .total-cart-icon span {
+    background-color: #007bff;
+    border-radius: 50%;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    height: 20px;
+    line-height: 20px;
+    position: absolute;
+    right: -15px;
+    text-align: center;
+    top: -10px;
+    width: 20px;
+  }
 
   .dropdown-custom {
     background-color: $pets-yellow;
     border: none;
+    margin: 0;
   }
 
-  .dropdown-custom:active {
-    background-color: $pets-blue;
+  .dropdown-custom:hover {
+    border: 1px solid $secondary-button-color;
+  }
+
+  .dropdown-custom:active,
+  .dropdown-custom:focus {
+    border: 1px solid $secondary-button-color;
   }
 
   .dropdown-toggle::after {
     display: none;
+  }
+
+  .dropdown-item:hover {
+    background-color: $background-color;
+  }
+
+  .dropdown-item:active,
+  .dropdown-item:focus {
+    border: 1px solid $secondary-button-color;
   }
 }

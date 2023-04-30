@@ -1,5 +1,5 @@
 import Logo from '../../logo.png'
-import '../../styles/nav.scss'
+import '../../styles/components/nav.scss'
 import { FiLogIn } from 'react-icons/fi'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -8,7 +8,10 @@ import UserOptions from '../UserSesion/UserOptions'
 import Register from '../UserSesion/Register'
 import Cart from './Cart'
 import Address from '../Orders/Address'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { LOGOUT } from '../../redux/actions'
+import eventBus from '../../helpers/event-bus'
+import { firebaseAuth } from '../../helpers/firebase'
 
 export default function Nav() {
 
@@ -16,10 +19,12 @@ export default function Nav() {
   const [activeSesion, setActiveSesion] = useState(false)
   const [modalRegister, setModalRegister] = useState(false)
   const [modalAddress, setModalAddress] = useState(false)
+  const [addressUpdated, setAddressUpdated] = useState(false)
 
   const token = localStorage.getItem('token')
   const userLocal = localStorage.getItem('user')
   const userReducer = useSelector((state) => state.clientReducer.user)
+  const dispatch = useDispatch()
 
   const handleLogin = () => {
     setModalLogin(!modalLogin)
@@ -29,7 +34,31 @@ export default function Nav() {
     if (token && userLocal) {
       setActiveSesion(true)
     }
-  }, [token, userLocal, modalLogin, modalRegister, userReducer])
+
+    const expiredSesionHandler = () => {
+      setActiveSesion(false)
+      dispatch(LOGOUT())
+    }
+    eventBus.on('expired-sesion', expiredSesionHandler)
+
+    const unsubscribe = firebaseAuth.onIdTokenChanged(async (user) => {
+      if (user) {
+        const newToken = await user.getIdToken()
+        localStorage.setItem('token', newToken)
+      } else {
+        localStorage.removeItem('token')
+      }
+    })
+
+    if(!token) {
+      setModalAddress(false)
+    }
+
+    return () => {
+      eventBus.off('expired-sesion', expiredSesionHandler)
+      unsubscribe()
+    }
+  }, [token, userLocal, modalLogin, modalRegister, userReducer, dispatch])
 
   return (
     <>
@@ -70,6 +99,8 @@ export default function Nav() {
       <Address
         show={modalAddress}
         onHideAddress={() => setModalAddress(!modalAddress)}
+        updateAddress={() => setAddressUpdated(!addressUpdated)}
+        fromCheckout={false}
       />
     </>
   )

@@ -15,7 +15,7 @@
   overflow-x: auto;
   align-items: center;
   justify-content: center;
-  margin: 0 5%;
+  margin: 0 2%;
 }
 
 .product-card {
@@ -24,63 +24,66 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px;
-  margin: 20px;
-  width: calc(50% - 40px);
-  max-width: 200px;
-  height: 400px;
-  background-color: $background-color;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   box-sizing: border-box;
   overflow: hidden;
+  height: 80vh;
+  width: 20%;
+  margin: 1%;
   z-index: 80;
 }
 
-.product-card:hover {
-  transform: scale(1.05);
+.product-card_img img {
+  max-width: 75%;
+  height: auto;
 }
 
-.product-card__img {
-  width: 100%;
-  height: 200px;
-  background-size: cover;
-  background-position: center;
-  margin-bottom: 10px;
-}
+.product-card_name {
+  margin-top: 0.5rem;
+  height: 10%;
 
-.product-card__name {
-  height: 5rem;
-  padding: 0.5rem;
-}
-
-.product-card__name h3 {
-  font-size: calc(1.3rem + 0.05vw);
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
-
-.subprod__price {
-  p {
-    font-size: calc(1.3rem + 0.05vw);
+  h3 {
+    font-size: calc(1rem + 0.2vw);
   }
+}
+
+.product-card_subprod {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0.5rem;
+  justify-content: center;
 }
 
 .subprod__button {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
+  justify-content: center;
   padding: $padding;
 
-  button {
+  .not-selected {
     background-color: $secondary-button-color;
-    border: none;
+    border: 1px solid $secondary-text-button-color;
     border-radius: 5px;
     color: $secondary-text-button-color;
     cursor: pointer;
-    font-size: 1.2rem;
+    font-size: 0.9rem;
+    padding: 5px 10px;
+    transition: background-color 0.2s ease-in-out;
+    margin: $margin-button;
+  }
+
+  .not-selected:hover {
+    background-color: #ccc;
+  }
+
+  .selected {
+    background-color: $primary-button-color;
+    border: 1px solid $primary-text-button-color;
+    border-radius: 5px;
+    color: $primary-text-button-color;
+    cursor: default;
+    font-size: 1rem;
     padding: 5px 10px;
     transition: background-color 0.2s ease-in-out;
     margin: $margin-button;
@@ -90,97 +93,137 @@
 .product-card__quantity {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  margin-top: 1rem;
 }
 
 .product-card__quantity button {
-  background-color: $secondary-button-color;
-  border: none;
+  background-color: #fff;
+  border: 1px solid #ccc;
   border-radius: 50%;
-  color: $secondary-text-button-color;
+  width: 2rem;
+  height: 2rem;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  font-size: 1.2rem;
-  height: 30px;
-  margin: 0 10px;
-  width: 30px;
+  transition: all 0.2s ease-in-out;
+  margin: 0;
+  color: black;
 }
 
-.product-card__quantity .number {
-  font-size: 1.2rem;
-  margin: 0 10px;
+.product-card__quantity button:hover {
+  background-color: #ccc;
 }
 
-.product-card_add button {
-  background-color: $primary-button-color;
-  border: none;
-  border-radius: 5px;
-  color: $primary-text-button-color;
-  cursor: pointer;
+.product-card__quantity p.number {
+  margin: 0 0.5rem;
   font-size: 1.2rem;
-  padding: 10px 20px;
+}
+
+.subprod__price {
+  margin-top: 0.5rem;
+  font-size: 1.2rem;
+
+  .not-discount {
+    text-decoration: line-through;
+    font-size: 80%;
+  }
+
+  .discount {
+    font-size: 110%;
+    font-weight: 500;
+  }
+}
+
+.product-card_add {
+  margin-top: 0.5rem;
   width: 100%;
 }
 
+.product-card_add button {
+  width: 80%;
+  padding: 0.5rem;
+  background-color: $primary-button-color;
+  border: none;
+  color: $primary-text-button-color;
+  font-size: 1.2rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
 .product-card_add button:hover {
-  transform: scale(1.05);
+  background-color: $secondary-button-color;
+  color: $secondary-text-button-color;
+  border: 1px solid $secondary-text-button-color;
 }
 
-@media only screen and (min-width: 480px) {
+@media only screen and (min-width: 768px) {
+
+  .product-card_img {
+    flex-basis: 30%;
+    margin-right: 1rem;
+  }
+
+  .subprod__button {
+    flex-wrap: nowrap;
+  }
+
+  .product-card__quantity {
+    margin-top: 0;
+  }
+
+  .product-card__quantity button {
+    font-size: 1.2rem;
+  }
+
+  .product-card__quantity p.number {
+    font-size: 1.5rem;
+  }
+
+  .subprod__price {
+    margin-top: 0;
+  }
+}
+
+@media only screen and (max-width: 520px) {
   .list-products {
-    justify-content: space-between;
+    flex-direction: column;
   }
 
-  .cart-item-added {
-    position: absolute;
-    top: 5%;
-    left: 50%;
+  .product-card {
+    width: 80%;
+    height: fit-content;
+  }
+
+  .product-card_img img {
+    width: 40%;
   }
 }
 
-@media only screen and (min-width: 769px) {
-
-  /* On larger screens, divide the available space equally between the cards */
+@media only screen and (min-width: 520px) and (max-width: 768px) {
   .product-card {
-    flex-basis: calc(20% - 10px);
-    max-width: calc(19% - 10px);
-    /* Sets a maximum width of 25% minus padding and margin to fit up to 4 products per line */
+    width: 40%;
+    height: fit-content;
   }
+
+  .product-card_img img {
+    width: 50%;
+  }
+
 }
 
-@media screen and (max-width: 1200px) {
+@media only screen and (min-width: 768px) and (max-width: 1024px) {
   .product-card {
-    max-width: 30%;
+    width: 30%;
+    height: fit-content;
   }
 
-  .cart-item-added {
-    position: absolute;
-    top: 5%;
-    left: 80%;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .product-card {
-    max-width: 45%;
+  .product-card_img img {
+    width: 50%;
   }
 
-  .cart-item-added {
-    position: absolute;
-    top: 5%;
-    left: 80%;
-  }
-}
-
-@media screen and (max-width: 576px) {
-  .product-card {
-    max-width: 80%;
-  }
-
-  .cart-item-added {
-    position: absolute;
-    top: 5%;
-    left: 80%;
-  }
 }
 
 .pagination {
@@ -232,7 +275,7 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   transform: translateX(-50%);
   animation: slide-down 2s ease forwards;
-  z-index: 120;
+  z-index: 350;
 
   .product-quantity {
     border: none;

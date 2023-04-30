@@ -1,7 +1,7 @@
 import { signInWithPopup } from 'firebase/auth';
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { firebaseAuth, providerGoogle } from '../../firebase';
+import { useDispatch, useSelector } from 'react-redux';
+import { firebaseAuth, providerGoogle } from '../../helpers/firebase';
 import googleImage from '../../google.png';
 import { LOGIN_WITH_EMAIL, LOGIN_WITH_GOOGLE, SAVE_LOCAL_CART } from '../../redux/actions';
 import Button from 'react-bootstrap/Button';
@@ -16,7 +16,7 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
 
   const token = localStorage.getItem('token')
   const userLocal = localStorage.getItem('user')
-  const cartLocal = localStorage.getItem('cart')
+  const cartReducer = useSelector((state) => state.clientReducer.cart)
 
   const [isLoading, setIsLoading] = useState(false)
   const [user, setUser] = useState({
@@ -39,18 +39,23 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
         dispatch(LOGIN_WITH_GOOGLE(userLocal))
           .then((response) => {
             if (response.payload.status === 201) {
-              dispatch(SAVE_LOCAL_CART(cartLocal)).then((res) => {
+              if (Object.keys(cartReducer).length !== 0) {
+                dispatch(SAVE_LOCAL_CART(cartReducer)).then((res) => {
+                  localStorage.setItem('token', user.accessToken)
+                  onHideLogin()
+                })
+              } else {
                 localStorage.setItem('token', user.accessToken)
                 onHideLogin()
-              })
+              }
             }
-            setIsLoading(false)
           })
       }).catch((error) => {
         const errorMessage = error.message;
         // const credential = GoogleAuthProvider.credentialFromError(error);
         return errorMessage
       });
+    setIsLoading(false)
   }
 
   const handleChange = (event) => {
@@ -73,11 +78,14 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
     dispatch(LOGIN_WITH_EMAIL(user))
       .then((response) => {
         if (response.payload.status === 201) {
-          dispatch(SAVE_LOCAL_CART(cartLocal)).then((res) => {
+          if (Object.keys(cartReducer).length !== 0) {
+            dispatch(SAVE_LOCAL_CART(cartReducer)).then((res) => {
+              onHideLogin()
+            })
+          } else {
             onHideLogin()
-          })
+          }
         }
-        setIsLoading(false)
       })
     setUser({
       email: '',
@@ -124,7 +132,7 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
       </Modal.Body>
       <Modal.Footer className='modal-login-footer'>
         <p>Todavía no tenes cuenta?</p>
-        <Button onClick={showRegister}>Registrate</Button>
+        <Button className='outline-primary' onClick={showRegister}>Registrate</Button>
       </Modal.Footer>
     </Modal>
   )

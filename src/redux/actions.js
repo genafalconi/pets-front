@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import Swal from 'sweetalert2';
-import { firebaseAuth } from '../firebase';
+import { firebaseAuth } from '../helpers/firebase';
 import { addLocalCart } from '../helpers/addLocalCart';
 import { constants } from '../helpers/constants';
 import { fillCart } from '../helpers/fillCart';
@@ -19,8 +19,8 @@ export const LOGIN_WITH_EMAIL = createAsyncThunk(
         const res = await request(constants.POST, `${REACT_APP_AUTH}/auth/login`, null, user, token)
 
         if (res.status === 201) {
-          localStorage.setItem('user', res.data.user.id)
-          localStorage.setItem('cart', JSON.stringify(res.data.cart))
+          localStorage.setItem('user', res.data.user._id)
+          localStorage.setItem('cart', JSON.stringify(res.data.cart ? res.data.cart : {}))
           const isLoggedUser = localStorage.getItem('user')
           if (isLoggedUser) {
             localStorage.setItem('token', token)
@@ -30,6 +30,7 @@ export const LOGIN_WITH_EMAIL = createAsyncThunk(
         }
       }
     } catch (error) {
+      console.log(error)
       const firebaseError = error.message.replace('Firebase: Error', '').match(/\((.*)\)/).pop()
       if (firebaseError === 'auth/user-not-found') {
         Swal.fire({
@@ -71,10 +72,11 @@ export const LOGIN_WITH_GOOGLE = createAsyncThunk(
     try {
       const token = localStorage.getItem('token')
       const res = await request(constants.POST, `${REACT_APP_AUTH}/auth/login`, null, user, token)
+
       if (res.status === 201) {
         localStorage.setItem('token', token)
-        localStorage.setItem('user', res.data.user.id)
-        localStorage.setItem('cart', JSON.stringify(res.data.cart))
+        localStorage.setItem('user', res?.data?.user?._id)
+        localStorage.setItem('cart', JSON.stringify(res?.data?.cart))
 
         return { ...res, token: token }
       }
@@ -99,13 +101,13 @@ export const REGISTER_WITH_EMAIL = createAsyncThunk(
         const res = await request(constants.POST, `${REACT_APP_AUTH}/auth/register`, null, register, token)
 
         localStorage.setItem('token', token)
-        localStorage.setItem('user', JSON.stringify(res.data.id))
+        localStorage.setItem('user', res?.data?._id)
         Swal.fire({
           title: 'Usuario creado correctamente',
-          text: `Email: ${res.data.email}`,
+          text: `Email: ${res?.data?.email}`,
           icon: 'success'
         })
-        return res
+        return { ...res, token: token }
       }
     } catch (error) {
       const firebaseError = error.message.replace('Firebase: Error', '').match(/\((.*)\)/).pop()
@@ -122,6 +124,25 @@ export const REGISTER_WITH_EMAIL = createAsyncThunk(
           icon: 'error'
         })
       }
+      return firebaseError
+    }
+  }
+)
+
+export const VERIFY_TOKEN = createAsyncThunk(
+  'VERIFY_TOKEN', async () => {
+    try {
+      const token = localStorage.getItem('token')
+      const res = await request(constants.GET, `${REACT_APP_AUTH}/auth/verify-token`, null, null, token)
+
+      return res?.data
+    } catch (error) {
+      const firebaseError = error.message.replace('Firebase: Error', '').match(/\((.*)\)/).pop()
+      Swal.fire({
+        title: 'Error!',
+        text: `${firebaseError}`,
+        icon: 'error'
+      })
       return firebaseError
     }
   }
@@ -154,7 +175,7 @@ export const GET_USER_CART = createAsyncThunk(
       const idUser = localStorage.getItem('user')
 
       const res = await request(constants.GET, `${REACT_APP_CART}/cart/${idUser}`, null, null, token)
-      localStorage.setItem('cart', JSON.stringify(res.data))
+      localStorage.setItem('cart', JSON.stringify(res?.data))
 
       return res
     } catch (error) {
@@ -176,9 +197,9 @@ export const ADD_TO_CART = createAsyncThunk(
       const idUser = localStorage.getItem('user')
 
       const res = await request(constants.POST, `${REACT_APP_CART}/cart/add/${idUser}`, null, subprod, token)
-      localStorage.setItem('cart', JSON.stringify(res.data))
+      localStorage.setItem('cart', JSON.stringify(res?.data))
 
-      return res.data
+      return res?.data
     } catch (error) {
       const firebaseError = error.message.replace('Firebase: Error', '').match(/\((.*)\)/).pop()
       Swal.fire({
@@ -198,9 +219,9 @@ export const REMOVE_FROM_CART = createAsyncThunk(
       const idUser = localStorage.getItem('user')
 
       const res = await request(constants.DELETE, `${REACT_APP_CART}/cart/remove/${idUser}`, null, subprod, token)
-      localStorage.setItem('cart', JSON.stringify(res.data))
+      localStorage.setItem('cart', JSON.stringify(res?.data))
 
-      return res.data
+      return res?.data
     } catch (error) {
       const firebaseError = error.message.replace('Firebase: Error', '').match(/\((.*)\)/).pop()
       Swal.fire({
@@ -270,12 +291,10 @@ export const SAVE_LOCAL_CART = createAsyncThunk(
     try {
       const token = localStorage.getItem('token')
       const idUser = localStorage.getItem('user')
-
       if (cart) {
-        cart = JSON.parse(cart)
         const res = await request(constants.POST, `${REACT_APP_CART}/cart/create/${idUser}`, null, cart, token)
-        localStorage.setItem('cart', JSON.stringify(res.data))
-        return res
+        localStorage.setItem('cart', JSON.stringify(res?.data))
+        return res?.data
       }
       return true
     } catch (error) {
@@ -290,17 +309,32 @@ export const SAVE_LOCAL_CART = createAsyncThunk(
 )
 
 export const GET_ACTIVE_PRODUCTS = createAsyncThunk(
-  'GET_ACTIVE_PRODUCTS', async (cart) => {
+  'GET_ACTIVE_PRODUCTS', async (query) => {
     try {
       const token = localStorage.getItem('token')
-      const res = await request(constants.GET, `${REACT_APP_PROD}/products/active`, null, cart, token)
-      if (res.data.length === 0) {
-        Swal.fire({
-          title: 'No hay productos disponibles',
-          icon: 'info'
-        })
+      let param = 'active'
+      if (query && query !== undefined) {
+        param = `active?animal=${query}`
       }
-      return res.data
+      const res = await request(constants.GET, `${REACT_APP_PROD}/products/${param}`, null, null, token)
+      return res?.data
+    } catch (error) {
+      Swal.fire({
+        title: 'Error!',
+        text: `${error}`,
+        icon: 'error'
+      })
+      return error
+    }
+  }
+)
+
+export const GET_FILTER_PRODUCTS = createAsyncThunk(
+  'GET_FILTER_PRODUCTS', async (filterData) => {
+    try {
+      const token = localStorage.getItem('token')
+      const res = await request(constants.POST, `${REACT_APP_PROD}/products/filter`, null, filterData, token)
+      return res?.data
     } catch (error) {
       Swal.fire({
         title: 'Error!',
@@ -319,7 +353,7 @@ export const CREATE_USER_ADDRESS = createAsyncThunk(
       const idUser = localStorage.getItem('user')
       const res = await request(constants.POST, `${REACT_APP_AUTH}/user/address/${idUser}`, null, address, token)
 
-      return res.data
+      return res?.data
     } catch (error) {
       Swal.fire({
         title: 'Error!',
@@ -337,14 +371,8 @@ export const GET_USER_ADDRESS = createAsyncThunk(
       const token = localStorage.getItem('token')
       const idUser = localStorage.getItem('user')
       const res = await request(constants.GET, `${REACT_APP_AUTH}/user/address/${idUser}`, null, null, token)
-
-      return res.data
+      return res?.data
     } catch (error) {
-      Swal.fire({
-        title: 'Error!',
-        text: `${error}`,
-        icon: 'error'
-      })
       return error
     }
   }
@@ -384,9 +412,9 @@ export const UPDATE_SUBPRODUCT_QUANTITY = createAsyncThunk(
       const token = localStorage.getItem('token')
       const idUser = localStorage.getItem('user')
       const res = await request(constants.PUT, `${REACT_APP_CART}/cart/update/quantity/${idUser}`, null, subprodNewQuantity, token)
-      localStorage.setItem('cart', JSON.stringify(res.data))
+      localStorage.setItem('cart', JSON.stringify(res?.data))
 
-      return res.data
+      return res?.data
     } catch (error) {
       Swal.fire({
         title: 'Error!',
@@ -404,7 +432,7 @@ export const LOCK_SUBPROD_USER = createAsyncThunk(
       const token = localStorage.getItem('token')
       const res = await request(constants.POST, `${REACT_APP_PROD}/subproducts/lock`, null, lockCart, token)
 
-      return res.data
+      return res?.data
     } catch (error) {
       Swal.fire({
         title: 'Error!',
@@ -423,7 +451,7 @@ export const REMOVE_LOCK_SUBPROD_USER = createAsyncThunk(
       const idUser = localStorage.getItem('user')
       const res = await request(constants.DELETE, `${REACT_APP_PROD}/subproducts/lock/${idUser}`, null, null, token)
 
-      return res.data
+      return res?.data
     } catch (error) {
       Swal.fire({
         title: 'Error!',
@@ -441,7 +469,7 @@ export const GET_OPEN_OFFERS = createAsyncThunk(
       const token = localStorage.getItem('token')
       const res = await request(constants.GET, `${REACT_APP_OFFER}/offers/open`, null, null, token)
 
-      return res.data
+      return res?.data
     } catch (error) {
       Swal.fire({
         title: 'Error!',
@@ -461,10 +489,9 @@ export const CREATE_USER_ORDER = createAsyncThunk(
 
       if (res.status === 201) {
         localStorage.removeItem('cart')
-        localStorage.setItem('order', res.data.id)
+        localStorage.setItem('order', res.data._id)
       }
-
-      return res.data
+      return res?.data
     } catch (error) {
       Swal.fire({
         title: 'Error!',
@@ -482,7 +509,7 @@ export const GET_USER_ORDER = createAsyncThunk(
       const token = localStorage.getItem('token')
       const res = await request(constants.GET, `${REACT_APP_ORDER}/orders/order/${orderId}`, null, null, token)
 
-      return res.data
+      return res?.data
     } catch (error) {
       Swal.fire({
         title: 'Error!',

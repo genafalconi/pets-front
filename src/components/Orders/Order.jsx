@@ -44,26 +44,26 @@ export default function Order() {
                 </div>
                 <div className="product-order">
                   {
-                    order.cart?.products?.map((elem) => {
+                    order.cart?.subproducts?.map((elem) => {
                       return (
-                        <>
+                        <div className='product-order_item' key={elem.subproduct._id}>
                           <div className="product-name">
-                            <p>{elem.productName} {elem.size}kg</p>
+                            <p>{elem.subproduct.product.name} {elem.subproduct.size}kg</p>
                           </div>
                           <div className="product-sec-details">
                             <div className="prod-quantity">
                               <p>Cantidad: {elem.quantity}</p>
                             </div>
                             <div className="prod-price">
-                              <p>Precio: ${elem.price.toFixed(2)}</p>
+                              <p>Precio: ${elem.subproduct.sell_price.toFixed(2)}</p>
                             </div>
                           </div>
-                        </>
+                        </div>
                       )
                     })
                   }
                   <div className="order-total">
-                    <p>Total: ${order.cart?.totalPrice.toFixed(2)}</p>
+                    <p>Total: ${order.cart?.total_price.toFixed(2)}</p>
                   </div>
                 </div>
               </div>
@@ -73,20 +73,20 @@ export default function Order() {
                 </div>
                 <div className="address-order">
                   <div className="address-name">
-                    <p>{order.address.street} {order.address.number}</p>
+                    <p>{order.address?.street} {order.address?.number}</p>
                   </div>
                   <div className="address-details">
                     <div className="col1">
-                      <p>Piso: {order.address.floor ? order.address.floor : '-'}</p>
-                      <p>Dpto: {order.address.flat ? order.address.flat : '-'}</p>
+                      <p>Piso: {order.address?.floor ? order.address.floor : '-'}</p>
+                      <p>Dpto: {order.address?.flat ? order.address.flat : '-'}</p>
                     </div>
                     <div className="col2">
-                      <p>Ciudad: {order.address.city}</p>
-                      <p>Provincia: {order.address.province}</p>
+                      <p>Ciudad: {order.address?.city}</p>
+                      <p>Provincia: {order.address?.province}</p>
                     </div>
                   </div>
                   <div className="address-extra">
-                    <p>{order.address.extra}</p>
+                    <p>{order.address?.extra}</p>
                   </div>
                 </div>
               </div>

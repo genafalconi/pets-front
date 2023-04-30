@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { firebaseAuth, providerGoogle } from "../../firebase";
-import { LOGIN_WITH_GOOGLE, REGISTER_WITH_EMAIL } from "../../redux/actions";
+import { useDispatch, useSelector } from "react-redux";
+import { firebaseAuth, providerGoogle } from "../../helpers/firebase";
+import { LOGIN_WITH_GOOGLE, REGISTER_WITH_EMAIL, SAVE_LOCAL_CART } from "../../redux/actions";
 import googleImage from '../../google.png';
 import { signInWithPopup } from "firebase/auth";
 import Button from 'react-bootstrap/Button';
@@ -11,9 +11,11 @@ import Modal from 'react-bootstrap/Modal';
 import Swal from "sweetalert2";
 import '../../styles/modals/modalRegister.scss';
 
-export default function Register({ show, onHideLogin, onHideRegister }) {
+export default function Register({ show, onHideLogin, onHideRegister, onModalClose }) {
 
   const dispatch = useDispatch()
+  const cartReducer = useSelector((state) => state.clientReducer.cart)
+
   const [isLoading, setIsLoading] = useState(false)
   const [register, setRegister] = useState({
     email: '',
@@ -21,6 +23,7 @@ export default function Register({ show, onHideLogin, onHideRegister }) {
     phone: '',
     password: ''
   })
+
   let token = localStorage.getItem('token')
   let userLocal = localStorage.getItem('user')
 
@@ -37,16 +40,22 @@ export default function Register({ show, onHideLogin, onHideRegister }) {
     dispatch(REGISTER_WITH_EMAIL(register))
       .then((response) => {
         if (response.payload.status === 201) {
+          if (Object.keys(cartReducer).length !== 0) {
+            dispatch(SAVE_LOCAL_CART(cartReducer)).then((res) => {
+              onHideRegister()
+            })
+          }
           Swal.fire({
             title: 'Usuario creado correctamente',
             text: `Mail: ${response.payload.data.email}`,
             icon: 'success'
           })
-          onHideRegister()
         }
         setIsLoading(false)
+        onHideRegister()
       }).catch((error) => {
         const errorMessage = error.message;
+        setIsLoading(false)
         return errorMessage
       });
   }
@@ -79,18 +88,23 @@ export default function Register({ show, onHideLogin, onHideRegister }) {
     onHideLogin()
   }
 
+  const handleHide = () => {
+    onHideRegister();
+    if (onModalClose) {
+      onModalClose();
+    }
+  };
+
   useEffect(() => {
 
-  }, [token, userLocal, isLoading])
+  }, [token, userLocal, isLoading, cartReducer])
 
   return (
     <Modal
       show={show}
-      onHide={onHideRegister}
-      size="lg"
+      onHide={handleHide}
       aria-labelledby="contained-modal-title-vcenter"
       centered
-      className='modal-register'
     >
       <Modal.Header closeButton>
         <Modal.Title id="contained-modal-title-vcenter" >
@@ -122,7 +136,7 @@ export default function Register({ show, onHideLogin, onHideRegister }) {
       </Modal.Body>
       <Modal.Footer className='modal-register-footer'>
         <p>Ya tenes cuenta?</p>
-        <Button onClick={showLogin}>Inicia Sesíon</Button>
+        <Button className='btn outline-primary' onClick={showLogin}>Inicia Sesíon</Button>
       </Modal.Footer>
     </Modal>
   )

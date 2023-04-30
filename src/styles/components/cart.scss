@@ -172,6 +172,11 @@
     justify-content: flex-start;
   }
 
+  .product-name {
+    display: flex;
+    align-items: flex-start;
+  }
+
   .product-remove {
     margin-top: 10px;
     margin-bottom: 10px;

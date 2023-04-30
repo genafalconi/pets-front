@@ -1,38 +1,89 @@
 @import '../variables';
 
+.t-body-address {
+  font-size: 14px;
+}
+
 .modal-address-body {
-  display: inline-flex;
-  height: 60%;
-  flex-direction: column;
-  align-items: center;
+  padding: 1rem;
 }
 
-.modal-body_form {
-  display: flex;
-  flex-direction: column;
-}
-
-.grid-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(4, auto);
-  gap: 10px;
-}
-
-.grid-item {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-label {
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-input {
-  padding: 5px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+.small-input {
   width: 100%;
+  max-width: 5rem;
+}
+
+.primary-button {
+  display: flex;
+  justify-content: center;
+}
+
+.address-table {
+  display: flex;
+  justify-content: space-around;
+}
+
+.address-table-scroll {
+  height: 20vh;
+  overflow-y: auto;
+}
+
+.address-table-scroll::-webkit-scrollbar {
+  -webkit-appearance: none;
+  background-color: $background-color;
+}
+
+.address-table-scroll::-webkit-scrollbar:vertical {
+  width: 5px;
+}
+
+.address-table-scroll::-webkit-scrollbar-button:increment,
+.address-table-scroll::-webkit-scrollbar-button {
+  display: none;
+}
+
+.address-table-scroll::-webkit-scrollbar:horizontal {
+  height: 5px;
+}
+
+.address-table-scroll::-webkit-scrollbar-thumb {
+  background-color: #797979;
+  border-radius: 20px;
+  border: 2px solid #f1f2f3;
+}
+
+.address-table-scroll::-webkit-scrollbar-track {
+  border-radius: 10px;
+}
+
+.address-table-scroll {
+  overflow-x: auto;
+  height: 20vh;
+}
+
+.address-table {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.address-item {
+  width: calc(33.33% - 20px);
+  margin-right: 20px;
+}
+
+.address-item:nth-child(3n+1) {
+  margin-right: 0;
+}
+
+@media (max-width: 992px) {
+  .address-item {
+    width: calc(40% - 20px);
+    margin-right: 20px;
+  }
+}
+
+@media (max-width: 466px) {
+  .address-item {
+    width: calc(100% - 20px);
+  }
 }

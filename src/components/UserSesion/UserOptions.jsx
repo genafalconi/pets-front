@@ -1,5 +1,5 @@
 import Dropdown from 'react-bootstrap/Dropdown';
-import '../../styles/nav.scss'
+import '../../styles/components/nav.scss'
 import { FaUser } from 'react-icons/fa'
 import { useDispatch } from 'react-redux';
 import { LOGOUT } from '../../redux/actions';

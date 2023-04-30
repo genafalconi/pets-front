@@ -1,85 +1,56 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
+import { Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 import { GET_ACTIVE_PRODUCTS } from "../../redux/actions";
 import ProductCart from "./ProductCard";
-import Spinner from 'react-bootstrap/Spinner';
-import "../../styles/components/product.scss";
 
 export default function Products() {
+
+  const query = new URLSearchParams(useLocation().search).get('animal');
   const dispatch = useDispatch();
   const activeProducts = useSelector((state) => state.clientReducer.products);
 
   const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [productsPerPage, setProductsPerPage] = useState(20);
-  const offset = 0
 
-  const getActiveProducts = async () => {
-    await dispatch(GET_ACTIVE_PRODUCTS()).then((res) => {
-      setIsLoading(false)
-    })
-  }
+  const offset = 0;
 
-  const loadMore = useCallback(() => {
-    setIsLoadingMore(true);
-    setProductsPerPage((prevProductsPerPage) => prevProductsPerPage + 20);
-    setIsLoadingMore(false)
-  }, []);
+  const getActiveProducts = async (query) => {
+    await dispatch(GET_ACTIVE_PRODUCTS(query)).then((res) => {
+      if (res) {
+        setIsLoading(false);
+      }
+    });
+  };
 
   useEffect(() => {
-    getActiveProducts();
+    getActiveProducts(query);
     // eslint-disable-next-line
   }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const windowHeight =
-        "innerHeight" in window
-          ? window.innerHeight
-          : document.documentElement.offsetHeight;
-      const body = document.body;
-      const html = document.documentElement;
-      const docHeight = Math.max(
-        body.scrollHeight,
-        body.offsetHeight,
-        html.clientHeight,
-        html.scrollHeight,
-        html.offsetHeight
-      );
-      const windowBottom = windowHeight + window.pageYOffset;
-      if (windowBottom >= docHeight) {
-        loadMore()
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [loadMore]);
 
   return (
     <div className="content-page">
       {
         isLoading ?
           <div className="loading">
-            <Spinner as="span" animation="border" size='xl' role="status" aria-hidden="true" />
+            <Spinner as="span" animation="border" size="xl" role="status" aria-hidden="true" />
           </div>
-          : activeProducts.length === 0 ?
-            <h2>No hay productos</h2>
-            :
-            <div className="products-container">
-              <div className="title">
-                <h1>Productos</h1>
-              </div>
-              <div className="list-products">
-                {
-                  activeProducts
-                    .slice(offset, offset + productsPerPage)
-                    .map((elem) => <ProductCart key={elem.id} data={elem} />)
-                }
-              </div>
+          :
+          <div className="products-container">
+            <div className="title">
+              <h1>Productos</h1>
             </div>
+            <div className="list-products">
+              {activeProducts && activeProducts.length !== 0 ? (
+                activeProducts
+                  .slice(offset)
+                  .map((elem) => <ProductCart key={elem._id} data={elem} />)
+              ) : (
+                <h2>No hay productos</h2>
+              )}
+            </div>
+          </div>
       }
-      {isLoadingMore && <p>Loading more products...</p>}
     </div>
   );
 }

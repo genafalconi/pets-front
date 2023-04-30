@@ -5,30 +5,32 @@ import '../../styles/components/checkout.scss'
 import { useDispatch, useSelector } from 'react-redux';
 import { LOCK_SUBPROD_USER, GET_USER_ADDRESS, SET_USER_ADDRESS } from '../../redux/actions';
 import AddressList from './AddressList';
-import Address from './Address';
 import Timer from '../atomic/Timer';
 import PaymentDate from './PaymentDate';
 import eventBus from '../../helpers/event-bus';
+import Address from './Address';
 
 export default function Checkout() {
-
   const dispatch = useDispatch()
 
   const cartReducer = useSelector((state) => state.clientReducer.cart)
   const addresses = useSelector((state) => state.clientReducer.addresses)
+  const userReducer = useSelector((state) => state.clientReducer.user)
 
   const cart = JSON.parse(localStorage.getItem('cart'))
   const user = localStorage.getItem('user')
 
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [validContinue, setValidContinue] = useState(false)
   const [modalAddress, setModalAddress] = useState(false)
   const [showPaymentDate, setShowPaymentDate] = useState(false)
   const [showCheckout, setShowCheckout] = useState(true)
   const [settedAddress, setSettedAddress] = useState(true)
+  const [selectedAddress, setSelectedAddress] = useState(null)
+  const [addressUpdated, setAddressUpdated] = useState(false)
   const [lockCart, setLockCart] = useState({
     user: '',
-    subprods: []
+    subproducts: []
   })
 
   const handleChargeAddress = () => {
@@ -41,27 +43,37 @@ export default function Checkout() {
   }
 
   const getUserAddresses = async () => {
-    setIsLoading(true)
     dispatch(GET_USER_ADDRESS()).then((res) => {
       if (res.payload) {
-        setIsLoading(false)
+        if (Array.isArray(addresses)) {
+          let selectedAddress = addresses.find((elem) => elem._id === settedAddress)
+          if (selectedAddress) {
+            dispatch(SET_USER_ADDRESS(selectedAddress))
+            setValidContinue(true)
+          } else {
+            setValidContinue(false)
+          }
+        }
       }
     })
   }
 
   const handlePayCart = () => {
     const subprods = []
-    cart?.products?.map((elem) => subprods.push({ idSubprod: elem.id, quantity: elem.quantity }))
+    cart?.subproducts?.map((elem) => subprods.push({ subprod: elem.subproduct._id, quantity: elem.quantity }))
     if (!lockCart.user && subprods.length > 0) {
       setLockCart({
         user: user,
-        subprods: subprods
+        subproducts: subprods
       })
     }
   }
 
   useEffect(() => {
-    const selectedAddress = addresses?.find((elem) => elem.id === settedAddress)
+    let selectedAddress
+    if (Array.isArray(addresses)) {
+      selectedAddress = Array.from(addresses).find((elem) => elem._id === settedAddress)
+    }
 
     if (selectedAddress) {
       dispatch(SET_USER_ADDRESS(selectedAddress))
@@ -73,16 +85,19 @@ export default function Checkout() {
 
   useEffect(() => {
     handlePayCart()
-    if (lockCart.subprods.length > 0) {
+    if (lockCart.subproducts.length > 0) {
       dispatch(LOCK_SUBPROD_USER(lockCart))
     }
+    setTimeout(() => {
+      setIsLoading(false)
+    }, [2800])
     // eslint-disable-next-line
-  }, [lockCart, cartReducer, user])
+  }, [lockCart, cartReducer, userReducer])
 
   useEffect(() => {
     getUserAddresses()
     // eslint-disable-next-line
-  }, [modalAddress]);
+  }, [addressUpdated]);
 
   useEffect(() => {
     const handleGoBack = (isTrue) => {
@@ -106,6 +121,7 @@ export default function Checkout() {
           </div>
         ) : (
           <>
+            <Timer />
             {showCheckout ? (
               <>
                 <div className="title">
@@ -116,21 +132,21 @@ export default function Checkout() {
                     <div className="subtitle">
                       <h2>Productos</h2>
                     </div>
-                    {cart?.products?.map(item => {
+                    {cart?.subproducts?.map(item => {
                       return (
                         <ProductCheckout
-                          key={item.id}
-                          id={item.id}
-                          productName={item.productName}
-                          price={item.price}
-                          size={item.size}
+                          key={item.subproduct._id}
+                          id={item.subproduct._id}
+                          product_name={item.subproduct.product.name}
+                          sell_price={item.subproduct.sell_price}
+                          size={item.subproduct.size}
                           quantity={item.quantity}
                         />
                       );
                     })}
                     <div className="cart-total">
                       <p>Total:</p>
-                      <p>${cart?.totalPrice}</p>
+                      <p>${cart?.total_price.toFixed(2)}</p>
                     </div>
                   </div>
                   <div className="address">
@@ -141,7 +157,10 @@ export default function Checkout() {
                       {addresses?.length > 0 ? (
                         addresses?.map(elem => {
                           return (
-                            <AddressList id={elem.id} modal={false} key={elem.id} street={elem.street} number={elem.number} floor={elem.floor} flat={elem.flat} city={elem.city} province={elem.province} extra={elem.extra} setSettedAddress={setSettedAddress} />
+                            <AddressList id={elem._id} modal={false} key={elem._id} street={elem.street}
+                              number={elem.number} floor={elem.floor} flat={elem.flat} city={elem.city}
+                              province={elem.province} extra={elem.extra}
+                              setSettedAddress={setSettedAddress} selectedAddress={selectedAddress} setSelectedAddress={setSelectedAddress} />
                           );
                         })
                       ) : (
@@ -152,11 +171,18 @@ export default function Checkout() {
                           </div>
                         </>
                       )}
+                      <div>
+                        {
+                          selectedAddress ? '' : <p>Selecciona una direccion</p>
+                        }
+                      </div>
+                      <div className="third-button">
+                        <button onClick={handleChargeAddress}>Cargar otra</button>
+                      </div>
                     </div>
                   </div>
-                  <Timer />
                 </div>
-                <div className={validContinue ? "primary-button" : "disabled-button"}>
+                <div className={validContinue ? "primary-button checkout" : "disabled-button checkout"}>
                   <button disabled={!validContinue} onClick={handleCoordinate}>Continuar</button>
                 </div>
               </>
@@ -166,7 +192,12 @@ export default function Checkout() {
           </>
         )
       }
-      <Address show={modalAddress} onHideAddress={() => setModalAddress(!modalAddress)} />
+      <Address
+        show={modalAddress}
+        onHideAddress={() => setModalAddress(!modalAddress)}
+        updateAddress={() => setAddressUpdated(!addressUpdated)}
+        fromCheckout={true}
+      />
     </div >
   );
 }  

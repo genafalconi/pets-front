@@ -75,6 +75,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
   margin-bottom: 16px;
+  cursor: pointer;
 }
 
 .container-address.selected {
@@ -130,6 +131,23 @@
   color: $primary-text-button-color;
 }
 
+.third-button>button {
+  background-color: $secondary-button-color;
+  border: 1px solid $secondary-text-button-color;
+  border-radius: 5px;
+  color: $secondary-text-button-color;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 5px;
+  width: auto;
+  margin: 2.5%;
+}
+
+.third-button button:hover {
+  background-color: rgb(13, 110, 253, 0.8);
+  color: $primary-text-button-color;
+}
+
 .error-info {
   display: flex;
   align-items: center;
@@ -175,5 +193,16 @@
     flex-direction: column;
     align-items: flex-start;
     padding: 10px;
+  }
+
+  .timer {
+    color: red;
+    font-size: 1rem;
+    position: absolute;
+    left: 55%;
+    top: 15%;
+    z-index: 200;
+    display: flex;
+    width: max-content;
   }
 }

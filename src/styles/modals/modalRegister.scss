@@ -13,8 +13,6 @@
 
   .modal-body_google {
     max-width: 7%;
-    border: $border;
-    border-radius: $border-radius;
     margin-bottom: $margin-input;
     cursor: pointer;
 
@@ -54,6 +52,10 @@
 @media (max-width: 767px) {
   .modal-register-body {
     height: auto;
+  }
+
+  .modal-register {
+    max-width: 100%;
   }
 
   .modal-body_logo {
