@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { firebaseAuth, providerGoogle } from "../../helpers/firebase";
 import { LOGIN_WITH_GOOGLE, REGISTER_WITH_EMAIL, SAVE_LOCAL_CART } from "../../redux/actions";
-import googleImage from '../../google.png';
 import { signInWithPopup } from "firebase/auth";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
@@ -10,6 +9,10 @@ import Spinner from 'react-bootstrap/Spinner';
 import Modal from 'react-bootstrap/Modal';
 import Swal from "sweetalert2";
 import '../../styles/modals/modalRegister.scss';
+import { AdvancedImage } from "@cloudinary/react";
+import { cloudinaryImg } from "../../helpers/cloudinary";
+
+const GOOGLE_PUBLIC_ID = 'Ppales/Google'
 
 export default function Register({ show, onHideLogin, onHideRegister, onModalClose }) {
 
@@ -52,7 +55,7 @@ export default function Register({ show, onHideLogin, onHideRegister, onModalClo
           })
         }
         setIsLoading(false)
-        onHideRegister()
+        handleHide()
       }).catch((error) => {
         const errorMessage = error.message;
         setIsLoading(false)
@@ -75,7 +78,7 @@ export default function Register({ show, onHideLogin, onHideRegister, onModalClo
         localStorage.setItem('user', JSON.stringify(userLocal))
         localStorage.setItem('token', user.accessToken)
         dispatch(LOGIN_WITH_GOOGLE(userLocal))
-        onHideRegister()
+        handleHide()
       }).catch((error) => {
         const errorMessage = error.message;
         // const credential = GoogleAuthProvider.credentialFromError(error);
@@ -132,7 +135,7 @@ export default function Register({ show, onHideLogin, onHideRegister, onModalClo
             :
             <Button className='modal-body_register' onClick={registerUser}>Registrarse</Button>
         }
-        <img className='modal-body_google' src={googleImage} alt="signInGoogle" onClick={registerWithGoogle} />
+        <AdvancedImage cldImg={cloudinaryImg(GOOGLE_PUBLIC_ID)} className='modal-body_google' alt="signInGoogle" onClick={registerWithGoogle} />
       </Modal.Body>
       <Modal.Footer className='modal-register-footer'>
         <p>Ya tenes cuenta?</p>

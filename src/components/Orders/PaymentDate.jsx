@@ -1,100 +1,86 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import eventBus from '../../helpers/event-bus';
 import { CREATE_USER_ORDER, GET_OPEN_OFFERS } from '../../redux/actions';
 import Spinner from 'react-bootstrap/Spinner';
 import '../../styles/components/coordinate.scss'
-import Cash from '../../cash.png'
-import Mp from '../../mp.png'
-import Trans from '../../transfe.png'
 import Offers from '../atomic/Offers';
 import Swal from 'sweetalert2';
+import { AdvancedImage } from '@cloudinary/react';
+import { cloudinaryImg } from '../../helpers/cloudinary';
+import LazyComponent from '../../helpers/lazyComponents';
+
+const CASH_PUBLIC_ID = 'Payments/Efectivo'
+const TRANS_PUBLIC_ID = 'Payments/Transferencia'
+const MP_PUBLIC_ID = 'Payments/MercadoPago'
 
 export default function PaymentDate() {
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const offers = useSelector((state) => state.clientReducer.offers)
-  const cart = useSelector((state) => state.clientReducer.cart)
-  const address = useSelector((state) => state.clientReducer.address)
-  const locks = useSelector((state) => state.clientReducer.locks)
+  const { offers, cart, address, locks } = useSelector((state) => state.clientReducer);
 
-  const user = localStorage.getItem('user')
+  const user = useMemo(() => localStorage.getItem('user'), []);
 
-  const [buttonLoading, setButtonLoading] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedPaymentType, setSelectedPaymentType] = useState(null);
   const [selectedOfferData, setSelectedOfferData] = useState(null);
-  const [hasFetchedOffers, setHasFetchedOffers] = useState(false);
-  const [validContinue, setValidContinue] = useState(false)
-  const [isConfirmed, setIsConfirmed] = useState(false)
+  const [validContinue, setValidContinue] = useState(false);
+  const [isConfirmed, setIsConfirmed] = useState(false);
 
-  const handlePaymentType = (event) => {
+  const handlePaymentType = useCallback((event) => {
     const selectedType = event.target.name;
-    if (selectedType === selectedPaymentType) {
-      setSelectedPaymentType(null);
-    } else {
-      setSelectedPaymentType(selectedType);
-    }
-  };
+    setSelectedPaymentType((prevType) => (prevType === selectedType ? null : selectedType));
+  }, []);
 
-  const handleGoBack = () => {
-    eventBus.emit('go-back-button', true)
-  }
+  const handleGoBack = useCallback(() => {
+    eventBus.emit('go-back-button', true);
+  }, []);
 
-  const emptyFunction = () => {
-    console.log(isConfirmed)
-  }
-
-  const handleConfirm = async () => {
+  const handleConfirm = useCallback(() => {
     const orderToCreate = {
       cart: cart,
       user: user,
       offer: selectedOfferData,
       payment_type: selectedPaymentType,
       address: address,
-      locks: locks
-    }
-    setButtonLoading(true)
-    setIsConfirmed(true)
+      locks: locks,
+    };
+    setIsConfirmed(true);
     dispatch(CREATE_USER_ORDER(orderToCreate))
       .then((res) => {
         if (res.payload._id) {
-          setButtonLoading(false)
+          setIsConfirmed(false);
           Swal.fire({
             title: 'Pedido realizado con exito!',
             text: `Numero de orden: ${res.payload._id}`,
-            icon: 'success'
-          }).then(() => {
-            navigate('/orders')
-          })
+            icon: 'success',
+            timer: 2500,
+            timerProgressBar: true,
+            showConfirmButton: false
+          });
+          navigate('/orders');
         }
       })
-
-  };
+  }, [cart, dispatch, user, selectedOfferData, selectedPaymentType, address, locks, navigate]);
 
   useEffect(() => {
     if (selectedPaymentType && selectedOfferData) {
-      setValidContinue(true)
+      setValidContinue(true);
     } else {
-      setValidContinue(false)
+      setValidContinue(false);
     }
+  }, [selectedOfferData, selectedPaymentType]);
 
-  }, [selectedOfferData, selectedPaymentType])
+  const handleOpenOffers = useCallback(() => {
+    dispatch(GET_OPEN_OFFERS()).then((res) => {
+      setIsLoading(false);
+    })
+  }, [dispatch]);
 
   useEffect(() => {
-    const handleOpenOffers = async () => {
-      if (!hasFetchedOffers) {
-        await dispatch(GET_OPEN_OFFERS())
-          .then((res) => {
-            setIsLoading(false);
-            setHasFetchedOffers(true);
-          });
-      }
-    };
     handleOpenOffers();
-  }, [dispatch, hasFetchedOffers]);
+  }, [handleOpenOffers]);
 
   return (
     <>
@@ -113,7 +99,9 @@ export default function PaymentDate() {
                 <div className="subtitle">
                   <h2>Fecha de entrega</h2>
                 </div>
-                <Offers offers={offers} setSelectedOfferData={setSelectedOfferData} />
+                <LazyComponent>
+                  <Offers offers={offers} setSelectedOfferData={setSelectedOfferData} />
+                </LazyComponent>
                 <div className='mt-3'>
                   {
                     selectedOfferData ? '' : <p>Selecciona una oferta</p>
@@ -126,15 +114,15 @@ export default function PaymentDate() {
                 </div>
                 <div className='payment-type d-flex'>
                   <div className='d-flex flex-column'>
-                    <img src={Cash} alt="cash" name='CASH' className={selectedPaymentType === 'CASH' ? 'selected-payment' : ''} onClick={handlePaymentType} />
+                    <AdvancedImage cldImg={cloudinaryImg(CASH_PUBLIC_ID)} name='CASH' className={selectedPaymentType === 'CASH' ? 'selected-payment' : ''} onClick={handlePaymentType} />
                     <span className='.fs-6'>Efectivo</span>
                   </div>
                   <div className='d-flex flex-column'>
-                    <img src={Mp} alt="mp" name='MP' className={selectedPaymentType === 'MP' ? 'selected-payment' : ''} onClick={handlePaymentType} />
+                    <AdvancedImage cldImg={cloudinaryImg(MP_PUBLIC_ID)} name='MP' className={selectedPaymentType === 'MP' ? 'selected-payment' : ''} onClick={handlePaymentType} />
                     <span className='.fs-6'>Tarjetas</span>
                   </div>
                   <div className='d-flex flex-column'>
-                    <img src={Trans} alt="transferencia" name='TRANSFERENCIA' className={selectedPaymentType === 'TRANSFERENCIA' ? 'selected-payment' : ''} onClick={handlePaymentType} />
+                    <AdvancedImage cldImg={cloudinaryImg(TRANS_PUBLIC_ID)} name='TRANSFERENCIA' className={selectedPaymentType === 'TRANSFERENCIA' ? 'selected-payment' : ''} onClick={handlePaymentType} />
                     <span className='.fs-6'>Transferencia</span>
                   </div>
                 </div>
@@ -150,13 +138,13 @@ export default function PaymentDate() {
                 <button onClick={handleGoBack}>Volver</button>
               </div>
               {
-                buttonLoading ?
+                isConfirmed ?
                   <div className='primary-button'>
                     <Spinner as="span" animation="border" size='sm' role="status" aria-hidden="true" />
                   </div>
                   :
                   <div className={validContinue ? "primary-button" : "disabled-button"}>
-                    <button onClick={isConfirmed ? emptyFunction : handleConfirm} disabled={!validContinue}>Confirmar</button>
+                    <button onClick={validContinue ? handleConfirm : undefined} disabled={!validContinue}>Confirmar</button>
                   </div>
               }
             </div>

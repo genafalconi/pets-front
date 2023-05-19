@@ -14,35 +14,42 @@ export default function Cart() {
   const dispatch = useDispatch()
 
   const [emptyCart, setEmptyCart] = useState(false)
-  const cartReducer = useSelector((state) => state.clientReducer.cart)
-  const cartStorage = JSON.parse(localStorage.getItem('cart'))
+  const [cartTotalQuantity, setCartTotalQuantity] = useState(0);
+  let { cart: cartReducer, reorder_cart } = useSelector((state) => state.clientReducer)
+
+  let cartStorage = JSON.parse(localStorage.getItem('cart'))
+  const reorderCartStorage = JSON.parse(localStorage.getItem('reorder_cart'))
+  if (reorderCartStorage && Object.keys(reorderCartStorage).length !== 0) {
+    cartStorage = reorderCartStorage
+    cartReducer = reorder_cart
+  }
   const user = localStorage.getItem('user')
 
   const removeFromCart = async (subprod) => {
-    if (user && cartStorage) {
-      dispatch(REMOVE_FROM_CART(subprod))
-    } else {
-      await dispatch(REMOVE_FROM_LOCAL_CART(subprod)).then((res) => {
+    if (cartStorage) {
+      dispatch(REMOVE_FROM_LOCAL_CART(subprod)).then((res) => {
         if (res.payload?.subproducts?.length === 0) {
           setEmptyCart(true)
         }
       })
+      if (user) dispatch(REMOVE_FROM_CART(subprod))
     }
   }
 
   const handlePayCart = () => {
-    navigate('/checkout')
+    navigate('/checkout/order')
   }
 
   useEffect(() => {
-    if (Object.keys(cartReducer).length === 0) {
+    if (cartStorage && Object.keys(cartStorage).length === 0) {
+      setEmptyCart(true)
+    } else if (!cartStorage) {
+      setEmptyCart(true)
+    } else if (cartStorage && cartStorage?.subproducts?.length === 0) {
       setEmptyCart(true)
     } else {
-      if (cartStorage && cartStorage.subproducts?.length === 0) {
-        setEmptyCart(true)
-      } else {
-        setEmptyCart(false)
-      }
+      setEmptyCart(false)
+      setCartTotalQuantity(cartStorage?.total_products);
     }
   }, [emptyCart, cartStorage, cartReducer])
 
@@ -50,9 +57,9 @@ export default function Cart() {
     <Dropdown className={`dropdown-cart${window.location.pathname === '/checkout' ? ' d-none' : ''}`}>
       <Dropdown.Toggle id="dropdown-autoclose-true" className='dropdown-custom'>
         <div className="total-cart-icon">
-          <span>{cartStorage?.total_products > 0 ? cartStorage?.total_products : 0}</span>
+          <span>{cartTotalQuantity}</span>
         </div>
-        <FaShoppingCart className='user-nav_cart_icon' size={30} />
+        <FaShoppingCart className='user-nav_cart_icon' size={25} />
       </Dropdown.Toggle>
       <Dropdown.Menu className="dropdown-cart-items" onClick={(e) => e.stopPropagation()}>
         {

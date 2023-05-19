@@ -2,13 +2,16 @@ import { signInWithPopup } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { firebaseAuth, providerGoogle } from '../../helpers/firebase';
-import googleImage from '../../google.png';
 import { LOGIN_WITH_EMAIL, LOGIN_WITH_GOOGLE, SAVE_LOCAL_CART } from '../../redux/actions';
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
 import Modal from 'react-bootstrap/Modal';
-import Logo from '../../logo.png'
 import '../../styles/modals/modalLogin.scss';
+import { AdvancedImage } from '@cloudinary/react';
+import { cloudinaryImg } from '../../helpers/cloudinary';
+
+const GOOGLE_PUBLIC_ID = 'Ppales/Google'
+const LOGO_PUBLIC_ID = 'Ppales/Logo'
 
 export default function Login({ show, onHideLogin, onHideRegister, onModalClose }) {
 
@@ -86,6 +89,7 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
             onHideLogin()
           }
         }
+        setIsLoading(false)
       })
     setUser({
       email: '',
@@ -115,7 +119,7 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className='modal-login-body'>
-        <img className='modal-body_logo' src={Logo} alt="logo-pets" />
+        <AdvancedImage cldImg={cloudinaryImg(LOGO_PUBLIC_ID)} className='modal-body_logo' alt="logo-pets" />
         <form className='modal-body_form'>
           <input type="text" placeholder='email' name='email' defaultValue='' onChange={handleChange} />
           <input type="password" placeholder='password' defaultValue='' name='password' onChange={handleChange} />
@@ -128,7 +132,7 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
             :
             <Button className='modal-body_login' onClick={loginWithEmail}>Iniciar Sesíon</Button>
         }
-        <img className='modal-body_google' src={googleImage} alt="signInGoogle" onClick={loginGoogle} />
+        <AdvancedImage cldImg={cloudinaryImg(GOOGLE_PUBLIC_ID)} className='modal-body_google' alt="signInGoogle" onClick={loginGoogle} />
       </Modal.Body>
       <Modal.Footer className='modal-login-footer'>
         <p>Todavía no tenes cuenta?</p>

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { GET_FILTER_PRODUCTS } from '../../redux/actions';
 import ProductCart from '../Product/ProductCard';
+import LazyComponent from '../../helpers/lazyComponents';
 
 export default function ProductList() {
 
@@ -26,10 +27,18 @@ export default function ProductList() {
   return (
     <>
       <div>
-        <AnimalTypeFilter onFilterChange={handleFilterChange} />
-        <AgeFilter filterProds={filterProds} onFilterChange={handleFilterChange} />
-        <SizeFilter filterProds={filterProds} onFilterChange={handleFilterChange} />
-        <ProductTypeFilter filterProds={filterProds} onFilterChange={handleFilterChange} />
+        <LazyComponent>
+          <AnimalTypeFilter onFilterChange={handleFilterChange} />
+        </LazyComponent>
+        <LazyComponent>
+          <AgeFilter filterProds={filterProds} onFilterChange={handleFilterChange} />
+        </LazyComponent>
+        <LazyComponent>
+          <SizeFilter filterProds={filterProds} onFilterChange={handleFilterChange} />
+        </LazyComponent>
+        <LazyComponent>
+          <ProductTypeFilter filterProds={filterProds} onFilterChange={handleFilterChange} />
+        </LazyComponent>
         <button onClick={handleFilterSubmit}>Buscar Productos</button>
       </div>
       <div className="list-products">

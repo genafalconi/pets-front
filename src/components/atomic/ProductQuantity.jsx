@@ -32,11 +32,9 @@ export default function ProductQuantity({ quantity, idSubprod, stock }) {
       idSubprod: idSubprod,
       newQuantity: updatedQuantity
     };
-    if (user) {
-      dispatch(UPDATE_SUBPRODUCT_QUANTITY(subprodUpdateQuantity));
-    } else {
-      dispatch(UPDATE_LOCAL_SUBPRODUCT_QUANTITY(subprodUpdateQuantity))
-    }
+    dispatch(UPDATE_LOCAL_SUBPRODUCT_QUANTITY(subprodUpdateQuantity))
+    if (user) dispatch(UPDATE_SUBPRODUCT_QUANTITY(subprodUpdateQuantity));
+
   }, [dispatch, idSubprod, user])
 
   useEffect(() => {

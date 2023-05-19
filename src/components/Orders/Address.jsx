@@ -9,6 +9,7 @@ import GoogleMaps from '../atomic/GoogleMaps';
 import AddressList from './AddressList';
 import Form from 'react-bootstrap/Form';
 import { Col, Row } from 'react-bootstrap';
+import LazyComponent from '../../helpers/lazyComponents';
 
 export default function Address({ show, onHideAddress, updateAddress, fromCheckout }) {
 
@@ -99,12 +100,12 @@ export default function Address({ show, onHideAddress, updateAddress, fromChecko
                   Array.isArray(addresses) &&
                   addresses.map((elem) => {
                     return (
-                      <div key={elem._id} className='address-item'>
+                      <LazyComponent key={elem._id} className='address-item'>
                         <AddressList key={elem._id} id={elem._id} modal={true} street={elem.street} number={elem.number}
                           floor={elem.floor} flat={elem.flat} city={elem.city} province={elem.province} extra={elem.extra}
                           setSettedAddress={null} selectedAddress={null} setSelectedAddress={null} />
                         <hr />
-                      </div>
+                      </LazyComponent>
                     )
                   })
                 }
@@ -183,10 +184,12 @@ export default function Address({ show, onHideAddress, updateAddress, fromChecko
           </Button>
           {
             searchByMaps ?
-              <GoogleMaps
-                show={searchByMaps}
-                handleHide={() => setSearchByMaps(!searchByMaps)}
-              />
+              <LazyComponent>
+                <GoogleMaps
+                  show={searchByMaps}
+                  handleHide={() => setSearchByMaps(!searchByMaps)}
+                />
+              </LazyComponent>
               : ''
           }
         </div>

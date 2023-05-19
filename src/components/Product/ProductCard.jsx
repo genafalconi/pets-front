@@ -1,8 +1,9 @@
 import { useState } from "react"
 import { useDispatch } from "react-redux"
 import { ADD_TO_CART, ADD_TO_LOCAL_CART } from "../../redux/actions"
-import image from '../../FR_129240_master.jpg'
 import '../../styles/components/product.scss'
+import { cloudinaryImg } from "../../helpers/cloudinary"
+import { AdvancedImage } from '@cloudinary/react';
 
 export default function ProductCart({ data }) {
 
@@ -40,11 +41,10 @@ export default function ProductCart({ data }) {
       setTimeout(() => {
         setNewProd()
       }, 3000)
-      if (user) {
-        dispatch(ADD_TO_CART(subProdToAdd))
-      } else {
-        dispatch(ADD_TO_LOCAL_CART(subProdToAdd))
-      }
+
+      dispatch(ADD_TO_LOCAL_CART(subProdToAdd))
+      if (user) dispatch(ADD_TO_CART(subProdToAdd))
+      
       setQuantity(0)
     }
   }
@@ -66,7 +66,7 @@ export default function ProductCart({ data }) {
     <>
       <div className="product-card">
         <div className="product-card_img">
-          <img src={image} alt={data?.name} />
+          <AdvancedImage cldImg={cloudinaryImg(data?.image)} />
         </div>
         <div className="product-card_name">
           <h3>{data?.name}</h3>

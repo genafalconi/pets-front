@@ -1,29 +1,19 @@
 import Card from 'react-bootstrap/Card';
-import { useNavigate, Link } from 'react-router-dom';
-import dog from '../../beautiful-pet-portrait-dog.jpg'
-import cat from '../../gold-bengal-cat-black-space.jpg'
+import { Link } from 'react-router-dom';
 import '../../styles/components/landing.scss'
+import { AdvancedImage } from '@cloudinary/react';
+import { cloudinaryImg } from '../../helpers/cloudinary';
+
+const CAT_PUBLIC_ID = 'Ppales/Cat'
+const DOG_PUBLIC_ID = 'Ppales/Dog'
 
 export default function AnimalCards() {
-
-  const navigate = useNavigate()
-
-  const handleClick = (event) => {
-    console.log(event)
-    if (event.target.id === 'dog') {
-      console.log('dog')
-      // navigate('/products')
-    } else {
-      console.log('cat')
-      // navigate('/products')
-    }
-  }
 
   return (
     <div className='animal-selection'>
       <Link to={'/products?animal=CAT'}>
         <Card className="bg-dark text-white animal-card">
-          <Card.Img src={cat} alt="Card image" />
+          <AdvancedImage cldImg={cloudinaryImg(CAT_PUBLIC_ID)} alt='Cat' />
           <Card.ImgOverlay>
             <div className="card-title-container cat">
               <Card.Title>Gato</Card.Title>
@@ -33,7 +23,7 @@ export default function AnimalCards() {
       </Link>
       <Link to={'/products?animal=DOG'}>
         <Card className="bg-dark text-white animal-card">
-          <Card.Img src={dog} alt="Card image" />
+          <AdvancedImage cldImg={cloudinaryImg(DOG_PUBLIC_ID)} alt='Cat' />
           <Card.ImgOverlay>
             <div className="card-title-container dog">
               <Card.Title>Perro</Card.Title>

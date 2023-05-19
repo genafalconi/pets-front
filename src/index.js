@@ -1,25 +1,27 @@
-import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
 import { FirebaseAppProvider } from 'reactfire';
 import firebaseConfig from './helpers/firebaseConfig';
+import React from 'react';
+import ErrorHandler from './components/atomic/ErrorHandler';
+
+const App = React.lazy(() => import('./App'));
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   // <React.StrictMode>
-    <Provider store={store}>
-      <FirebaseAppProvider firebaseConfig={firebaseConfig}>
-        <Suspense fallback={<p>Cargando...</p>}>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
-        </Suspense>
-      </FirebaseAppProvider>
-    </Provider>
+  <Provider store={store}>
+    <FirebaseAppProvider firebaseConfig={firebaseConfig}>
+      <BrowserRouter>
+        <ErrorHandler>
+          <App />
+        </ErrorHandler>
+      </BrowserRouter>
+    </FirebaseAppProvider>
+  </Provider>
   // </React.StrictMode>
 );
 

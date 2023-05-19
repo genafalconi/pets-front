@@ -13,7 +13,7 @@ export const request = async (method, url, params, data, token) => {
       'Authorization': `Bearer ${token}`
     }
   }
-  
+
   try {
     const response = await axios(config);
     return response;
@@ -23,14 +23,22 @@ export const request = async (method, url, params, data, token) => {
       Swal.fire({
         title: 'Error!',
         text: `Sesion inactiva`,
-        icon: 'error'
+        icon: 'error',
+        timer: 2500,
+        timerProgressBar: true,
+        showConfirmButton: false
       })
       eventBus.emit('expired-sesion', true)
     } else {
       Swal.fire({
         title: 'Error!',
         text: `Ocurrio un error inesperado!`,
-        icon: 'error'
+        icon: 'error',
+        timer: 2500,
+        timerProgressBar: true,
+        showConfirmButton: false
+      }).then(() => {
+        window.location.href = '/'
       })
       throw new Error(error);
     }
