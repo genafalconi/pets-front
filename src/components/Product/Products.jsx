@@ -13,7 +13,7 @@ export default function Products() {
   const dispatch = useDispatch();
   const { products, products_filtered, current_page, total_pages } = useSelector((state) => state.clientReducer);
 
-  const [isLoading, setIsLoading] = useState(input ? false : true);
+  const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(current_page);
 
   const activeProducts = useMemo(() => {
@@ -27,11 +27,6 @@ export default function Products() {
 
   const handlePageClick = (pageNumber) => {
     setCurrentPage(pageNumber);
-    if (input) {
-      getSearchedProducts()
-    } else {
-      getActiveProducts();
-    }
   };
 
   const getSearchedProducts = useCallback(() => {

@@ -7,7 +7,7 @@ import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
 import Spinner from 'react-bootstrap/Spinner';
 import { useDispatch } from 'react-redux';
-import { GET_ACCOUNT_ORDERS, SAVE_LOCAL_CART, SET_REORDER_CART } from '../../redux/actions';
+import { GET_ACCOUNT_ORDERS, SAVE_RE_ORDER_CART } from '../../redux/actions';
 import '../../styles/components/account.scss'
 import { ord_constants } from '../../helpers/constants';
 import { useNavigate } from 'react-router-dom';
@@ -50,8 +50,7 @@ export default function UserOrders() {
   const handleReOrder = useCallback(async (cart) => {
     setIsLoading(true)
     const { _id, ...newCart } = cart;
-    dispatch(SET_REORDER_CART(newCart))
-    await dispatch(SAVE_LOCAL_CART(newCart)).then((res) => {
+    await dispatch(SAVE_RE_ORDER_CART(newCart)).then((res) => {
       navigate('/checkout/re-order')
     })
     setIsLoading(false)
@@ -102,7 +101,7 @@ export default function UserOrders() {
                         </div>
                       </Accordion.Header>
                       <Accordion.Body>
-                        <Table striped bordered hover className={ord?.status === ord_constants.DELIVERED ? '' : 'm-0'}>
+                        <Table striped bordered hover className={`table-orders ${ord?.status === ord_constants.DELIVERED ? '' : 'm-0'}`}>
                           <thead>
                             <tr>
                               <th>Producto</th>
@@ -110,7 +109,7 @@ export default function UserOrders() {
                               <th>Total</th>
                             </tr>
                           </thead>
-                          <tbody>
+                          <tbody className='table-body'>
                             {ord?.cart?.subproducts?.map((sub) => (
                               <tr key={sub?.subproduct?._id}>
                                 <td>{`${sub?.subproduct?.product?.name} ${sub?.subproduct?.size}kg`}</td>

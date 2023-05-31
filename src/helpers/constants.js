@@ -16,3 +16,8 @@ export const type_ord = {
   ORDER: 'order',
   REORDER: 're-order'
 }
+
+export const endpoints = {
+  CHECKOUT_ORD: '/checkout/order',
+  CHECKOUT_REORD: '/checkout/re-order'
+}

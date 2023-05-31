@@ -20,7 +20,7 @@ export default function Account() {
       </div>
       <div className="account-container">
         <div className="side-nav">
-          <ListGroup defaultActiveKey="index">
+          <ListGroup defaultActiveKey="index" horizontal={window.innerWidth > 768 ? false : true}>
             <ListGroup.Item id='info' action onClick={displayInfoById}>
               Informacion personal
             </ListGroup.Item>

@@ -22,8 +22,10 @@
 }
 
 .personal-card {
+  width: 100%;
+
   .card-title {
-    font-size: 1.6rem;
+    font-size: calc(1.1rem + 0.1vw) !important;
     margin-bottom: 4%;
   }
 
@@ -35,7 +37,7 @@
 
     span {
       margin: 1%;
-      font-size: 1.2rem;
+      font-size: calc(1.1rem + 0.1vw);
     }
   }
 
@@ -76,7 +78,7 @@
   .accordion-header {
     h5 {
       margin: 0;
-      font-size: 1.2rem;
+      font-size: calc(0.9rem + 0.1vw);
     }
 
     .order-data-button {
@@ -116,3 +118,42 @@
     width: 30%;
   }
 }
+
+.table-orders {
+  font-size: calc(0.8rem + 0.1vw);
+}
+
+@media only screen and (max-width: 768px) {
+  .account-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .side-nav {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    button {
+      white-space: nowrap;
+    }
+  }
+
+  .item-selected {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+@media only screen and (min-width: 900px) {
+  .side-nav {
+    button {
+      white-space: nowrap;
+    }
+  }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 1024px) {}

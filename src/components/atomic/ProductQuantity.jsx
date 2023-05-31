@@ -38,7 +38,11 @@ export default function ProductQuantity({ quantity, idSubprod, stock }) {
   }, [dispatch, idSubprod, user])
 
   useEffect(() => {
-  }, [newQuantity])
+    setNewQuantity(quantity);
+  }, [quantity]);
+
+  useEffect(() => {
+  }, [newQuantity, dispatch])
 
   return (
     <div className="product-quantity">

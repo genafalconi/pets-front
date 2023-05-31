@@ -6,7 +6,7 @@ export const fillCart = (subProduct, cart) => {
   } else {
     cart.subproducts.push({ subproduct: subProduct, quantity: subProduct.quantity })
   }
-console.log(cart, existSubProd)
+
   let newTotalP = 0, newCant = 0
   // eslint-disable-next-line
   cart?.subproducts?.map((elem) => {

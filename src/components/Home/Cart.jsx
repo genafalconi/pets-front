@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import Dropdown from 'react-bootstrap/Dropdown'
 import { FaShoppingCart } from 'react-icons/fa'
 import { useDispatch, useSelector } from "react-redux"
@@ -14,50 +14,51 @@ export default function Cart() {
   const dispatch = useDispatch()
 
   const [emptyCart, setEmptyCart] = useState(false)
-  const [cartTotalQuantity, setCartTotalQuantity] = useState(0);
-  let { cart: cartReducer, reorder_cart } = useSelector((state) => state.clientReducer)
+  const [totalQuantityCart, setTotalQuantityCart] = useState(false)
+  let { cart: cartReducer } = useSelector((state) => state.clientReducer)
 
   let cartStorage = JSON.parse(localStorage.getItem('cart'))
-  const reorderCartStorage = JSON.parse(localStorage.getItem('reorder_cart'))
-  if (reorderCartStorage && Object.keys(reorderCartStorage).length !== 0) {
-    cartStorage = reorderCartStorage
-    cartReducer = reorder_cart
-  }
   const user = localStorage.getItem('user')
 
-  const removeFromCart = async (subprod) => {
+  const removeFromCart = useCallback(async (subprod) => {
     if (cartStorage) {
-      dispatch(REMOVE_FROM_LOCAL_CART(subprod)).then((res) => {
+      await dispatch(REMOVE_FROM_LOCAL_CART(subprod)).then((res) => {
         if (res.payload?.subproducts?.length === 0) {
           setEmptyCart(true)
         }
       })
       if (user) dispatch(REMOVE_FROM_CART(subprod))
     }
-  }
+  }, [cartStorage, dispatch, user])
 
   const handlePayCart = () => {
     navigate('/checkout/order')
   }
+  
+  const handleCartQuantity = useCallback(() => {
+    if (cartStorage && Object.keys(cartStorage).length !== 0) {
+      if (cartStorage?.subproducts?.length !== 0) {
+        setTotalQuantityCart(cartStorage.total_products)
+        setEmptyCart(false)
+      } else {
+        setEmptyCart(true)
+        setTotalQuantityCart(0)
+      }
+    } else {
+      setEmptyCart(true)
+      setTotalQuantityCart(0)
+    }
+  }, [cartStorage])
 
   useEffect(() => {
-    if (cartStorage && Object.keys(cartStorage).length === 0) {
-      setEmptyCart(true)
-    } else if (!cartStorage) {
-      setEmptyCart(true)
-    } else if (cartStorage && cartStorage?.subproducts?.length === 0) {
-      setEmptyCart(true)
-    } else {
-      setEmptyCart(false)
-      setCartTotalQuantity(cartStorage?.total_products);
-    }
-  }, [emptyCart, cartStorage, cartReducer])
+    handleCartQuantity()
+  }, [cartStorage, cartReducer, handleCartQuantity, totalQuantityCart]);
 
   return (
     <Dropdown className={`dropdown-cart${window.location.pathname === '/checkout' ? ' d-none' : ''}`}>
       <Dropdown.Toggle id="dropdown-autoclose-true" className='dropdown-custom'>
         <div className="total-cart-icon">
-          <span>{cartTotalQuantity}</span>
+          <span>{totalQuantityCart}</span>
         </div>
         <FaShoppingCart className='user-nav_cart_icon' size={25} />
       </Dropdown.Toggle>

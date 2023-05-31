@@ -20,7 +20,7 @@ export default function App() {
         <Route exact path="/" element={<LazyComponent><Landing /></LazyComponent>} />
         <Route exact path="/products" element={<LazyComponent><Products /></LazyComponent>} />
         <Route exact path="/checkout/:order_type" element={<ProtectedRoute><LazyComponent><Checkout /></LazyComponent></ProtectedRoute>} />
-        <Route exact path="/orders" element={<ProtectedRoute><LazyComponent><Order /></LazyComponent></ProtectedRoute>} />
+        <Route exact path="/new-order" element={<ProtectedRoute><LazyComponent><Order /></LazyComponent></ProtectedRoute>} />
         <Route exact path="/account" element={<ProtectedRoute><LazyComponent><Account /></LazyComponent></ProtectedRoute>} />
       </Routes>
     </div>

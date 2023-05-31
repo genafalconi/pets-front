@@ -3,10 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { GET_USER_ORDER } from '../../redux/actions';
 import Spinner from 'react-bootstrap/Spinner';
 import '../../styles/components/order.scss'
+import { useNavigate } from 'react-router-dom';
 
 export default function Order() {
 
   const dispatch = useDispatch();
+  const navigate = useNavigate()
   const order = useSelector((state) => state.clientReducer.order)
 
   const orderId = localStorage.getItem('order')
@@ -14,6 +16,7 @@ export default function Order() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
+    if(!orderId) navigate('/')
     const getOrderData = async () => {
       if (orderId && user) {
         await dispatch(GET_USER_ORDER(orderId))
@@ -23,7 +26,7 @@ export default function Order() {
       }
     }
     getOrderData()
-  }, [orderId, dispatch, user])
+  }, [orderId, dispatch, user, navigate])
 
   return (
     <div className='content-page'>

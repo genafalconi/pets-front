@@ -15,6 +15,11 @@ export default function updateSubprodQuantity(subprodNewQuantity, cart) {
   })
   cart.total_price = newTotalP
   cart.total_products = newCant
-  
+  if (cart?.total_products === 0) {
+    if (cart) {
+      cart.subproducts = []
+    }
+  }
+
   return cart
 }

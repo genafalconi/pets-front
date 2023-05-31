@@ -28,10 +28,6 @@
     flex-direction: column;
 
     input {
-      margin: $margin-input;
-      border: 1px solid black;
-      border-radius: 5px;
-      text-align: center;
       font-size: 20px;
     }
   }
@@ -59,7 +55,6 @@
   }
 
   .modal-body_form input {
-    width: 80%;
     font-size: 16px;
   }
 

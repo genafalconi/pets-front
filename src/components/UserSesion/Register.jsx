@@ -3,14 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { firebaseAuth, providerGoogle } from "../../helpers/firebase";
 import { LOGIN_WITH_GOOGLE, REGISTER_WITH_EMAIL, SAVE_LOCAL_CART } from "../../redux/actions";
 import { signInWithPopup } from "firebase/auth";
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import Spinner from 'react-bootstrap/Spinner';
-import Modal from 'react-bootstrap/Modal';
+import { Form, Button, Spinner, Modal, Col } from 'react-bootstrap';
 import Swal from "sweetalert2";
 import '../../styles/modals/modalRegister.scss';
 import { AdvancedImage } from "@cloudinary/react";
 import { cloudinaryImg } from "../../helpers/cloudinary";
+import { Formik } from 'formik';
+import * as yup from 'yup';
 
 const GOOGLE_PUBLIC_ID = 'Ppales/Google'
 
@@ -20,27 +19,23 @@ export default function Register({ show, onHideLogin, onHideRegister, onModalClo
   const cartReducer = useSelector((state) => state.clientReducer.cart)
 
   const [isLoading, setIsLoading] = useState(false)
-  const [register, setRegister] = useState({
-    email: '',
-    fullName: '',
-    phone: '',
-    password: ''
-  })
+
+  const validationSchema = yup.object().shape({
+    email: yup.string().email('Correo electrónico inválido').required('Correo electrónico requerido'),
+    fullName: yup.string().required('Nombre y Apellido requeridos'),
+    phone: yup.string().required('Teléfono requerido'),
+    password: yup.string()
+      .min(6, 'La contraseña debe tener al menos 6 caracteres')
+      .max(20, 'La contraseña debe tener menos de 20 caracteres')
+      .required('Contraseña requerida'),
+  });
 
   let token = localStorage.getItem('token')
   let userLocal = localStorage.getItem('user')
 
-  const handleChange = (event) => {
-    setRegister({
-      ...register,
-      [event.target.name]: event.target.value
-    })
-  }
-
-  const registerUser = (event) => {
-    event.preventDefault()
+  const registerUser = (values) => {
     setIsLoading(true)
-    dispatch(REGISTER_WITH_EMAIL(register))
+    dispatch(REGISTER_WITH_EMAIL(values))
       .then((response) => {
         if (response.payload.status === 201) {
           if (Object.keys(cartReducer).length !== 0) {
@@ -115,26 +110,100 @@ export default function Register({ show, onHideLogin, onHideRegister, onModalClo
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className='modal-register-body'>
-        <Form className="register-form" onSubmit={registerUser}>
-          <Form.Group className="register-form_group">
-            <Form.Label>Email</Form.Label>
-            <Form.Control type="email" name="email" placeholder='Email' defaultValue='' onChange={handleChange} />
-            <Form.Label>Nombre y Apellido</Form.Label>
-            <Form.Control type="text" name="fullName" placeholder='Nombre y Apellido' defaultValue='' onChange={handleChange} />
-            <Form.Label>Telefono</Form.Label>
-            <Form.Control type="text" name="phone" placeholder='Telefono' defaultValue='' onChange={handleChange} />
-            <Form.Label>Contraseña</Form.Label>
-            <Form.Control type="password" name="password" defaultValue='' onChange={handleChange} />
-          </Form.Group>
-        </Form>
-        {
-          isLoading ?
-            <Button className='modal-body_register'>
-              <Spinner as="span" animation="border" size='sm' role="status" aria-hidden="true" />
-            </Button>
-            :
-            <Button className='modal-body_register' onClick={registerUser}>Registrarse</Button>
-        }
+        <Formik
+          validationSchema={validationSchema}
+          initialValues={{
+            email: '',
+            fullName: '',
+            phone: '',
+            password: '',
+          }}
+          onSubmit={(values, { setSubmitting }) => {
+            registerUser(values);
+            setSubmitting(false);
+          }}
+        >
+          {({
+            handleSubmit,
+            handleChange,
+            handleBlur,
+            values,
+            touched,
+            isValid,
+            errors,
+          }) => (
+            <Form noValidate onSubmit={handleSubmit} className='modal-body_registerform'>
+              <Form.Group as={Col} controlId="validationFormikEmail">
+                <Form.Label>Email</Form.Label>
+                <Form.Control
+                  type="email"
+                  placeholder="Email"
+                  name="email"
+                  value={values.email}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  isInvalid={touched.email && !!errors.email}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.email}
+                </Form.Control.Feedback>
+              </Form.Group>
+              <Form.Group as={Col} controlId="validationFormikFullName">
+                <Form.Label>Nombre y Apellido</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Nombre y Apellido"
+                  name="fullName"
+                  value={values.fullName}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  isInvalid={touched.fullName && !!errors.fullName}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.fullName}
+                </Form.Control.Feedback>
+              </Form.Group>
+              <Form.Group as={Col} controlId="validationFormikPhone">
+                <Form.Label>Telefono</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Telefono"
+                  name="phone"
+                  value={values.phone}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  isInvalid={touched.phone && !!errors.phone}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.phone}
+                </Form.Control.Feedback>
+              </Form.Group>
+              <Form.Group as={Col} controlId="validationFormikPassword">
+                <Form.Label>Contraseña</Form.Label>
+                <Form.Control
+                  type="password"
+                  placeholder="Contraseña"
+                  name="password"
+                  value={values.password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  isInvalid={touched.password && !!errors.password}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.password}
+                </Form.Control.Feedback>
+              </Form.Group>
+              {
+                isLoading ?
+                  <Button className='modal-body_register' disabled>
+                    <Spinner as="span" animation="border" size='sm' role="status" aria-hidden="true" />
+                  </Button>
+                  :
+                  <Button className='modal-body_register' type="submit" disabled={!isValid}>Registrarse</Button>
+              }
+            </Form>
+          )}
+        </Formik>
         <AdvancedImage cldImg={cloudinaryImg(GOOGLE_PUBLIC_ID)} className='modal-body_google' alt="signInGoogle" onClick={registerWithGoogle} />
       </Modal.Body>
       <Modal.Footer className='modal-register-footer'>

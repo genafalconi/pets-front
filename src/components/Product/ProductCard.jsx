@@ -11,8 +11,8 @@ export default function ProductCart({ data }) {
   const user = localStorage.getItem('user')
 
   const [prodSizeSelected, setProdSizeSelected] = useState(data?.subproducts[0]?._id)
-  const [quantity, setQuantity] = useState(0)
-  const [newProd, setNewProd] = useState(null)
+  const [quantity, setQuantity] = useState(1)
+  const [newProd, setNewProd] = useState(false)
   const [sizeSelected, setSizeSelected] = useState(data?.subproducts[0]?._id)
 
   const sortedSubproducts = [...data.subproducts].sort((a, b) => a.size - b.size);
@@ -39,13 +39,13 @@ export default function ProductCart({ data }) {
       }
       setNewProd(subProdToAdd)
       setTimeout(() => {
-        setNewProd()
+        setNewProd(false)
       }, 3000)
 
       dispatch(ADD_TO_LOCAL_CART(subProdToAdd))
       if (user) dispatch(ADD_TO_CART(subProdToAdd))
-      
-      setQuantity(0)
+
+      setQuantity(1)
     }
   }
 
@@ -68,38 +68,42 @@ export default function ProductCart({ data }) {
         <div className="product-card_img">
           <AdvancedImage cldImg={cloudinaryImg(data?.image)} />
         </div>
-        <div className="product-card_name">
-          <h3>{data?.name}</h3>
-        </div>
-        <div className="product-card_subprod">
-          <div className="subprod__button">
-            {
-              sortedSubproducts.map((elem) => {
-                return <button
-                  key={elem._id}
-                  onClick={() => handlePriceSize(elem._id)}
-                  className={elem._id === sizeSelected ? 'selected' : 'not-selected'}>
-                  {elem?.size}kg
-                </button>
-              })
-            }
+        <div className="product-card_details">
+          <div className="product-card_name">
+            <h3>{data?.name}</h3>
           </div>
-        </div>
-        <div className="product-card__quantity">
-          <button onClick={changeQuantity} name='desc'>-</button>
-          <p className="number">{quantity}</p>
-          <button onClick={changeQuantity} name='asc'>+</button>
-        </div>
-        <div className="subprod__price">
-          <p className="not-discount">
-            ${(data?.subproducts.find((subProd) => subProd._id === prodSizeSelected)?.sell_price * 1.15).toFixed(2)}
-          </p>
-          <p className="discount">
-            ${data?.subproducts.find((subProd) => subProd._id === prodSizeSelected)?.sell_price.toFixed(2)}
-          </p>
-        </div>
-        <div className="product-card_add">
-          <button onClick={() => addToCart(data)}>Agregar</button>
+          <div className="product-card_subprod">
+            <div className="subprod__button">
+              {
+                sortedSubproducts.map((elem) => {
+                  return <button
+                    key={elem._id}
+                    onClick={() => handlePriceSize(elem._id)}
+                    className={elem._id === sizeSelected ? 'selected' : 'not-selected'}>
+                    {elem?.size}kg
+                  </button>
+                })
+              }
+            </div>
+          </div>
+          <div className="product-card_totals">
+            <div className="product-card__quantity">
+              <button onClick={changeQuantity} name='desc'>-</button>
+              <p className="number">{quantity}</p>
+              <button onClick={changeQuantity} name='asc'>+</button>
+            </div>
+            <div className="subprod__price">
+              <p className="not-discount">
+                ${(data?.subproducts.find((subProd) => subProd._id === prodSizeSelected)?.sell_price * 1.15).toFixed(2)}
+              </p>
+              <p className="discount">
+                ${data?.subproducts.find((subProd) => subProd._id === prodSizeSelected)?.sell_price.toFixed(2)}
+              </p>
+            </div>
+          </div>
+          <div className="product-card_add">
+            <button onClick={() => addToCart(data)}>Agregar</button>
+          </div>
         </div>
       </div>
       <>
@@ -118,7 +122,7 @@ export default function ProductCart({ data }) {
                     {newProd.quantity} un
                   </div>
                   <div className="product-price">
-                    <p>${newProd.sell_price}</p>
+                    <p>${newProd.sell_price.toFixed(2)}</p>
                   </div>
                 </div>
               </div>

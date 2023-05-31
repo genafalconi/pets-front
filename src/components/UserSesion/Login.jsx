@@ -9,64 +9,60 @@ import Modal from 'react-bootstrap/Modal';
 import '../../styles/modals/modalLogin.scss';
 import { AdvancedImage } from '@cloudinary/react';
 import { cloudinaryImg } from '../../helpers/cloudinary';
+import { Form, Col } from 'react-bootstrap';
+import { Formik } from 'formik';
+import * as yup from 'yup';
 
-const GOOGLE_PUBLIC_ID = 'Ppales/Google'
-const LOGO_PUBLIC_ID = 'Ppales/Logo'
+const GOOGLE_PUBLIC_ID = 'Ppales/Google';
+const LOGO_PUBLIC_ID = 'Ppales/Logo';
 
 export default function Login({ show, onHideLogin, onHideRegister, onModalClose }) {
+  const dispatch = useDispatch();
 
-  const dispatch = useDispatch()
+  const token = localStorage.getItem('token');
+  const userLocal = localStorage.getItem('user');
+  const cartReducer = useSelector((state) => state.clientReducer.cart);
 
-  const token = localStorage.getItem('token')
-  const userLocal = localStorage.getItem('user')
-  const cartReducer = useSelector((state) => state.clientReducer.cart)
-
-  const [isLoading, setIsLoading] = useState(false)
-  const [user, setUser] = useState({
-    email: '',
-    password: ''
-  })
+  const [isLoading, setIsLoading] = useState(false);
+  const schema = yup.object().shape({
+    email: yup.string().email('Correo electrónico inválido').required('Correo electrónico requerido'),
+    password: yup.string().min(6, 'La contraseña debe tener al menos 6 caracteres').required('Contraseña requerida'),
+  });
 
   const loginGoogle = () => {
     signInWithPopup(firebaseAuth, providerGoogle)
       .then((result) => {
-        // const credential = GoogleAuthProvider.credentialFromResult(result);
         const user = result.user;
         const userLocal = {
           email: user.email,
           fullName: user.displayName,
           id: user.uid,
           phoneNumber: user.phoneNumber
-        }
-        setIsLoading(true)
+        };
+        setIsLoading(true);
         dispatch(LOGIN_WITH_GOOGLE(userLocal))
           .then((response) => {
             if (response.payload.status === 201) {
               if (Object.keys(cartReducer).length !== 0) {
                 dispatch(SAVE_LOCAL_CART(cartReducer)).then((res) => {
-                  localStorage.setItem('token', user.accessToken)
-                  onHideLogin()
-                })
+                  localStorage.setItem('token', user.accessToken);
+                  onHideLogin();
+                });
               } else {
-                localStorage.setItem('token', user.accessToken)
-                onHideLogin()
+                localStorage.setItem('token', user.accessToken);
+                onHideLogin();
               }
             }
           })
-      }).catch((error) => {
+      })
+      .catch((error) => {
         const errorMessage = error.message;
-        // const credential = GoogleAuthProvider.credentialFromError(error);
-        return errorMessage
+        return errorMessage;
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
-    setIsLoading(false)
-  }
-
-  const handleChange = (event) => {
-    setUser({
-      ...user,
-      [event.target.name]: event.target.value
-    })
-  }
+  };
 
   const handleHide = () => {
     onHideLogin();
@@ -75,27 +71,24 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
     }
   };
 
-  const loginWithEmail = (event) => {
-    event.preventDefault()
-    setIsLoading(true)
-    dispatch(LOGIN_WITH_EMAIL(user))
+  const loginWithEmail = (values) => {
+    setIsLoading(true);
+    dispatch(LOGIN_WITH_EMAIL(values))
       .then((response) => {
         if (response.payload.status === 201) {
           if (Object.keys(cartReducer).length !== 0) {
             dispatch(SAVE_LOCAL_CART(cartReducer)).then((res) => {
-              onHideLogin()
-            })
+              onHideLogin();
+            });
           } else {
-            onHideLogin()
+            onHideLogin();
           }
         }
-        setIsLoading(false)
       })
-    setUser({
-      email: '',
-      password: ''
-    })
-  }
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
 
   const showRegister = () => {
     onHideLogin()
@@ -104,7 +97,7 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
 
   useEffect(() => {
 
-  }, [token, userLocal, dispatch])
+  }, [token, userLocal, dispatch]);
 
   return (
     <Modal
@@ -114,24 +107,74 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
       centered
     >
       <Modal.Header closeButton>
-        <Modal.Title id="contained-modal-title-vcenter" >
+        <Modal.Title id="contained-modal-title-vcenter">
           Log In
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className='modal-login-body'>
         <AdvancedImage cldImg={cloudinaryImg(LOGO_PUBLIC_ID)} className='modal-body_logo' alt="logo-pets" />
-        <form className='modal-body_form'>
-          <input type="text" placeholder='email' name='email' defaultValue='' onChange={handleChange} />
-          <input type="password" placeholder='password' defaultValue='' name='password' onChange={handleChange} />
-        </form>
-        {
-          isLoading ?
-            <Button className='modal-body_login'>
-              <Spinner as="span" animation="border" size='sm' role="status" aria-hidden="true" />
-            </Button>
-            :
-            <Button className='modal-body_login' onClick={loginWithEmail}>Iniciar Sesíon</Button>
-        }
+        <Formik
+          validationSchema={schema}
+          initialValues={{
+            email: '',
+            password: '',
+          }}
+          onSubmit={(values, { setSubmitting }) => {
+            loginWithEmail(values);
+            setSubmitting(false);
+          }}
+        >
+          {({
+            handleSubmit,
+            handleChange,
+            handleBlur,
+            values,
+            touched,
+            isValid,
+            errors,
+          }) => (
+            <Form noValidate onSubmit={handleSubmit} className='modal-body_form'>
+              <Form.Group as={Col} controlId="validationFormikEmail">
+                <Form.Label>Email</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Email"
+                  name="email"
+                  value={values.email}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  isInvalid={touched.email && !!errors.email}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.email}
+                </Form.Control.Feedback>
+              </Form.Group>
+              <Form.Group as={Col} controlId="validationFormikPassword">
+                <Form.Label>Password</Form.Label>
+                <Form.Control
+                  type="password"
+                  placeholder="Password"
+                  name="password"
+                  value={values.password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  isInvalid={touched.password && !!errors.password}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.password}
+                </Form.Control.Feedback>
+              </Form.Group>
+              {
+                isLoading ?
+                  <Button className='modal-body_login' disabled>
+                    <Spinner as="span" animation="border" size='sm' role="status" aria-hidden="true" />
+                  </Button>
+                  :
+                  <Button className='modal-body_login' type="submit" disabled={!isValid}>Iniciar Sesíon</Button>
+              }
+            </Form>
+          )}
+        </Formik>
         <AdvancedImage cldImg={cloudinaryImg(GOOGLE_PUBLIC_ID)} className='modal-body_google' alt="signInGoogle" onClick={loginGoogle} />
       </Modal.Body>
       <Modal.Footer className='modal-login-footer'>
@@ -139,5 +182,5 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
         <Button className='outline-primary' onClick={showRegister}>Registrate</Button>
       </Modal.Footer>
     </Modal>
-  )
+  );
 }

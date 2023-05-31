@@ -17,6 +17,8 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import { AdvancedImage } from '@cloudinary/react'
 import { cloudinaryImg } from '../../helpers/cloudinary'
 import LazyComponent from '../../helpers/lazyComponents'
+import { endpoints } from '../../helpers/constants';
+import { validateSearchInput } from '../../helpers/validateInputs';
 
 const LOGO_PUBLIC_ID = 'Ppales/Logo'
 
@@ -27,6 +29,9 @@ export default function Nav() {
   const [modalRegister, setModalRegister] = useState(false)
   const [modalAddress, setModalAddress] = useState(false)
   const [addressUpdated, setAddressUpdated] = useState(false)
+  const [showCart, setShowCart] = useState(true)
+  const [searchInput, setSearchInput] = useState('')
+  const [inputErrors, setInputErrors] = useState(null)
   const inputRef = useRef(null)
 
   const token = localStorage.getItem('token')
@@ -42,6 +47,7 @@ export default function Nav() {
   const handleSearchInput = useCallback(async (value) => {
     await dispatch(SEARCH_PRODUCTS({ input_value: value, page: null })).then((res) => {
       if (res.payload) {
+        setSearchInput('')
         navigate(`/products?input=${value}`)
       }
     })
@@ -57,10 +63,37 @@ export default function Nav() {
     }
   };
 
+  const validateInput = (value) => {
+    const validation = validateSearchInput(value)
+    if (validation.valid) {
+      setSearchInput(value)
+      setInputErrors(validation.error)
+    } else {
+      setInputErrors(validation.error)
+    }
+  }
+
+  const handleCartDisplay = useCallback((endpoint) => {
+    switch (endpoint) {
+      case endpoints.CHECKOUT_ORD:
+        setShowCart(false)
+        break;
+      case endpoints.CHECKOUT_REORD:
+        setShowCart(false)
+        break
+      default:
+        setShowCart(true)
+        break;
+    }
+  }, [])
+
   useEffect(() => {
     if (token && userLocal) {
       setActiveSesion(true)
     }
+
+    const endpoint = window.location.pathname
+    handleCartDisplay(endpoint)
 
     const expiredSesionHandler = () => {
       setActiveSesion(false)
@@ -85,8 +118,8 @@ export default function Nav() {
       eventBus.off('expired-sesion', expiredSesionHandler)
       unsubscribe()
     }
-  }, [token, userLocal, modalLogin, modalRegister, userReducer, dispatch])
-  console.log(window.innerWidth)
+  }, [token, userLocal, modalLogin, modalRegister, userReducer, dispatch, handleCartDisplay])
+
   return (
     <>
       <nav className='nav'>
@@ -98,7 +131,15 @@ export default function Nav() {
             {
               window.innerWidth > 768 ?
                 <div className='div-search'>
-                  <Form.Control className='input-search' type="text" placeholder='Buscar...' ref={inputRef} onKeyDown={handleKeyDown} />
+                  <Form.Control
+                    className='input-search'
+                    type="text"
+                    placeholder='Buscar...'
+                    ref={inputRef}
+                    onKeyDown={handleKeyDown}
+                    value={searchInput}
+                    maxLength={35}
+                    onChange={(e) => validateInput(e.target.value)} />
                   <MdSearch className='action-search-icon' size={25} onClick={() => handleSearchInput(inputRef.current.value)} />
                 </div>
                 :
@@ -113,6 +154,9 @@ export default function Nav() {
                     </Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
+            }
+            {
+              inputErrors?.length > 0 && <span>{inputErrors}</span>
             }
           </div>
         </div>
@@ -129,11 +173,14 @@ export default function Nav() {
                 <FiLogIn className='icon-nav' size={25} onClick={handleLogin} />
               </div>
           }
-          <LazyComponent>
-            <Cart
-              onHideLogin={() => setModalLogin(!modalLogin)}
-            />
-          </LazyComponent>
+          {
+            showCart &&
+            <LazyComponent>
+              <Cart
+                onHideLogin={() => setModalLogin(!modalLogin)}
+              />
+            </LazyComponent>
+          }
         </div>
       </nav>
       <LazyComponent>

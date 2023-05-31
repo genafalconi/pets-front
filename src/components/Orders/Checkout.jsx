@@ -28,6 +28,8 @@ export default function Checkout() {
   const user = localStorage.getItem('user');
 
   const [isLoading, setIsLoading] = useState(true);
+  const [cartReady, setCartReady] = useState(false);
+  const [addressReady, setAddressReady] = useState(false);
   const [validContinue, setValidContinue] = useState(false);
   const [modalAddress, setModalAddress] = useState(false);
   const [showPaymentDate, setShowPaymentDate] = useState(false);
@@ -50,8 +52,7 @@ export default function Checkout() {
   }, [showPaymentDate, showCheckout]);
 
   const getUserAddresses = useCallback(async () => {
-    setIsLoading(true);
-    dispatch(GET_USER_ADDRESS()).then((res) => {
+    await dispatch(GET_USER_ADDRESS()).then((res) => {
       if (res.payload) {
         if (Array.isArray(addresses)) {
           let selectedAddress = addresses.find((elem) => elem._id === settedAddress);
@@ -62,8 +63,8 @@ export default function Checkout() {
             setValidContinue(false);
           }
         }
+        setAddressReady(true);
       }
-      setIsLoading(false);
     });
   }, [dispatch, addresses, settedAddress]);
 
@@ -89,6 +90,7 @@ export default function Checkout() {
     let selectedAddress;
     if (Array.isArray(addresses)) {
       selectedAddress = Array.from(addresses).find((elem) => elem._id === settedAddress);
+
     }
 
     if (selectedAddress) {
@@ -111,9 +113,16 @@ export default function Checkout() {
 
   useEffect(() => {
     if (reorder_cart && cart) {
-      setIsLoading(false);
+      setCartReady(true)
     }
   }, [reorder_cart, cart]);
+
+  useEffect(() => {
+    if (cartReady && addressReady) {
+      setIsLoading(false)
+    }
+  }, [cartReady, addressReady]);
+
 
   useEffect(() => {
     getUserAddresses();
@@ -191,7 +200,7 @@ export default function Checkout() {
                       )}
                       <div>
                         {
-                          selectedAddress ? '' : <p>Selecciona una direccion</p>
+                          selectedAddress ? '' : <span className="error-labels">Selecciona una direccion</span>
                         }
                       </div>
                       <div className="third-button">

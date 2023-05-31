@@ -267,15 +267,24 @@ export const ADD_TO_LOCAL_CART = createAsyncThunk(
   'ADD_TO_LOCAL_CART', async (subprod) => {
     try {
       let cart = localStorage.getItem('cart')
-      let newCart, updatedCart
-      if (cart) cart = JSON.parse(cart)
+      let reorderCart = localStorage.getItem('reorder-cart')
+      let newCart, updatedCart, isReorder
+
+      if (reorderCart && Object.keys(reorderCart).length !== 0) {
+        cart = JSON.parse(reorderCart);
+        isReorder = true
+      } else if (cart && Object.keys(cart).length !== 0) {
+        cart = JSON.parse(cart);
+        isReorder = false
+      }
+
       if (cart && Object.keys(cart).length !== 0) {
         updatedCart = fillCart(subprod, cart)
-        localStorage.setItem('cart', JSON.stringify(updatedCart))
+        localStorage.setItem(isReorder ? 'reorder-cart' : 'cart', JSON.stringify(updatedCart))
         return updatedCart
       } else {
         newCart = addLocalCart(subprod)
-        localStorage.setItem('cart', JSON.stringify(newCart))
+        localStorage.setItem(isReorder ? 'reorder-cart' : 'cart', JSON.stringify(newCart))
         return newCart
       }
 
@@ -306,6 +315,27 @@ export const SAVE_LOCAL_CART = createAsyncThunk(
         return res?.data
       }
       return true
+    } catch (error) {
+      Swal.fire({
+        title: 'Error!',
+        text: `${error}`,
+        icon: 'error'
+      })
+      return error
+    }
+  }
+)
+
+export const SAVE_RE_ORDER_CART = createAsyncThunk(
+  'SAVE_RE_ORDER_CART', async (cart) => {
+    try {
+      const idUser = localStorage.getItem('user')
+      if (idUser) {
+        cart.user = idUser
+      }
+      cart.active = true
+      localStorage.setItem('reorder_cart', JSON.stringify(cart))
+      return cart
     } catch (error) {
       Swal.fire({
         title: 'Error!',
@@ -443,7 +473,6 @@ export const LOCK_SUBPROD_USER = createAsyncThunk(
     try {
       const token = localStorage.getItem('token')
       const res = await request(req_constants.POST, `${REACT_APP_PROD}/subproducts/lock`, null, lockCart, token)
-
       return res?.data
     } catch (error) {
       Swal.fire({
@@ -561,21 +590,6 @@ export const GET_ACCOUNT_ORDERS = createAsyncThunk(
       const res = await request(req_constants.GET, `${REACT_APP_AUTH}/user/orders/${user}`, null, null, token)
 
       return res?.data
-    } catch (error) {
-      Swal.fire({
-        title: 'Error!',
-        text: `${error}`,
-        icon: 'error'
-      })
-      return error
-    }
-  }
-)
-
-export const SET_REORDER_CART = createAsyncThunk(
-  'SET_REORDER_CART', async (cart) => {
-    try {
-      return cart
     } catch (error) {
       Swal.fire({
         title: 'Error!',

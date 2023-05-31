@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import eventBus from '../../helpers/event-bus';
 import { CREATE_USER_ORDER, GET_OPEN_OFFERS } from '../../redux/actions';
 import Spinner from 'react-bootstrap/Spinner';
@@ -10,17 +10,21 @@ import Swal from 'sweetalert2';
 import { AdvancedImage } from '@cloudinary/react';
 import { cloudinaryImg } from '../../helpers/cloudinary';
 import LazyComponent from '../../helpers/lazyComponents';
+import { type_ord } from '../../helpers/constants';
 
 const CASH_PUBLIC_ID = 'Payments/Efectivo'
 const TRANS_PUBLIC_ID = 'Payments/Transferencia'
 const MP_PUBLIC_ID = 'Payments/MercadoPago'
 
 export default function PaymentDate() {
+
+  const { order_type } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { offers, cart, address, locks } = useSelector((state) => state.clientReducer);
-
+  const { offers, address, locks } = useSelector((state) => state.clientReducer);
   const user = useMemo(() => localStorage.getItem('user'), []);
+  const cartKey = order_type === type_ord.REORDER ? 'reorder_cart' : 'cart';
+  const cart = JSON.parse(localStorage.getItem(cartKey));
 
   const [isLoading, setIsLoading] = useState(true);
   const [selectedPaymentType, setSelectedPaymentType] = useState(null);
@@ -39,30 +43,35 @@ export default function PaymentDate() {
 
   const handleConfirm = useCallback(() => {
     const orderToCreate = {
-      cart: cart,
-      user: user,
+      cart,
+      user,
       offer: selectedOfferData,
       payment_type: selectedPaymentType,
-      address: address,
-      locks: locks,
+      address,
+      locks,
+      order_type
     };
+
     setIsConfirmed(true);
     dispatch(CREATE_USER_ORDER(orderToCreate))
       .then((res) => {
+        setIsConfirmed(false);
         if (res.payload._id) {
-          setIsConfirmed(false);
           Swal.fire({
-            title: 'Pedido realizado con exito!',
-            text: `Numero de orden: ${res.payload._id}`,
+            title: 'Pedido realizado con éxito!',
+            text: `Número de orden: ${res.payload._id}`,
             icon: 'success',
             timer: 2500,
             timerProgressBar: true,
-            showConfirmButton: false
+            showConfirmButton: false,
           });
-          navigate('/orders');
+          navigate('/new-order');
         }
       })
-  }, [cart, dispatch, user, selectedOfferData, selectedPaymentType, address, locks, navigate]);
+      .catch((error) => {
+        setIsLoading(false);
+      });
+  }, [cart, dispatch, user, selectedOfferData, selectedPaymentType, address, locks, navigate, order_type]);
 
   useEffect(() => {
     if (selectedPaymentType && selectedOfferData) {
@@ -73,9 +82,9 @@ export default function PaymentDate() {
   }, [selectedOfferData, selectedPaymentType]);
 
   const handleOpenOffers = useCallback(() => {
-    dispatch(GET_OPEN_OFFERS()).then((res) => {
+    dispatch(GET_OPEN_OFFERS()).then(() => {
       setIsLoading(false);
-    })
+    });
   }, [dispatch]);
 
   useEffect(() => {
@@ -104,7 +113,8 @@ export default function PaymentDate() {
                 </LazyComponent>
                 <div className='mt-3'>
                   {
-                    selectedOfferData ? '' : <p>Selecciona una oferta</p>
+                    selectedOfferData ? ''
+                      : <span className="error-labels">Selecciona una oferta</span>
                   }
                 </div>
               </div>
@@ -112,7 +122,7 @@ export default function PaymentDate() {
                 <div className="subtitle">
                   <h2>Tipo de pago</h2>
                 </div>
-                <div className='payment-type d-flex'>
+                <div className='payment-type d-flex align-items-center justify-content-center'>
                   <div className='d-flex flex-column'>
                     <AdvancedImage cldImg={cloudinaryImg(CASH_PUBLIC_ID)} name='CASH' className={selectedPaymentType === 'CASH' ? 'selected-payment' : ''} onClick={handlePaymentType} />
                     <span className='.fs-6'>Efectivo</span>
@@ -128,7 +138,8 @@ export default function PaymentDate() {
                 </div>
                 <div className='mt-3'>
                   {
-                    selectedPaymentType ? '' : <p>Selecciona un metodo de pago</p>
+                    selectedPaymentType ? ''
+                      : <span className="error-labels">Selecciona un metodo de pago</span>
                   }
                 </div>
               </div>
