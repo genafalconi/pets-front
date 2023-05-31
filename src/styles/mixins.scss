@@ -23,7 +23,7 @@
 
 .title {
   position: absolute;
-  top: 12%;
+  top: 10%;
   font-size: 2rem;
   font-weight: bold;
   text-align: start;
@@ -62,19 +62,21 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
   margin-bottom: 16px;
+  gap: 1rem;
 }
 
 .container-address {
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
+  justify-content: center;
+  align-items: center;
   width: 100%;
-  border: 1px solid $background-color;
+  border: 1px solid #FAFAFA;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 20px;
+  padding: 15px;
   margin-bottom: 16px;
+  cursor: pointer;
+  gap: 1rem;
 }
 
 .container-address.selected {
@@ -130,12 +132,33 @@
   color: $primary-text-button-color;
 }
 
+.third-button>button {
+  background-color: $secondary-button-color;
+  border: 1px solid $secondary-text-button-color;
+  border-radius: 5px;
+  color: $secondary-text-button-color;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 5px;
+  width: auto;
+  margin: 2.5%;
+}
+
+.third-button button:hover {
+  background-color: rgb(13, 110, 253, 0.8);
+  color: $primary-text-button-color;
+}
+
 .error-info {
   display: flex;
   align-items: center;
   justify-content: flex-start;
   margin: 5%;
   font-size: 1.25rem;
+}
+
+.error-labels {
+  color: $pets-red;
 }
 
 .button-quantity {
@@ -166,7 +189,7 @@
   font-size: 1rem;
   position: absolute;
   left: 80%;
-  top: 14.5%;
+  top: 12.5%;
   z-index: 200;
 }
 
@@ -175,5 +198,22 @@
     flex-direction: column;
     align-items: flex-start;
     padding: 10px;
+  }
+
+  .container-checkout {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .timer {
+    color: red;
+    font-size: 1rem;
+    position: absolute;
+    left: 55%;
+    top: 15%;
+    z-index: 200;
+    display: flex;
+    width: max-content;
   }
 }

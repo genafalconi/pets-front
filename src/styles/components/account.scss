@@ -1,0 +1,159 @@
+@import '../variables';
+
+.account-container {
+  display: flex;
+  justify-content: flex-start;
+  margin: 0 10%;
+  z-index: 90;
+  gap: 8%;
+}
+
+.side-nav {
+  width: 20%;
+}
+
+.list-group {
+  width: fit-content;
+  text-align: start;
+}
+
+.item-selected {
+  width: 80%;
+}
+
+.personal-card {
+  width: 100%;
+
+  .card-title {
+    font-size: calc(1.1rem + 0.1vw) !important;
+    margin-bottom: 4%;
+  }
+
+  .card-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    span {
+      margin: 1%;
+      font-size: calc(1.1rem + 0.1vw);
+    }
+  }
+
+  .user-order-details {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    .user-order-date {
+      display: inherit;
+    }
+
+    .user-order-products {
+      display: inherit;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+
+      .order-products-detail {
+        display: inherit;
+        justify-content: space-between;
+        width: 100%;
+        align-items: center;
+
+        .products-detail {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    }
+  }
+
+  .info-accordion {
+    width: 8rem;
+  }
+
+  .accordion-header {
+    h5 {
+      margin: 0;
+      font-size: calc(0.9rem + 0.1vw);
+    }
+
+    .order-data-button {
+      width: 30%;
+    }
+  }
+}
+
+.email-container-input {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 1.2rem;
+
+  span {
+    font-size: smaller;
+    color: green;
+  }
+
+  input {
+    margin: $margin-input;
+    border: 1px solid black;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 20px;
+  }
+}
+
+.email-reset-button {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+
+  button {
+    width: 30%;
+  }
+}
+
+.table-orders {
+  font-size: calc(0.8rem + 0.1vw);
+}
+
+@media only screen and (max-width: 768px) {
+  .account-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .side-nav {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    button {
+      white-space: nowrap;
+    }
+  }
+
+  .item-selected {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+@media only screen and (min-width: 900px) {
+  .side-nav {
+    button {
+      white-space: nowrap;
+    }
+  }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 1024px) {}

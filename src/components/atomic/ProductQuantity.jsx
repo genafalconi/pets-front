@@ -1,7 +1,7 @@
-import { useEffect } from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
 import { UPDATE_LOCAL_SUBPRODUCT_QUANTITY, UPDATE_SUBPRODUCT_QUANTITY } from "../../redux/actions"
+import { useCallback } from "react"
 
 export default function ProductQuantity({ quantity, idSubprod, stock }) {
 
@@ -14,28 +14,35 @@ export default function ProductQuantity({ quantity, idSubprod, stock }) {
   const handleChangeQuantity = (event) => {
     if (event.target.name === 'asc') {
       if (newQuantity < stock) {
-        setNewQuantity(prevQuantity => prevQuantity + 1)
+        const updatedQuantity = newQuantity + 1;
+        setNewQuantity(updatedQuantity);
+        updateQuantity(updatedQuantity);
       }
     } else {
       if (newQuantity !== 0) {
-        setNewQuantity(prevQuantity => prevQuantity - 1)
+        const updatedQuantity = newQuantity - 1;
+        setNewQuantity(updatedQuantity);
+        updateQuantity(updatedQuantity);
       }
     }
   }
 
-  useEffect(() => {
+  const updateQuantity = useCallback((updatedQuantity) => {
     const subprodUpdateQuantity = {
       idSubprod: idSubprod,
-      newQuantity: newQuantity
+      newQuantity: updatedQuantity
     };
-    if (quantity !== subprodUpdateQuantity.newQuantity) {
-      if(user) {
-        dispatch(UPDATE_SUBPRODUCT_QUANTITY(subprodUpdateQuantity));
-      } else {
-        dispatch(UPDATE_LOCAL_SUBPRODUCT_QUANTITY(subprodUpdateQuantity))
-      }
-    }
-  }, [newQuantity, idSubprod, dispatch, quantity, user])
+    dispatch(UPDATE_LOCAL_SUBPRODUCT_QUANTITY(subprodUpdateQuantity))
+    if (user) dispatch(UPDATE_SUBPRODUCT_QUANTITY(subprodUpdateQuantity));
+
+  }, [dispatch, idSubprod, user])
+
+  useEffect(() => {
+    setNewQuantity(quantity);
+  }, [quantity]);
+
+  useEffect(() => {
+  }, [newQuantity, dispatch])
 
   return (
     <div className="product-quantity">

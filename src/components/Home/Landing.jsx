@@ -1,14 +1,13 @@
-import { Link } from 'react-router-dom'
 import '../../App.scss'
+import LazyComponent from '../../helpers/lazyComponents';
+import AnimalCards from '../segmentation/AnimalCards'
 
 export default function Landing() {
-
   return (
     <>
-      <Link to={'/products'}>
-        <button>Products</button>
-      </Link>
+      <LazyComponent>
+        <AnimalCards />
+      </LazyComponent>
     </>
-  )
-
+  );
 }

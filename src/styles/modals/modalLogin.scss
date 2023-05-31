@@ -7,16 +7,14 @@
   align-items: center;
 
   .modal-body_logo {
-    max-width: 15%;
+    width: 15%;
+    height: auto;
   }
 
   .modal-body_google {
     max-width: 7%;
-    border: $border;
-    border-radius: $border-radius;
     margin-bottom: $margin-input;
     cursor: pointer;
-
   }
 
   .modal-body_google:hover {
@@ -30,10 +28,6 @@
     flex-direction: column;
 
     input {
-      margin: $margin-input;
-      border: 1px solid black;
-      border-radius: 5px;
-      text-align: center;
       font-size: 20px;
     }
   }
@@ -61,7 +55,6 @@
   }
 
   .modal-body_form input {
-    width: 80%;
     font-size: 16px;
   }
 

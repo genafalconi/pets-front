@@ -1,101 +1,140 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Spinner from 'react-bootstrap/Spinner';
 import ProductCheckout from './ProductCheckout';
 import '../../styles/components/checkout.scss'
 import { useDispatch, useSelector } from 'react-redux';
 import { LOCK_SUBPROD_USER, GET_USER_ADDRESS, SET_USER_ADDRESS } from '../../redux/actions';
 import AddressList from './AddressList';
-import Address from './Address';
 import Timer from '../atomic/Timer';
 import PaymentDate from './PaymentDate';
 import eventBus from '../../helpers/event-bus';
+import Address from './Address';
+import LazyComponent from '../../helpers/lazyComponents';
+import { useParams } from 'react-router-dom';
+import { type_ord } from '../../helpers/constants';
 
 export default function Checkout() {
 
-  const dispatch = useDispatch()
+  const { order_type } = useParams()
+  const dispatch = useDispatch();
+  const { cart: cartReducer, user: userReducer, addresses, reorder_cart } = useSelector((state) => state.clientReducer);
 
-  const cartReducer = useSelector((state) => state.clientReducer.cart)
-  const addresses = useSelector((state) => state.clientReducer.addresses)
+  let cart;
+  if (order_type === type_ord.REORDER) {
+    cart = JSON.parse(localStorage.getItem('reorder_cart'));
+  } else {
+    cart = JSON.parse(localStorage.getItem('cart'));
+  }
+  const user = localStorage.getItem('user');
 
-  const cart = JSON.parse(localStorage.getItem('cart'))
-  const user = localStorage.getItem('user')
-
-  const [isLoading, setIsLoading] = useState(false)
-  const [validContinue, setValidContinue] = useState(false)
-  const [modalAddress, setModalAddress] = useState(false)
-  const [showPaymentDate, setShowPaymentDate] = useState(false)
-  const [showCheckout, setShowCheckout] = useState(true)
-  const [settedAddress, setSettedAddress] = useState(true)
+  const [isLoading, setIsLoading] = useState(true);
+  const [cartReady, setCartReady] = useState(false);
+  const [addressReady, setAddressReady] = useState(false);
+  const [validContinue, setValidContinue] = useState(false);
+  const [modalAddress, setModalAddress] = useState(false);
+  const [showPaymentDate, setShowPaymentDate] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(true);
+  const [settedAddress, setSettedAddress] = useState(true);
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [addressUpdated, setAddressUpdated] = useState(false);
   const [lockCart, setLockCart] = useState({
     user: '',
-    subprods: []
-  })
+    subproducts: []
+  });
 
-  const handleChargeAddress = () => {
-    setModalAddress(!modalAddress)
-  }
+  const handleChargeAddress = useCallback(() => {
+    setModalAddress(!modalAddress);
+  }, [modalAddress]);
 
-  const handleCoordinate = () => {
-    setShowPaymentDate(!showPaymentDate)
-    setShowCheckout(!showCheckout)
-  }
+  const handleCoordinate = useCallback(() => {
+    setShowPaymentDate(!showPaymentDate);
+    setShowCheckout(!showCheckout);
+  }, [showPaymentDate, showCheckout]);
 
-  const getUserAddresses = async () => {
-    setIsLoading(true)
-    dispatch(GET_USER_ADDRESS()).then((res) => {
+  const getUserAddresses = useCallback(async () => {
+    await dispatch(GET_USER_ADDRESS()).then((res) => {
       if (res.payload) {
-        setIsLoading(false)
+        if (Array.isArray(addresses)) {
+          let selectedAddress = addresses.find((elem) => elem._id === settedAddress);
+          if (selectedAddress) {
+            dispatch(SET_USER_ADDRESS(selectedAddress));
+            setValidContinue(true);
+          } else {
+            setValidContinue(false);
+          }
+        }
+        setAddressReady(true);
       }
-    })
-  }
+    });
+  }, [dispatch, addresses, settedAddress]);
 
-  const handlePayCart = () => {
-    const subprods = []
-    cart?.products?.map((elem) => subprods.push({ idSubprod: elem.id, quantity: elem.quantity }))
+  const handlePayCart = useCallback(() => {
+    const subprods = [];
+    cart?.subproducts?.forEach((elem) => subprods.push({ subprod: elem.subproduct._id, quantity: elem.quantity }));
     if (!lockCart.user && subprods.length > 0) {
       setLockCart({
         user: user,
-        subprods: subprods
-      })
+        subproducts: subprods
+      });
     }
-  }
+  }, [cart, lockCart.user, user]);
+
+  const handleGoBack = useCallback((isTrue) => {
+    if (isTrue) {
+      setShowPaymentDate(false);
+      setShowCheckout(true);
+    }
+  }, []);
 
   useEffect(() => {
-    const selectedAddress = addresses?.find((elem) => elem.id === settedAddress)
+    let selectedAddress;
+    if (Array.isArray(addresses)) {
+      selectedAddress = Array.from(addresses).find((elem) => elem._id === settedAddress);
+
+    }
 
     if (selectedAddress) {
-      dispatch(SET_USER_ADDRESS(selectedAddress))
-      setValidContinue(true)
+      dispatch(SET_USER_ADDRESS(selectedAddress));
+      setValidContinue(true);
     } else {
-      setValidContinue(false)
+      setValidContinue(false);
     }
-  }, [settedAddress, dispatch, addresses])
+  }, [settedAddress, dispatch, addresses]);
 
   useEffect(() => {
-    handlePayCart()
-    if (lockCart.subprods.length > 0) {
-      dispatch(LOCK_SUBPROD_USER(lockCart))
+    handlePayCart();
+  }, [handlePayCart]);
+
+  useEffect(() => {
+    if (lockCart.subproducts.length > 0) {
+      dispatch(LOCK_SUBPROD_USER(lockCart));
     }
+  }, [lockCart, cartReducer, userReducer, dispatch, order_type, reorder_cart]);
+
+  useEffect(() => {
+    if (reorder_cart && cart) {
+      setCartReady(true)
+    }
+  }, [reorder_cart, cart]);
+
+  useEffect(() => {
+    if (cartReady && addressReady) {
+      setIsLoading(false)
+    }
+  }, [cartReady, addressReady]);
+
+
+  useEffect(() => {
+    getUserAddresses();
     // eslint-disable-next-line
-  }, [lockCart, cartReducer, user])
+  }, []);
 
   useEffect(() => {
-    getUserAddresses()
-    // eslint-disable-next-line
-  }, [modalAddress]);
-
-  useEffect(() => {
-    const handleGoBack = (isTrue) => {
-      if (isTrue) {
-        setShowPaymentDate(false)
-        setShowCheckout(true)
-      }
-    }
-    eventBus.on('go-back-button', handleGoBack)
+    eventBus.on('go-back-button', handleGoBack);
     return () => {
-      eventBus.off('go-back-button', handleGoBack)
-    }
-  }, [])
+      eventBus.off('go-back-button', handleGoBack);
+    };
+  }, [handleGoBack]);
 
   return (
     <div className="content-page">
@@ -106,6 +145,7 @@ export default function Checkout() {
           </div>
         ) : (
           <>
+            <Timer />
             {showCheckout ? (
               <>
                 <div className="title">
@@ -116,21 +156,22 @@ export default function Checkout() {
                     <div className="subtitle">
                       <h2>Productos</h2>
                     </div>
-                    {cart?.products?.map(item => {
+                    {cart?.subproducts?.map(item => {
                       return (
-                        <ProductCheckout
-                          key={item.id}
-                          id={item.id}
-                          productName={item.productName}
-                          price={item.price}
-                          size={item.size}
-                          quantity={item.quantity}
-                        />
+                        <LazyComponent key={item.subproduct._id}>
+                          <ProductCheckout
+                            id={item.subproduct._id}
+                            product_name={item.subproduct.product.name}
+                            sell_price={item.subproduct.sell_price}
+                            size={item.subproduct.size}
+                            quantity={item.quantity}
+                          />
+                        </LazyComponent>
                       );
                     })}
                     <div className="cart-total">
                       <p>Total:</p>
-                      <p>${cart?.totalPrice}</p>
+                      <p>${cart?.total_price?.toFixed(2)}</p>
                     </div>
                   </div>
                   <div className="address">
@@ -141,7 +182,12 @@ export default function Checkout() {
                       {addresses?.length > 0 ? (
                         addresses?.map(elem => {
                           return (
-                            <AddressList id={elem.id} modal={false} key={elem.id} street={elem.street} number={elem.number} floor={elem.floor} flat={elem.flat} city={elem.city} province={elem.province} extra={elem.extra} setSettedAddress={setSettedAddress} />
+                            <LazyComponent key={elem._id}>
+                              <AddressList id={elem._id} modal={false} street={elem.street}
+                                number={elem.number} floor={elem.floor} flat={elem.flat} city={elem.city}
+                                province={elem.province} extra={elem.extra}
+                                setSettedAddress={setSettedAddress} selectedAddress={selectedAddress} setSelectedAddress={setSelectedAddress} />
+                            </LazyComponent>
                           );
                         })
                       ) : (
@@ -152,21 +198,37 @@ export default function Checkout() {
                           </div>
                         </>
                       )}
+                      <div>
+                        {
+                          selectedAddress ? '' : <span className="error-labels">Selecciona una direccion</span>
+                        }
+                      </div>
+                      <div className="third-button">
+                        <button onClick={handleChargeAddress}>Cargar otra</button>
+                      </div>
                     </div>
                   </div>
-                  <Timer />
                 </div>
-                <div className={validContinue ? "primary-button" : "disabled-button"}>
+                <div className={validContinue ? "primary-button checkout" : "disabled-button checkout"}>
                   <button disabled={!validContinue} onClick={handleCoordinate}>Continuar</button>
                 </div>
               </>
             ) : (
-              <PaymentDate />
+              <LazyComponent>
+                <PaymentDate />
+              </LazyComponent>
             )}
           </>
         )
       }
-      <Address show={modalAddress} onHideAddress={() => setModalAddress(!modalAddress)} />
+      <LazyComponent>
+        <Address
+          show={modalAddress}
+          onHideAddress={() => setModalAddress(!modalAddress)}
+          updateAddress={() => setAddressUpdated(!addressUpdated)}
+          fromCheckout={true}
+        />
+      </LazyComponent>
     </div >
   );
 }  

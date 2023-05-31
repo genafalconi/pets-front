@@ -56,6 +56,13 @@
   }
 }
 
+.payment-type {
+  span {
+    font-size: 0.85rem;
+    font-style: italic;
+  }
+}
+
 .selected-payment {
   border: 2px solid blue;
 }
@@ -68,23 +75,17 @@
     margin-right: 5%;
   }
 
-  .date, .payment {
+  .date,
+  .payment {
     width: 100%;
     margin-right: 0;
     margin-bottom: 20px;
   }
 
   .coordinate-buttons {
-    flex-direction: column;
-    margin: 0;
-  }
-
-  .primary-button {
-    margin-left: 0;
-    margin-top: 5%;
-  }
-
-  .secondary-button {
-    margin-right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5%;
   }
 }

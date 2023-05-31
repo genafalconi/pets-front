@@ -1,85 +1,93 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
+import { Pagination, Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { GET_ACTIVE_PRODUCTS } from "../../redux/actions";
+import { useLocation } from "react-router-dom";
+import { GET_ACTIVE_PRODUCTS, SEARCH_PRODUCTS } from "../../redux/actions";
 import ProductCart from "./ProductCard";
-import Spinner from 'react-bootstrap/Spinner';
-import "../../styles/components/product.scss";
+import LazyComponent from "../../helpers/lazyComponents";
 
 export default function Products() {
+
+  const input = new URLSearchParams(useLocation().search).get("input");
+  const query = new URLSearchParams(useLocation().search).get("animal");
   const dispatch = useDispatch();
-  const activeProducts = useSelector((state) => state.clientReducer.products);
+  const { products, products_filtered, current_page, total_pages } = useSelector((state) => state.clientReducer);
 
   const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [productsPerPage, setProductsPerPage] = useState(20);
-  const offset = 0
+  const [currentPage, setCurrentPage] = useState(current_page);
 
-  const getActiveProducts = async () => {
-    await dispatch(GET_ACTIVE_PRODUCTS()).then((res) => {
-      setIsLoading(false)
+  const activeProducts = useMemo(() => {
+    const productsToRender = input ? products_filtered : products;
+    return Array.isArray(productsToRender) && productsToRender?.map((elem) => (
+      <LazyComponent key={elem._id}>
+        <ProductCart data={elem} />
+      </LazyComponent>
+    ));
+  }, [products, products_filtered, input]);
+
+  const handlePageClick = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const getSearchedProducts = useCallback(() => {
+    setIsLoading(true)
+    dispatch(SEARCH_PRODUCTS({ input_value: input, page: currentPage })).then((res) => {
+      if (res.payload) setIsLoading(false);
     })
-  }
+  }, [dispatch, currentPage, input])
 
-  const loadMore = useCallback(() => {
-    setIsLoadingMore(true);
-    setProductsPerPage((prevProductsPerPage) => prevProductsPerPage + 20);
-    setIsLoadingMore(false)
-  }, []);
-
-  useEffect(() => {
-    getActiveProducts();
-    // eslint-disable-next-line
-  }, []);
+  const getActiveProducts = useCallback(() => {
+    setIsLoading(true);
+    dispatch(GET_ACTIVE_PRODUCTS({ animal: query, page: currentPage })).then((res) => {
+      if (res.payload) setIsLoading(false);
+    });
+  }, [dispatch, query, currentPage]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const windowHeight =
-        "innerHeight" in window
-          ? window.innerHeight
-          : document.documentElement.offsetHeight;
-      const body = document.body;
-      const html = document.documentElement;
-      const docHeight = Math.max(
-        body.scrollHeight,
-        body.offsetHeight,
-        html.clientHeight,
-        html.scrollHeight,
-        html.offsetHeight
-      );
-      const windowBottom = windowHeight + window.pageYOffset;
-      if (windowBottom >= docHeight) {
-        loadMore()
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [loadMore]);
+    if (!input) {
+      getActiveProducts();
+    } else {
+      getSearchedProducts();
+    }
+  }, [getActiveProducts, getSearchedProducts, input]);
 
   return (
     <div className="content-page">
-      {
-        isLoading ?
-          <div className="loading">
-            <Spinner as="span" animation="border" size='xl' role="status" aria-hidden="true" />
+      {isLoading ? (
+        <div className="loading">
+          <Spinner as="span" animation="border" size="xl" role="status" aria-hidden="true" />
+        </div>
+      ) : (
+        <div className="products-container">
+          <div className="title">
+            <h1>Productos</h1>
           </div>
-          : activeProducts.length === 0 ?
-            <h2>No hay productos</h2>
-            :
-            <div className="products-container">
-              <div className="title">
-                <h1>Productos</h1>
-              </div>
-              <div className="list-products">
-                {
-                  activeProducts
-                    .slice(offset, offset + productsPerPage)
-                    .map((elem) => <ProductCart key={elem.id} data={elem} />)
-                }
-              </div>
-            </div>
-      }
-      {isLoadingMore && <p>Loading more products...</p>}
+          <div className="list-products">
+            {activeProducts && activeProducts.length !== 0 ? (
+              activeProducts
+            ) : (
+              <h2>No hay productos</h2>
+            )}
+          </div>
+          <Pagination>
+            <Pagination.First onClick={() => handlePageClick(1)} />
+            <Pagination.Prev onClick={() => handlePageClick(currentPage - 1)} />
+            {[...Array(total_pages)].map((_, i) => {
+              return (
+                <Pagination.Item
+                  key={i}
+                  active={currentPage === i + 1}
+                  onClick={() => handlePageClick(i + 1)}
+                >
+                  {i + 1}
+                </Pagination.Item>
+              );
+            })}
+            <Pagination.Next onClick={() => handlePageClick(currentPage + 1)} />
+            <Pagination.Last onClick={() => handlePageClick(total_pages)} />
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 }

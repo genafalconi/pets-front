@@ -5,14 +5,21 @@ import Spinner from 'react-bootstrap/Spinner';
 import Modal from 'react-bootstrap/Modal';
 import '../../styles/modals/modalAddress.scss';
 import { CREATE_USER_ADDRESS, GET_USER_ADDRESS } from '../../redux/actions';
+import GoogleMaps from '../atomic/GoogleMaps';
 import AddressList from './AddressList';
+import Form from 'react-bootstrap/Form';
+import { Col, Row } from 'react-bootstrap';
+import LazyComponent from '../../helpers/lazyComponents';
 
-export default function Address({ show, onHideAddress }) {
+export default function Address({ show, onHideAddress, updateAddress, fromCheckout }) {
 
   const dispatch = useDispatch()
-  const addresses = useSelector((state) => state.clientReducer.address)
+  const addresses = useSelector((state) => state.clientReducer.addresses)
 
-  const [isLoading, setIsLoading] = useState(false)
+  const [searchByMaps, setSearchByMaps] = useState(false)
+  const [isConfirmed, setIsConfirmed] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isLoadingButton, setIsLoadingButton] = useState(false)
   const [address, setAddress] = useState({
     street: '',
     number: 0,
@@ -30,9 +37,8 @@ export default function Address({ show, onHideAddress }) {
     })
   }
 
-  const getUserAddresses = async () => {
-    setIsLoading(true)
-    if (show) {
+  const getUserAddresses = async (isOpen) => {
+    if (show || isOpen) {
       dispatch(GET_USER_ADDRESS()).then((res) => {
         if (res.payload) {
           setIsLoading(false)
@@ -41,28 +47,40 @@ export default function Address({ show, onHideAddress }) {
     }
   }
 
+  const validateInputs = () => {
+    if (address.street.length !== 0) return true
+  }
+
+  const handleSearchMaps = () => {
+    setSearchByMaps(!searchByMaps)
+  }
+
   const handleCreateAddress = () => {
-    setIsLoading(true)
-    dispatch(CREATE_USER_ADDRESS(address)).then((res) => {
-      if (Object.keys(res.payload).length !== 0) {
-        setIsLoading(false)
-        onHideAddress()
-      }
-    })
+    const validation = validateInputs()
+    if (validation) {
+      setIsLoadingButton(true)
+      setIsConfirmed(true)
+      dispatch(CREATE_USER_ADDRESS(address)).then((res) => {
+        if (Object.keys(res.payload).length !== 0) {
+          setIsLoadingButton(false)
+          updateAddress()
+          if (fromCheckout) onHideAddress()
+          setIsConfirmed(false)
+        }
+      })
+    }
   }
 
   useEffect(() => {
-    if (show) {
-      getUserAddresses()
-    }
+    getUserAddresses()
     // eslint-disable-next-line
-  }, [dispatch, show])
+  }, [dispatch, show, updateAddress])
 
   return (
     <Modal
       show={show}
       onHide={onHideAddress}
-      size="lg"
+      size='lg'
       aria-labelledby="contained-modal-title-vcenter"
       centered
       className='modal-address'
@@ -74,55 +92,107 @@ export default function Address({ show, onHideAddress }) {
       </Modal.Header>
       <Modal.Body className='modal-address-body'>
         {
-          addresses?.length > 0 ?
-            addresses?.map((elem) => {
-              return <AddressList id={elem.id} modal={true} key={elem.id} street={elem.street} number={elem.number} floor={elem.floor} flat={elem.flat}
-                city={elem.city} province={elem.province} extra={elem.extra} />
-            })
-            : ''
-        }
-        <form className='modal-body_form'>
-          <div className='grid-container'>
-            <div className='grid-item'>
-              <label>Calle:</label>
-              <input type='text' name='street' onChange={handleChange} />
-            </div>
-            <div className='grid-item'>
-              <label>Numero:</label>
-              <input type='text' name='number' onChange={handleChange} />
-            </div>
-            <div className='grid-item'>
-              <label>Piso:</label>
-              <input type='text' name='floor' onChange={handleChange} />
-            </div>
-            <div className='grid-item'>
-              <label>Departamento:</label>
-              <input type='text' name='flat' onChange={handleChange} />
-            </div>
-            <div className='grid-item'>
-              <label>Ciudad:</label>
-              <input type='text' name='city' onChange={handleChange} />
-            </div>
-            <div className='grid-item'>
-              <label>Provincia:</label>
-              <input type='text' name='province' onChange={handleChange} />
-            </div>
-            <div className='grid-item'>
-              <label>Comentarios:</label>
-              <input type='text' name='extra' onChange={handleChange} />
-            </div>
-          </div>
-        </form>
-        {
-          isLoading ?
-            <Button className='modal-body_address'>
-              <Spinner as="span" animation="border" size='sm' role="status" aria-hidden="true" />
-            </Button>
+          isLoading ? ''
             :
-            <div className="primary-button">
-              <Button className='modal-body_address' onClick={handleCreateAddress}>Crear</Button>
+            <div className='address-table-scroll'>
+              <div className='address-table'>
+                {
+                  Array.isArray(addresses) &&
+                  addresses.map((elem) => {
+                    return (
+                      <LazyComponent key={elem._id} className='address-item'>
+                        <AddressList key={elem._id} id={elem._id} modal={true} street={elem.street} number={elem.number}
+                          floor={elem.floor} flat={elem.flat} city={elem.city} province={elem.province} extra={elem.extra}
+                          setSettedAddress={null} selectedAddress={null} setSelectedAddress={null} />
+                        <hr />
+                      </LazyComponent>
+                    )
+                  })
+                }
+              </div>
             </div>
         }
+        <Form className='modal-body_form'>
+          <Row>
+            <Col>
+              <Form.Group className="mb-3" controlId="formBasicStreet">
+                <Form.Label>Calle:</Form.Label>
+                <Form.Control name='street' type="text" onChange={handleChange} />
+              </Form.Group>
+            </Col>
+            <Col>
+              <Form.Group className="mb-3" controlId="formBasicNro">
+                <Form.Label>Numero</Form.Label>
+                <Form.Control name='number' type="text" onChange={handleChange} />
+              </Form.Group>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <Form.Group className="mb-3" controlId="formBasicFloor">
+                <Form.Label>Piso</Form.Label>
+                <Form.Control name='floor' type="text" placeholder="Nro" onChange={handleChange} />
+              </Form.Group>
+            </Col>
+            <Col>
+              <Form.Group className="mb-3" controlId="formBasicFlat">
+                <Form.Label>Departamento</Form.Label>
+                <Form.Control name='flat' type="text" placeholder="Nro" onChange={handleChange} />
+              </Form.Group>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <Form.Group className="mb-3" controlId="formBasicCity">
+                <Form.Label>Ciudad</Form.Label>
+                <Form.Control name='city' type="text" onChange={handleChange} />
+              </Form.Group>
+            </Col>
+            <Col>
+              <Form.Group className="mb-3" controlId="formBasicProvince">
+                <Form.Label>Provincia</Form.Label>
+                <Form.Control name='province' type="text" onChange={handleChange} />
+              </Form.Group>
+            </Col>
+            <Col>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <Form.Group className="mb-3" controlId="formBasicExtra">
+                <Form.Label>Comentarios</Form.Label>
+                <Form.Control name='extra' type="text" onChange={handleChange} />
+              </Form.Group>
+            </Col>
+          </Row>
+          {
+            isLoadingButton ?
+              <div className="d-flex justify-content-center">
+                <Button className='modal-body_address'>
+                  <Spinner as="span" animation="border" size='sm' role="status" aria-hidden="true" />
+                </Button>
+              </div>
+              :
+              <div className="d-flex justify-content-center">
+                <Button className='w-25' onClick={isConfirmed ? null : handleCreateAddress}>Crear</Button>
+              </div>
+          }
+        </Form>
+        <div>
+          <Button variant='link' onClick={handleSearchMaps}>
+            Mira nuestra zona de cobertura
+          </Button>
+          {
+            searchByMaps ?
+              <LazyComponent>
+                <GoogleMaps
+                  show={searchByMaps}
+                  handleHide={() => setSearchByMaps(!searchByMaps)}
+                />
+              </LazyComponent>
+              : ''
+          }
+        </div>
       </Modal.Body>
     </Modal>
   )

@@ -48,7 +48,7 @@
   align-items: flex-start;
 }
 
-.item-name h2 {
+.item-name h5 {
   font-size: 18px;
   margin: 0;
 }
@@ -80,6 +80,10 @@
   margin-right: 10%;
 }
 
+.checkout {
+  display: flex;
+  justify-content: center;
+}
 
 .address-details {
   display: flex;
@@ -137,6 +141,17 @@
     text-align: center;
     display: block;
     margin: 0 10px;
+  }
+}
+
+.container-address-modal {
+
+  h5 {
+    font-size: smaller;
+  }
+
+  p {
+    font-size: x-small;
   }
 }
 

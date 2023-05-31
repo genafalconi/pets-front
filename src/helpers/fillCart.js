@@ -1,23 +1,22 @@
 export const fillCart = (subProduct, cart) => {
-  const existSubProd = cart?.products?.findIndex((elem) => subProduct.id === elem.id)
-
+  const existSubProd = cart?.subproducts?.findIndex((elem) => subProduct._id === elem.subproduct._id)
+  
   if (existSubProd !== -1) {
-    cart.products[existSubProd].quantity += subProduct.quantity
+    cart.subproducts[existSubProd].quantity += subProduct.quantity
   } else {
-    cart.products.push(subProduct)
+    cart.subproducts.push({ subproduct: subProduct, quantity: subProduct.quantity })
   }
 
   let newTotalP = 0, newCant = 0
   // eslint-disable-next-line
-  cart?.products?.map((elem) => {
-    let subProdTotal = elem.quantity * elem.price
+  cart?.subproducts?.map((elem) => {
+    let subProdTotal = elem.quantity * elem.subproduct?.sell_price
     newTotalP += subProdTotal
     newCant += elem.quantity
   })
 
-  cart.totalPrice = newTotalP
-  cart.totalProducts = newCant
-  cart.updated_at = new Date().toISOString()
+  cart.total_price = newTotalP
+  cart.total_products = newCant
 
   return cart
 }

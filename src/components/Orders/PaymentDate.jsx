@@ -1,89 +1,95 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import eventBus from '../../helpers/event-bus';
 import { CREATE_USER_ORDER, GET_OPEN_OFFERS } from '../../redux/actions';
 import Spinner from 'react-bootstrap/Spinner';
 import '../../styles/components/coordinate.scss'
-import Cash from '../../cash.png'
-import Mp from '../../mp.png'
-import Trans from '../../transfe.png'
 import Offers from '../atomic/Offers';
 import Swal from 'sweetalert2';
+import { AdvancedImage } from '@cloudinary/react';
+import { cloudinaryImg } from '../../helpers/cloudinary';
+import LazyComponent from '../../helpers/lazyComponents';
+import { type_ord } from '../../helpers/constants';
+
+const CASH_PUBLIC_ID = 'Payments/Efectivo'
+const TRANS_PUBLIC_ID = 'Payments/Transferencia'
+const MP_PUBLIC_ID = 'Payments/MercadoPago'
 
 export default function PaymentDate() {
 
+  const { order_type } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const offers = useSelector((state) => state.clientReducer.offers)
-  const cart = useSelector((state) => state.clientReducer.cart)
-  const address = useSelector((state) => state.clientReducer.address)
+  const { offers, address, locks } = useSelector((state) => state.clientReducer);
+  const user = useMemo(() => localStorage.getItem('user'), []);
+  const cartKey = order_type === type_ord.REORDER ? 'reorder_cart' : 'cart';
+  const cart = JSON.parse(localStorage.getItem(cartKey));
 
-  const user = localStorage.getItem('user')
-
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedPaymentType, setSelectedPaymentType] = useState(null);
-  const [selectedOfferData, setSelectedOfferData] = useState('');
-  const [hasFetchedOffers, setHasFetchedOffers] = useState(false);
-  const [validContinue, setValidContinue] = useState(false)
+  const [selectedOfferData, setSelectedOfferData] = useState(null);
+  const [validContinue, setValidContinue] = useState(false);
+  const [isConfirmed, setIsConfirmed] = useState(false);
 
-  const handlePaymentType = (event) => {
+  const handlePaymentType = useCallback((event) => {
     const selectedType = event.target.name;
-    if (selectedType === selectedPaymentType) {
-      setSelectedPaymentType(null);
-    } else {
-      setSelectedPaymentType(selectedType);
-    }
-  };
+    setSelectedPaymentType((prevType) => (prevType === selectedType ? null : selectedType));
+  }, []);
 
-  const handleGoBack = () => {
-    eventBus.emit('go-back-button', true)
-  }
+  const handleGoBack = useCallback(() => {
+    eventBus.emit('go-back-button', true);
+  }, []);
 
-  const handleConfirm = async () => {
+  const handleConfirm = useCallback(() => {
     const orderToCreate = {
-      cart: cart,
-      user: user,
+      cart,
+      user,
       offer: selectedOfferData,
-      payment: selectedPaymentType,
-      address: address
-    }
+      payment_type: selectedPaymentType,
+      address,
+      locks,
+      order_type
+    };
+
+    setIsConfirmed(true);
     dispatch(CREATE_USER_ORDER(orderToCreate))
       .then((res) => {
-        if (res.payload.id) {
+        setIsConfirmed(false);
+        if (res.payload._id) {
           Swal.fire({
-            title: 'Pedido realizado con exito!',
-            text: `Numero de orden: ${res.payload.id}`,
-            icon: 'success'
-          }).then(() => {
-            navigate('/orders')
-          })
+            title: 'Pedido realizado con éxito!',
+            text: `Número de orden: ${res.payload._id}`,
+            icon: 'success',
+            timer: 2500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+          });
+          navigate('/new-order');
         }
       })
-
-  };
+      .catch((error) => {
+        setIsLoading(false);
+      });
+  }, [cart, dispatch, user, selectedOfferData, selectedPaymentType, address, locks, navigate, order_type]);
 
   useEffect(() => {
-    if(selectedPaymentType && selectedOfferData) {
-      setValidContinue(true)
+    if (selectedPaymentType && selectedOfferData) {
+      setValidContinue(true);
     } else {
-      setValidContinue(false)
+      setValidContinue(false);
     }
+  }, [selectedOfferData, selectedPaymentType]);
 
-  }, [selectedOfferData, selectedPaymentType])
+  const handleOpenOffers = useCallback(() => {
+    dispatch(GET_OPEN_OFFERS()).then(() => {
+      setIsLoading(false);
+    });
+  }, [dispatch]);
 
   useEffect(() => {
-    const handleOpenOffers = async () => {
-      if (!hasFetchedOffers) {
-        await dispatch(GET_OPEN_OFFERS())
-          .then((res) => {
-            setIsLoading(false);
-            setHasFetchedOffers(true);
-          });
-      }
-    };
     handleOpenOffers();
-  }, [dispatch, hasFetchedOffers]);
+  }, [handleOpenOffers]);
 
   return (
     <>
@@ -102,27 +108,56 @@ export default function PaymentDate() {
                 <div className="subtitle">
                   <h2>Fecha de entrega</h2>
                 </div>
-                <Offers offers={offers} setSelectedOfferData={setSelectedOfferData} />
+                <LazyComponent>
+                  <Offers offers={offers} setSelectedOfferData={setSelectedOfferData} />
+                </LazyComponent>
+                <div className='mt-3'>
+                  {
+                    selectedOfferData ? ''
+                      : <span className="error-labels">Selecciona una oferta</span>
+                  }
+                </div>
               </div>
               <div className="payment">
                 <div className="subtitle">
                   <h2>Tipo de pago</h2>
                 </div>
-                <div className='payment-type'>
-                  <img src={Cash} alt="cash" name='cash' className={selectedPaymentType === 'cash' ? 'selected-payment' : ''} onClick={handlePaymentType} />
-                  <img src={Mp} alt="mp" name='mp' className={selectedPaymentType === 'mp' ? 'selected-payment' : ''} onClick={handlePaymentType} />
-                  <img src={Trans} alt="transferencia" name='transferencia' className={selectedPaymentType === 'transferencia' ? 'selected-payment' : ''} onClick={handlePaymentType} />
+                <div className='payment-type d-flex align-items-center justify-content-center'>
+                  <div className='d-flex flex-column'>
+                    <AdvancedImage cldImg={cloudinaryImg(CASH_PUBLIC_ID)} name='CASH' className={selectedPaymentType === 'CASH' ? 'selected-payment' : ''} onClick={handlePaymentType} />
+                    <span className='.fs-6'>Efectivo</span>
+                  </div>
+                  <div className='d-flex flex-column'>
+                    <AdvancedImage cldImg={cloudinaryImg(MP_PUBLIC_ID)} name='MP' className={selectedPaymentType === 'MP' ? 'selected-payment' : ''} onClick={handlePaymentType} />
+                    <span className='.fs-6'>Tarjetas</span>
+                  </div>
+                  <div className='d-flex flex-column'>
+                    <AdvancedImage cldImg={cloudinaryImg(TRANS_PUBLIC_ID)} name='TRANSFERENCIA' className={selectedPaymentType === 'TRANSFERENCIA' ? 'selected-payment' : ''} onClick={handlePaymentType} />
+                    <span className='.fs-6'>Transferencia</span>
+                  </div>
                 </div>
-                <p></p>
+                <div className='mt-3'>
+                  {
+                    selectedPaymentType ? ''
+                      : <span className="error-labels">Selecciona un metodo de pago</span>
+                  }
+                </div>
               </div>
             </div>
             <div className='coordinate-buttons'>
               <div className="secondary-button">
                 <button onClick={handleGoBack}>Volver</button>
               </div>
-              <div className={ validContinue ? "primary-button": "disabled-button"}>
-                <button onClick={handleConfirm} disabled={!validContinue}>Confirmar</button>
-              </div>
+              {
+                isConfirmed ?
+                  <div className='primary-button'>
+                    <Spinner as="span" animation="border" size='sm' role="status" aria-hidden="true" />
+                  </div>
+                  :
+                  <div className={validContinue ? "primary-button" : "disabled-button"}>
+                    <button onClick={validContinue ? handleConfirm : undefined} disabled={!validContinue}>Confirmar</button>
+                  </div>
+              }
             </div>
           </>
         )
