@@ -34,7 +34,7 @@ export default function UserOptions({ onHideAddress }) {
     const userUrl = encodeURIComponent(userEncripted)
     const tokenUrl = encodeURIComponent(tokenEncripted)
 
-    const url = `http://localhost:3001?token=${tokenUrl}&user=${userUrl}`;
+    const url = `${process.env.REACT_APP_ADMIN}?token=${tokenUrl}&user=${userUrl}`;
     window.open(url, '_blank');
   }
 
