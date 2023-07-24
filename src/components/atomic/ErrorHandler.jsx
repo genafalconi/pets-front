@@ -21,9 +21,9 @@ export default class ErrorHandler extends Component {
       title: 'Error!',
       text: 'Ha ocurrido un error, se recargara la página!',
       icon: 'error',
-      timer: 2500,
-      timerProgressBar: true,
-      showConfirmButton: false
+      // timer: 2500,
+      // timerProgressBar: true,
+      // showConfirmButton: false
     }).then(() => {
       window.location.href = '/';
     });

@@ -1,6 +1,6 @@
 import '../../App.scss'
 import LazyComponent from '../../helpers/lazyComponents';
-import AnimalCards from '../segmentation/AnimalCards'
+import AnimalCards from '../Segmentation/AnimalCards'
 
 export default function Landing() {
   return (

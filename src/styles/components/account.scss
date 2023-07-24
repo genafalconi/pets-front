@@ -25,7 +25,7 @@
   width: 100%;
 
   .card-title {
-    font-size: calc(1.1rem + 0.1vw) !important;
+    font-size: calc(1.1rem + 0.4vw) !important;
     margin-bottom: 4%;
   }
 
@@ -37,7 +37,7 @@
 
     span {
       margin: 1%;
-      font-size: calc(1.1rem + 0.1vw);
+      font-size: calc(1.1rem + 0.2vw);
     }
   }
 
@@ -78,7 +78,7 @@
   .accordion-header {
     h5 {
       margin: 0;
-      font-size: calc(0.9rem + 0.1vw);
+      font-size: calc(0.8rem + 0.4vw);
     }
 
     .order-data-button {
@@ -120,7 +120,7 @@
 }
 
 .table-orders {
-  font-size: calc(0.8rem + 0.1vw);
+  font-size: calc(0.7rem + 0.4vw);
 }
 
 @media only screen and (max-width: 768px) {

@@ -6,7 +6,7 @@ import Modal from 'react-bootstrap/Modal';
 import '../../styles/modals/modalAddress.scss';
 import { CREATE_USER_ADDRESS, GET_USER_ADDRESS } from '../../redux/actions';
 import GoogleMaps from '../atomic/GoogleMaps';
-import AddressList from './AddressList';
+import { MdOutlineDelete } from 'react-icons/md'
 import Form from 'react-bootstrap/Form';
 import { Col, Row } from 'react-bootstrap';
 import LazyComponent from '../../helpers/lazyComponents';
@@ -18,7 +18,7 @@ export default function Address({ show, onHideAddress, updateAddress, fromChecko
 
   const [searchByMaps, setSearchByMaps] = useState(false)
   const [isConfirmed, setIsConfirmed] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [isLoadingButton, setIsLoadingButton] = useState(false)
   const [address, setAddress] = useState({
     street: '',
@@ -39,6 +39,7 @@ export default function Address({ show, onHideAddress, updateAddress, fromChecko
 
   const getUserAddresses = async (isOpen) => {
     if (show || isOpen) {
+      setIsLoading(true)
       dispatch(GET_USER_ADDRESS()).then((res) => {
         if (res.payload) {
           setIsLoading(false)
@@ -71,10 +72,17 @@ export default function Address({ show, onHideAddress, updateAddress, fromChecko
     }
   }
 
+  const handleDeleteAddress = () => {
+    console.log('borro')
+  }
+
   useEffect(() => {
-    getUserAddresses()
+    console.log(addresses)
+    if (addresses?.length === 0) {
+      getUserAddresses()
+    }
     // eslint-disable-next-line
-  }, [dispatch, show, updateAddress])
+  }, [show, updateAddress])
 
   return (
     <Modal
@@ -91,28 +99,38 @@ export default function Address({ show, onHideAddress, updateAddress, fromChecko
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className='modal-address-body'>
-        {
-          isLoading ? ''
-            :
-            <div className='address-table-scroll'>
+        <div className='address-table-scroll'>
+          {
+            isLoading ? (
+              <div className="loading-address">
+                <Spinner as="span" animation="border" size="lg" role="status" aria-hidden="true" />
+              </div>
+            ) : (
               <div className='address-table'>
                 {
                   Array.isArray(addresses) &&
                   addresses.map((elem) => {
                     return (
-                      <LazyComponent key={elem._id} className='address-item'>
-                        <AddressList key={elem._id} id={elem._id} modal={true} street={elem.street} number={elem.number}
-                          floor={elem.floor} flat={elem.flat} city={elem.city} province={elem.province} extra={elem.extra}
-                          setSettedAddress={null} selectedAddress={null} setSelectedAddress={null} />
-                        <hr />
+                      <LazyComponent key={elem._id}>
+                        <div className='address-item'>
+                          <div className='address-item_title'>
+                            <h5 className='m-0'>{elem.street} {elem.number} {elem.floor} {elem.flat}</h5>
+                            <MdOutlineDelete onClick={() => handleDeleteAddress(elem._id)} />
+                          </div>
+                          <div className='address-item_details'>
+                            <p>{elem.city} - {elem.province}</p>
+                            <p>{elem.extra}</p>
+                          </div>
+                        </div>
                       </LazyComponent>
                     )
                   })
                 }
               </div>
-            </div>
-        }
-        <Form className='modal-body_form'>
+            )
+          }
+        </div>
+        <Form className='modal-body_form-address'>
           <Row>
             <Col>
               <Form.Group className="mb-3" controlId="formBasicStreet">

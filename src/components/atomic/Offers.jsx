@@ -18,7 +18,7 @@ export default function Offers({ offers, setSelectedOfferData }) {
   useEffect(() => {
     setSelectedOfferData(selectedOffer);
   }, [selectedOffer, setSelectedOfferData]);
-  
+
   return (
     <div className="offers-table">
       {offers?.map((offer) => (
@@ -35,7 +35,7 @@ export default function Offers({ offers, setSelectedOfferData }) {
               className={selectedOffer === offer ? 'selected-offer' : ''}
             >
               <td>
-                <p>{offer.hours}</p>
+                <p>{offer.from}-{offer.to}</p>
                 <p>GRATIS</p>
               </td>
             </tr>

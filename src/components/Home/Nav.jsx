@@ -10,7 +10,7 @@ import Register from '../UserSesion/Register'
 import Cart from './Cart'
 import Address from '../Orders/Address'
 import { useDispatch, useSelector } from 'react-redux'
-import { LOGOUT, SEARCH_PRODUCTS } from '../../redux/actions'
+import { LOGOUT } from '../../redux/actions'
 import eventBus from '../../helpers/event-bus'
 import { firebaseAuth } from '../../helpers/firebase'
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -44,14 +44,10 @@ export default function Nav() {
     setModalLogin(!modalLogin)
   }
 
-  const handleSearchInput = useCallback(async (value) => {
-    await dispatch(SEARCH_PRODUCTS({ input_value: value, page: null })).then((res) => {
-      if (res.payload) {
-        setSearchInput('')
-        navigate(`/products?input=${value}`)
-      }
-    })
-  }, [dispatch, navigate])
+  const handleSearchInput = (value) => {
+    navigate(`/products?input=${value}`)
+    inputRef.current.value = ''
+  }
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
@@ -127,6 +123,7 @@ export default function Nav() {
           <Link to={'/'}>
             <AdvancedImage cldImg={cloudinaryImg(LOGO_PUBLIC_ID)} alt='Logo' />
           </Link>
+          <p>Pets Zone</p>
           <div className="search-bar">
             {
               window.innerWidth > 768 ?
@@ -149,7 +146,7 @@ export default function Nav() {
                   </Dropdown.Toggle>
                   <Dropdown.Menu className='dropdown-custom-menu'>
                     <Dropdown.Item className='dropdown-search-item' onClick={(e) => e.stopPropagation()}>
-                      <Form.Control className='input-search' type="text" placeholder='Buscar...' ref={inputRef} onKeyDown={handleKeyDown} />
+                      <Form.Control className='input-search' type="text" placeholder='Buscar...' ref={inputRef} value={searchInput} onKeyDown={handleKeyDown} />
                       <MdSearch className='action-search-icon' size={25} onClick={() => handleSearchInput(inputRef.current.value)} />
                     </Dropdown.Item>
                   </Dropdown.Menu>
@@ -183,28 +180,36 @@ export default function Nav() {
           }
         </div>
       </nav>
-      <LazyComponent>
-        <Login
-          show={modalLogin}
-          onHideLogin={() => setModalLogin(!modalLogin)}
-          onHideRegister={() => setModalRegister(!modalRegister)}
-        />
-      </LazyComponent>
-      <LazyComponent>
-        <Register
-          show={modalRegister}
-          onHideLogin={() => setModalLogin(!modalLogin)}
-          onHideRegister={() => setModalRegister(!modalRegister)}
-        />
-      </LazyComponent>
-      <LazyComponent>
-        <Address
-          show={modalAddress}
-          onHideAddress={() => setModalAddress(!modalAddress)}
-          updateAddress={() => setAddressUpdated(!addressUpdated)}
-          fromCheckout={false}
-        />
-      </LazyComponent>
+      {modalLogin && (
+        <LazyComponent>
+          <Login
+            show={modalLogin}
+            onHideLogin={() => setModalLogin(!modalLogin)}
+            onHideRegister={() => setModalRegister(!modalRegister)}
+          />
+        </LazyComponent>
+      )}
+
+      {modalRegister && (
+        <LazyComponent>
+          <Register
+            show={modalRegister}
+            onHideLogin={() => setModalLogin(!modalLogin)}
+            onHideRegister={() => setModalRegister(!modalRegister)}
+          />
+        </LazyComponent>
+      )}
+
+      {modalAddress && (
+        <LazyComponent>
+          <Address
+            show={modalAddress}
+            onHideAddress={() => setModalAddress(!modalAddress)}
+            updateAddress={() => setAddressUpdated(!addressUpdated)}
+            fromCheckout={false}
+          />
+        </LazyComponent>
+      )}
     </>
   )
 }

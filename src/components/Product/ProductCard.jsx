@@ -4,6 +4,7 @@ import { ADD_TO_CART, ADD_TO_LOCAL_CART } from "../../redux/actions"
 import '../../styles/components/product.scss'
 import { cloudinaryImg } from "../../helpers/cloudinary"
 import { AdvancedImage } from '@cloudinary/react';
+import { Button, Spinner } from 'react-bootstrap';
 
 export default function ProductCart({ data }) {
 
@@ -14,13 +15,15 @@ export default function ProductCart({ data }) {
   const [quantity, setQuantity] = useState(1)
   const [newProd, setNewProd] = useState(false)
   const [sizeSelected, setSizeSelected] = useState(data?.subproducts[0]?._id)
+  const [isLoading, setIsLoading] = useState(false)
+  const [hasError, setHasError] = useState(false)
 
   const sortedSubproducts = [...data.subproducts].sort((a, b) => a.size - b.size);
 
   const addToCart = (data) => {
     const subprod = data?.subproducts.find((elem) => elem._id === prodSizeSelected)
 
-    if (quantity > 0) {
+    if (quantity > 0 && subprod.stock >= quantity) {
       const subProdToAdd = {
         _id: subprod?._id,
         product: data?._id,
@@ -43,9 +46,21 @@ export default function ProductCart({ data }) {
       }, 3000)
 
       dispatch(ADD_TO_LOCAL_CART(subProdToAdd))
-      if (user) dispatch(ADD_TO_CART(subProdToAdd))
+      if (user) {
+        setIsLoading(true);
+        dispatch(ADD_TO_CART(subProdToAdd))
+          .then(() => {
+            setIsLoading(false);
+          })
+          .catch((error) => {
+            setIsLoading(false);
+            setHasError(true);
+          });
+      }
 
       setQuantity(1)
+    } else {
+      setHasError(true)
     }
   }
 
@@ -102,7 +117,14 @@ export default function ProductCart({ data }) {
             </div>
           </div>
           <div className="product-card_add">
-            <button onClick={() => addToCart(data)}>Agregar</button>
+            {
+              isLoading ?
+                <Button className='product-card_add' disabled>
+                  <Spinner as="span" animation="border" size='sm' role="status" aria-hidden="true" />
+                </Button>
+                :
+                <Button className='product-card_add' onClick={() => addToCart(data)} disabled={hasError}>Agregar</Button>
+            }
           </div>
         </div>
       </div>

@@ -76,7 +76,7 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
     dispatch(LOGIN_WITH_EMAIL(values))
       .then((response) => {
         if (response.payload.status === 201) {
-          if (Object.keys(cartReducer).length !== 0) {
+          if (cartReducer && Object.keys(cartReducer).length !== 0) {
             dispatch(SAVE_LOCAL_CART(cartReducer)).then((res) => {
               onHideLogin();
             });

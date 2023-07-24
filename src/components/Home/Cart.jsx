@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react"
 import Dropdown from 'react-bootstrap/Dropdown'
 import { FaShoppingCart } from 'react-icons/fa'
-import { useDispatch, useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { MdOutlineDelete } from 'react-icons/md'
 import '../../styles/components/cart.scss'
@@ -15,7 +15,6 @@ export default function Cart() {
 
   const [emptyCart, setEmptyCart] = useState(false)
   const [totalQuantityCart, setTotalQuantityCart] = useState(false)
-  let { cart: cartReducer } = useSelector((state) => state.clientReducer)
 
   let cartStorage = JSON.parse(localStorage.getItem('cart'))
   const user = localStorage.getItem('user')
@@ -34,7 +33,7 @@ export default function Cart() {
   const handlePayCart = () => {
     navigate('/checkout/order')
   }
-  
+
   const handleCartQuantity = useCallback(() => {
     if (cartStorage && Object.keys(cartStorage).length !== 0) {
       if (cartStorage?.subproducts?.length !== 0) {
@@ -52,7 +51,7 @@ export default function Cart() {
 
   useEffect(() => {
     handleCartQuantity()
-  }, [cartStorage, cartReducer, handleCartQuantity, totalQuantityCart]);
+  }, [cartStorage, handleCartQuantity, totalQuantityCart]);
 
   return (
     <Dropdown className={`dropdown-cart${window.location.pathname === '/checkout' ? ' d-none' : ''}`}>
@@ -74,7 +73,7 @@ export default function Cart() {
                   <Dropdown.Item key={elem.subproduct?._id} className="cart-item" onClick={(e) => e.stopPropagation()}>
                     <div className="cart-product-card">
                       <div className="product-name">
-                        <h3>{user ? elem.subproduct?.product?.name : elem?.subproduct?.name}</h3>
+                        <h3>{elem?.subproduct?.product?.name?.length > 0 ? elem?.subproduct?.product?.name : elem?.subproduct?.name}</h3>
                       </div>
                       <div className="product-details">
                         <div className="product-size">

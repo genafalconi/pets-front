@@ -16,7 +16,7 @@ export default function Order() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    if(!orderId) navigate('/')
+    if (!orderId) navigate('/')
     const getOrderData = async () => {
       if (orderId && user) {
         await dispatch(GET_USER_ORDER(orderId))
@@ -100,7 +100,7 @@ export default function Order() {
                 <div className="offer-order">
                   <div className="order-details">
                     <p>Fecha: {order.offer?.weekday.charAt(0).toUpperCase() + order.offer?.weekday.slice(1)} {new Date(order.offer?.date).toLocaleDateString()}</p>
-                    <p>Horario: {order.offer?.hours.replace("-", "hs a ") + "hs"}</p>
+                    <p>Horario: {order.offer?.from} a {order.offer?.to}</p>
                   </div>
                 </div>
               </div>

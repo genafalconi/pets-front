@@ -8,6 +8,7 @@ import { fillCart } from '../helpers/fillCart';
 import { removeFromCart } from '../helpers/removeFromCart';
 import { request } from '../helpers/request'
 import updateSubprodQuantity from '../helpers/updateSubprodQuantity';
+import errorHandler from '../helpers/errorHandler';
 const { REACT_APP_AUTH, REACT_APP_CART, REACT_APP_PROD, REACT_APP_ORDER, REACT_APP_OFFER } = process.env;
 
 export const LOGIN_WITH_EMAIL = createAsyncThunk(
@@ -20,6 +21,7 @@ export const LOGIN_WITH_EMAIL = createAsyncThunk(
 
         if (res.status === 201) {
           localStorage.setItem('user', res.data.user?._id)
+          localStorage.setItem('admin', res.data.user?.admin)
           localStorage.setItem('cart', JSON.stringify(res.data.cart ? res.data.cart : {}))
           const isLoggedUser = localStorage.getItem('user')
           if (isLoggedUser) {
@@ -30,7 +32,6 @@ export const LOGIN_WITH_EMAIL = createAsyncThunk(
         }
       }
     } catch (error) {
-      console.log(error)
       const firebaseError = error.message.replace('Firebase: Error', '').match(/\((.*)\)/).pop()
       if (firebaseError === 'auth/user-not-found') {
         Swal.fire({
@@ -76,18 +77,13 @@ export const LOGIN_WITH_GOOGLE = createAsyncThunk(
       if (res.status === 201) {
         localStorage.setItem('token', token)
         localStorage.setItem('user', res?.data?.user?._id)
+        localStorage.setItem('admin', res.data.user?.admin)
         localStorage.setItem('cart', JSON.stringify(res?.data?.cart))
 
         return { ...res, token: token }
       }
     } catch (error) {
-      const firebaseError = error.message.replace('Firebase: Error', '').match(/\((.*)\)/).pop()
-      Swal.fire({
-        title: 'Error!',
-        text: `${firebaseError}`,
-        icon: 'error'
-      })
-      return firebaseError
+      return errorHandler(error)
     }
   }
 )
@@ -137,16 +133,7 @@ export const VERIFY_TOKEN = createAsyncThunk(
 
       return res?.data
     } catch (error) {
-      const firebaseError = error.message.replace('Firebase: Error', '').match(/\((.*)\)/).pop()
-      Swal.fire({
-        title: 'Error!',
-        text: `${firebaseError}`,
-        icon: 'error',
-        timer: 2500,
-        timerProgressBar: true,
-        showConfirmButton: false
-      })
-      return firebaseError
+      return errorHandler(error)
     }
   }
 )
@@ -154,12 +141,13 @@ export const VERIFY_TOKEN = createAsyncThunk(
 export const LOGOUT = createAsyncThunk(
   'LOGOUT', async () => {
     try {
-      await firebaseAuth.signOut()
       localStorage.removeItem('token')
       localStorage.removeItem('user')
       localStorage.removeItem('cart')
+      localStorage.removeItem('admin')
       localStorage.getItem('reorder_cart') && localStorage.removeItem('reorder_cart')
       localStorage.getItem('order') && localStorage.removeItem('order')
+      await firebaseAuth.signOut()
 
     } catch (error) {
       const firebaseError = error.message.replace('Firebase: Error', '').match(/\((.*)\)/).pop()
@@ -184,13 +172,7 @@ export const GET_USER_CART = createAsyncThunk(
 
       return res
     } catch (error) {
-      const firebaseError = error.message.replace('Firebase: Error', '').match(/\((.*)\)/).pop()
-      Swal.fire({
-        title: 'Error!',
-        text: `${firebaseError}`,
-        icon: 'error'
-      })
-      return firebaseError
+      return errorHandler(error)
     }
   }
 )
@@ -202,17 +184,9 @@ export const ADD_TO_CART = createAsyncThunk(
       const idUser = localStorage.getItem('user')
 
       const res = await request(req_constants.POST, `${REACT_APP_CART}/cart/add/${idUser}`, null, subprod, token)
-      localStorage.setItem('cart', JSON.stringify(res?.data))
-
       return res?.data
     } catch (error) {
-      const firebaseError = error.message.replace('Firebase: Error', '').match(/\((.*)\)/).pop()
-      Swal.fire({
-        title: 'Error!',
-        text: `${firebaseError}`,
-        icon: 'error'
-      })
-      return firebaseError
+      return errorHandler(error)
     }
   }
 )
@@ -224,17 +198,9 @@ export const REMOVE_FROM_CART = createAsyncThunk(
       const idUser = localStorage.getItem('user')
 
       const res = await request(req_constants.DELETE, `${REACT_APP_CART}/cart/remove/${idUser}`, null, subprod, token)
-      localStorage.setItem('cart', JSON.stringify(res?.data))
-
       return res?.data
     } catch (error) {
-      const firebaseError = error.message.replace('Firebase: Error', '').match(/\((.*)\)/).pop()
-      Swal.fire({
-        title: 'Error!',
-        text: `${firebaseError}`,
-        icon: 'error'
-      })
-      return firebaseError
+      return errorHandler(error)
     }
   }
 )
@@ -252,13 +218,7 @@ export const REMOVE_FROM_LOCAL_CART = createAsyncThunk(
       }
       return updatedCart
     } catch (error) {
-      const firebaseError = error.message.replace('Firebase: Error', '').match(/\((.*)\)/).pop()
-      Swal.fire({
-        title: 'Error!',
-        text: `${firebaseError}`,
-        icon: 'error'
-      })
-      return firebaseError
+      return errorHandler(error)
     }
   }
 )
@@ -289,13 +249,7 @@ export const ADD_TO_LOCAL_CART = createAsyncThunk(
       }
 
     } catch (error) {
-      console.log(error)
-      Swal.fire({
-        title: 'Error!',
-        text: `${error}`,
-        icon: 'error'
-      })
-      return error
+      return errorHandler(error)
     }
   }
 )
@@ -316,12 +270,7 @@ export const SAVE_LOCAL_CART = createAsyncThunk(
       }
       return true
     } catch (error) {
-      Swal.fire({
-        title: 'Error!',
-        text: `${error}`,
-        icon: 'error'
-      })
-      return error
+      return errorHandler(error)
     }
   }
 )
@@ -337,12 +286,7 @@ export const SAVE_RE_ORDER_CART = createAsyncThunk(
       localStorage.setItem('reorder_cart', JSON.stringify(cart))
       return cart
     } catch (error) {
-      Swal.fire({
-        title: 'Error!',
-        text: `${error}`,
-        icon: 'error'
-      })
-      return error
+      return errorHandler(error)
     }
   }
 )
@@ -361,12 +305,7 @@ export const GET_ACTIVE_PRODUCTS = createAsyncThunk(
       const res = await request(req_constants.GET, `${REACT_APP_PROD}/products/active${param}`, null, null, token)
       return res?.data
     } catch (error) {
-      Swal.fire({
-        title: 'Error!',
-        text: `${error}`,
-        icon: 'error'
-      })
-      return error
+      return errorHandler(error)
     }
   }
 );
@@ -378,12 +317,7 @@ export const GET_FILTER_PRODUCTS = createAsyncThunk(
       const res = await request(req_constants.POST, `${REACT_APP_PROD}/products/filter`, null, filterData, token)
       return res?.data
     } catch (error) {
-      Swal.fire({
-        title: 'Error!',
-        text: `${error}`,
-        icon: 'error'
-      })
-      return error
+      return errorHandler(error)
     }
   }
 )
@@ -394,15 +328,9 @@ export const CREATE_USER_ADDRESS = createAsyncThunk(
       const token = localStorage.getItem('token')
       const idUser = localStorage.getItem('user')
       const res = await request(req_constants.POST, `${REACT_APP_AUTH}/user/address/${idUser}`, null, address, token)
-
       return res?.data
     } catch (error) {
-      Swal.fire({
-        title: 'Error!',
-        text: `${error}`,
-        icon: 'error'
-      })
-      return error
+      return errorHandler(error)
     }
   }
 )
@@ -415,7 +343,7 @@ export const GET_USER_ADDRESS = createAsyncThunk(
       const res = await request(req_constants.GET, `${REACT_APP_AUTH}/user/address/${idUser}`, null, null, token)
       return res?.data
     } catch (error) {
-      return error
+      return errorHandler(error)
     }
   }
 )
@@ -438,12 +366,7 @@ export const UPDATE_LOCAL_SUBPRODUCT_QUANTITY = createAsyncThunk(
         return cart
       }
     } catch (error) {
-      Swal.fire({
-        title: 'Error!',
-        text: `${error}`,
-        icon: 'error'
-      })
-      return error
+      return errorHandler(error)
     }
   }
 )
@@ -454,16 +377,10 @@ export const UPDATE_SUBPRODUCT_QUANTITY = createAsyncThunk(
       const token = localStorage.getItem('token')
       const idUser = localStorage.getItem('user')
       const res = await request(req_constants.PUT, `${REACT_APP_CART}/cart/update/quantity/${idUser}`, null, subprodNewQuantity, token)
-      localStorage.setItem('cart', JSON.stringify(res?.data))
 
       return res?.data
     } catch (error) {
-      Swal.fire({
-        title: 'Error!',
-        text: `${error}`,
-        icon: 'error'
-      })
-      return error
+      return errorHandler(error)
     }
   }
 )
@@ -475,12 +392,7 @@ export const LOCK_SUBPROD_USER = createAsyncThunk(
       const res = await request(req_constants.POST, `${REACT_APP_PROD}/subproducts/lock`, null, lockCart, token)
       return res?.data
     } catch (error) {
-      Swal.fire({
-        title: 'Error!',
-        text: `${error}`,
-        icon: 'error'
-      })
-      return error
+      return errorHandler(error)
     }
   }
 )
@@ -494,12 +406,7 @@ export const REMOVE_LOCK_SUBPROD_USER = createAsyncThunk(
 
       return res?.data
     } catch (error) {
-      Swal.fire({
-        title: 'Error!',
-        text: `${error}`,
-        icon: 'error'
-      })
-      return error
+      return errorHandler(error)
     }
   }
 )
@@ -512,12 +419,7 @@ export const GET_OPEN_OFFERS = createAsyncThunk(
 
       return res?.data
     } catch (error) {
-      Swal.fire({
-        title: 'Error!',
-        text: `${error}`,
-        icon: 'error'
-      })
-      return error
+      return errorHandler(error)
     }
   }
 )
@@ -535,12 +437,7 @@ export const CREATE_USER_ORDER = createAsyncThunk(
       }
       return res?.data
     } catch (error) {
-      Swal.fire({
-        title: 'Error!',
-        text: `${error}`,
-        icon: 'error'
-      })
-      return error
+      return errorHandler(error)
     }
   }
 )
@@ -553,12 +450,7 @@ export const GET_USER_ORDER = createAsyncThunk(
 
       return res?.data
     } catch (error) {
-      Swal.fire({
-        title: 'Error!',
-        text: `${error}`,
-        icon: 'error'
-      })
-      return error
+      return errorHandler(error)
     }
   }
 )
@@ -572,12 +464,7 @@ export const GET_ACCOUNT_INFO = createAsyncThunk(
 
       return res?.data
     } catch (error) {
-      Swal.fire({
-        title: 'Error!',
-        text: `${error}`,
-        icon: 'error'
-      })
-      return error
+      return errorHandler(error)
     }
   }
 )
@@ -591,12 +478,7 @@ export const GET_ACCOUNT_ORDERS = createAsyncThunk(
 
       return res?.data
     } catch (error) {
-      Swal.fire({
-        title: 'Error!',
-        text: `${error}`,
-        icon: 'error'
-      })
-      return error
+      return errorHandler(error)
     }
   }
 )
@@ -606,12 +488,7 @@ export const RESET_PASSWORD = createAsyncThunk(
     try {
       await sendPasswordResetEmail(firebaseAuth, email)
     } catch (error) {
-      Swal.fire({
-        title: 'Error!',
-        text: `${error}`,
-        icon: 'error'
-      })
-      return error
+      return errorHandler(error)
     }
   }
 )
@@ -624,12 +501,7 @@ export const SEARCH_PRODUCTS = createAsyncThunk(
       const res = await request(req_constants.GET, `${REACT_APP_PROD}/products/search${param}`, null, null, null)
       return res?.data
     } catch (error) {
-      Swal.fire({
-        title: 'Error!',
-        text: `${error}`,
-        icon: 'error'
-      })
-      return error
+      return errorHandler(error)
     }
   }
 )

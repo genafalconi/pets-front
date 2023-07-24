@@ -58,7 +58,8 @@
 
 .address-table-scroll {
   overflow-x: auto;
-  height: 20vh;
+  height: auto;
+  margin-bottom: 5%;
 }
 
 .address-table {
@@ -67,23 +68,58 @@
 }
 
 .address-item {
-  width: calc(33.33% - 20px);
-  margin-right: 20px;
-}
+  width: 40%;
+  padding: 5px;
+  border: 0.5px solid gray;
+  border-radius: 4px;
 
-.address-item:nth-child(3n+1) {
-  margin-right: 0;
-}
-
-@media (max-width: 992px) {
-  .address-item {
-    width: calc(40% - 20px);
-    margin-right: 20px;
+  p {
+    margin: 0;
   }
 }
 
-@media (max-width: 466px) {
+.address-item:not(:last-child) {
+  margin-bottom: 2%;
+}
+
+.address-item_title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.address-item_details {
+  display: flex;
+  font-size: 0.8rem;
+  gap: 1rem;
+  width: 95%;
+}
+
+.loading-address {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 10vh;
+}
+
+
+@media only screen and (max-width: 992px) {
+  .address-table {
+    flex-direction: column;
+  }
+
   .address-item {
-    width: calc(100% - 20px);
+    width: 100%
+  }
+}
+
+@media only screen and (max-width: 466px) {
+  .address-table {
+    flex-direction: column;
+  }
+
+  .address-item {
+    width: 100%
   }
 }

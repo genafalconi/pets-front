@@ -45,7 +45,7 @@
   width: 80%;
 }
 
-@media (max-width: 767px) {
+@media only screen and (max-width: 767px) {
   .modal-register-body {
     height: auto;
   }

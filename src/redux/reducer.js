@@ -12,7 +12,7 @@ const initialState = {
     subproducts: [],
     user: localStorage.getItem('user') ? localStorage.getItem('user') : '',
     user_auth: localStorage.getItem('token') ? true : false,
-    user_info: {},
+    user_admin: false,
     cart: localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : {},
     address: {},
     addresses: [],
@@ -32,6 +32,7 @@ export const clientReducer = createReducer(initialState, (builder) => {
         state.cart = action.payload.data?.cart
         state.token = action.payload.token
         state.user_auth = true
+        state.user_admin = action.payload.data?.user?.admin
     })
     builder.addCase(LOGIN_WITH_GOOGLE.fulfilled, (state, action) => {
         state.user = action.payload.data?.user?._id

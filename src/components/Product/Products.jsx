@@ -44,12 +44,12 @@ export default function Products() {
   }, [dispatch, query, currentPage]);
 
   useEffect(() => {
-    if (!input) {
+    if (!input && !products_filtered.length) {
       getActiveProducts();
     } else {
       getSearchedProducts();
     }
-  }, [getActiveProducts, getSearchedProducts, input]);
+  }, [getActiveProducts, getSearchedProducts, input, products_filtered.length]);
 
   return (
     <div className="content-page">
