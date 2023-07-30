@@ -1,8 +1,8 @@
 import { signInWithPopup } from 'firebase/auth';
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { firebaseAuth, providerGoogle } from '../../helpers/firebase';
-import { LOGIN_WITH_EMAIL, LOGIN_WITH_GOOGLE, SAVE_LOCAL_CART } from '../../redux/actions';
+import { LOGIN_WITH_EMAIL, LOGIN_WITH_GOOGLE } from '../../redux/actions';
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
 import Modal from 'react-bootstrap/Modal';
@@ -12,6 +12,7 @@ import { cloudinaryImg } from '../../helpers/cloudinary';
 import { Form, Col } from 'react-bootstrap';
 import { Formik } from 'formik';
 import * as yup from 'yup';
+import { type_ord } from '../../helpers/constants';
 
 const GOOGLE_PUBLIC_ID = 'Ppales/Google';
 const LOGO_PUBLIC_ID = 'Ppales/Logo';
@@ -21,47 +22,61 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
 
   const token = localStorage.getItem('token');
   const userLocal = localStorage.getItem('user');
-  const cartReducer = useSelector((state) => state.clientReducer.cart);
+  const cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : null;
 
   const [isLoading, setIsLoading] = useState(false);
+  const [validLoginButton, setValidLoginButton] = useState(true);
+  const [validGoogleButton, setValidGoogleButton] = useState(true);
   const schema = yup.object().shape({
-    email: yup.string().email('Correo electrónico inválido').required('Correo electrónico requerido'),
+    email: yup.string().email('Email inválido').required('Email requerido'),
     password: yup.string().min(6, 'La contraseña debe tener al menos 6 caracteres').required('Contraseña requerida'),
   });
 
   const loginGoogle = () => {
-    signInWithPopup(firebaseAuth, providerGoogle)
-      .then((result) => {
-        const user = result.user;
-        const userLocal = {
-          email: user.email,
-          fullName: user.displayName,
-          id: user.uid,
-          phoneNumber: user.phoneNumber
-        };
-        setIsLoading(true);
-        dispatch(LOGIN_WITH_GOOGLE(userLocal))
-          .then((response) => {
-            if (response.payload.status === 201) {
-              if (Object.keys(cartReducer).length !== 0) {
-                dispatch(SAVE_LOCAL_CART(cartReducer)).then((res) => {
-                  localStorage.setItem('token', user.accessToken);
-                  onHideLogin();
-                });
-              } else {
+    if (validGoogleButton) {
+      setValidGoogleButton(false);
+      setIsLoading(true);
+      signInWithPopup(firebaseAuth, providerGoogle)
+        .then((result) => {
+          const user = result.user;
+          const userLocal = {
+            email: user.email,
+            fullName: user.displayName,
+            id: user.uid,
+            phoneNumber: user.phoneNumber
+          };
+
+          let modifiedCart = cart
+          if (cart && Object.keys(cart).length > 0) {
+            const modifiedSubproducts = cart.subproducts.map(({ subproduct }) => {
+              const { name, quantity, ...rest } = subproduct;
+              return { subproduct: rest, quantity };
+            });
+
+            modifiedCart = {
+              ...cart,
+              subproducts: modifiedSubproducts
+            };
+          }
+          dispatch(LOGIN_WITH_GOOGLE(
+            { userdata: userLocal, cart: modifiedCart, token: result.user.accessToken }
+          ))
+            .then((response) => {
+              if (response.payload.status === 201) {
                 localStorage.setItem('token', user.accessToken);
                 onHideLogin();
               }
-            }
-          })
-      })
-      .catch((error) => {
-        const errorMessage = error.message;
-        return errorMessage;
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+              setValidGoogleButton(true);
+            })
+        })
+        .catch((error) => {
+          const errorMessage = error.message;
+          return errorMessage;
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
   };
 
   const handleHide = () => {
@@ -73,17 +88,25 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
 
   const loginWithEmail = (values) => {
     setIsLoading(true);
-    dispatch(LOGIN_WITH_EMAIL(values))
+    setValidLoginButton(false);
+    let modifiedCart = cart
+    if (cart && Object.keys(cart).length > 0) {
+      const modifiedSubproducts = cart.subproducts.map(({ subproduct }) => {
+        const { name, quantity, ...rest } = subproduct;
+        return { subproduct: rest, quantity };
+      });
+
+      modifiedCart = {
+        ...cart,
+        subproducts: modifiedSubproducts
+      };
+    }
+    dispatch(LOGIN_WITH_EMAIL({ userdata: values, cart: modifiedCart, order_type: type_ord.ORDER }))
       .then((response) => {
         if (response.payload.status === 201) {
-          if (Object.keys(cartReducer).length !== 0) {
-            dispatch(SAVE_LOCAL_CART(cartReducer)).then((res) => {
-              onHideLogin();
-            });
-          } else {
-            onHideLogin();
-          }
+          onHideLogin();
         }
+        setValidLoginButton(true);
       })
       .finally(() => {
         setIsLoading(false);
@@ -170,7 +193,7 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
                     <Spinner as="span" animation="border" size='sm' role="status" aria-hidden="true" />
                   </Button>
                   :
-                  <Button className='modal-body_login' type="submit" disabled={!isValid}>Iniciar Sesíon</Button>
+                  <Button className='modal-body_login' type="submit" disabled={!isValid && !validLoginButton}>Iniciar Sesíon</Button>
               }
             </Form>
           )}

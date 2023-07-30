@@ -1,6 +1,7 @@
 {
   "hosting": {
-    "public": "public",
+    "public": "build",
+    "site": "petszone-arg",
     "ignore": [
       "firebase.json",
       "**/.*",

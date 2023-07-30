@@ -10,22 +10,11 @@ import PaymentDate from './PaymentDate';
 import eventBus from '../../helpers/event-bus';
 import Address from './Address';
 import LazyComponent from '../../helpers/lazyComponents';
-import { useParams } from 'react-router-dom';
-import { type_ord } from '../../helpers/constants';
 
 export default function Checkout() {
 
-  const { order_type } = useParams()
   const dispatch = useDispatch();
-  const { cart: cartReducer, user: userReducer, addresses, reorder_cart } = useSelector((state) => state.clientReducer);
-
-  let cart;
-  if (order_type === type_ord.REORDER) {
-    cart = JSON.parse(localStorage.getItem('reorder_cart'));
-  } else {
-    cart = JSON.parse(localStorage.getItem('cart'));
-  }
-  const user = localStorage.getItem('user');
+  const { cart, user, addresses } = useSelector((state) => state.clientReducer);
 
   const [isLoading, setIsLoading] = useState(true);
   const [cartReady, setCartReady] = useState(false);
@@ -42,9 +31,9 @@ export default function Checkout() {
     subproducts: []
   });
 
-  const handleChargeAddress = useCallback(() => {
+  const handleChargeAddress = () => {
     setModalAddress(!modalAddress);
-  }, [modalAddress]);
+  };
 
   const handleCoordinate = useCallback(() => {
     setShowPaymentDate(!showPaymentDate);
@@ -52,21 +41,12 @@ export default function Checkout() {
   }, [showPaymentDate, showCheckout]);
 
   const getUserAddresses = useCallback(async () => {
-    await dispatch(GET_USER_ADDRESS()).then((res) => {
+    dispatch(GET_USER_ADDRESS()).then((res) => {
       if (res.payload) {
-        if (Array.isArray(addresses)) {
-          let selectedAddress = addresses.find((elem) => elem._id === settedAddress);
-          if (selectedAddress) {
-            dispatch(SET_USER_ADDRESS(selectedAddress));
-            setValidContinue(true);
-          } else {
-            setValidContinue(false);
-          }
-        }
         setAddressReady(true);
       }
     });
-  }, [dispatch, addresses, settedAddress]);
+  }, [dispatch]);
 
   const handlePayCart = useCallback(() => {
     const subprods = [];
@@ -90,7 +70,6 @@ export default function Checkout() {
     let selectedAddress;
     if (Array.isArray(addresses)) {
       selectedAddress = Array.from(addresses).find((elem) => elem._id === settedAddress);
-
     }
 
     if (selectedAddress) {
@@ -99,7 +78,7 @@ export default function Checkout() {
     } else {
       setValidContinue(false);
     }
-  }, [settedAddress, dispatch, addresses]);
+  }, [settedAddress, dispatch, addresses, addressUpdated]);
 
   useEffect(() => {
     handlePayCart();
@@ -109,13 +88,13 @@ export default function Checkout() {
     if (lockCart.subproducts.length > 0) {
       dispatch(LOCK_SUBPROD_USER(lockCart));
     }
-  }, [lockCart, cartReducer, userReducer, dispatch, order_type, reorder_cart]);
+  }, [dispatch, lockCart]);
 
   useEffect(() => {
-    if (reorder_cart && cart) {
+    if (Object.keys(cart).length > 0) {
       setCartReady(true)
     }
-  }, [reorder_cart, cart]);
+  }, [cart]);
 
   useEffect(() => {
     if (cartReady && addressReady) {
@@ -161,7 +140,7 @@ export default function Checkout() {
                         <LazyComponent key={item.subproduct._id}>
                           <ProductCheckout
                             id={item.subproduct._id}
-                            product_name={item.subproduct.product.name}
+                            product_name={item.subproduct.product.name ? item.subproduct.product.name : item.subproduct.name}
                             sell_price={item.subproduct.sell_price}
                             size={item.subproduct.size}
                             quantity={item.quantity}
@@ -198,14 +177,15 @@ export default function Checkout() {
                           </div>
                         </>
                       )}
-                      <div>
-                        {
-                          selectedAddress ? '' : <span className="error-labels">Selecciona una direccion</span>
-                        }
-                      </div>
-                      <div className="third-button">
-                        <button onClick={handleChargeAddress}>Cargar otra</button>
-                      </div>
+                      {
+                        addresses?.length > 0 &&
+                        <div className="third-button">
+                          {
+                            selectedAddress ? '' : <span className="error-labels">Selecciona una direccion</span>
+                          }
+                          <button onClick={handleChargeAddress}>Cargar otra</button>
+                        </div>
+                      }
                     </div>
                   </div>
                 </div>
@@ -221,14 +201,16 @@ export default function Checkout() {
           </>
         )
       }
-      <LazyComponent>
-        <Address
-          show={modalAddress}
-          onHideAddress={() => setModalAddress(!modalAddress)}
-          updateAddress={() => setAddressUpdated(!addressUpdated)}
-          fromCheckout={true}
-        />
-      </LazyComponent>
+      {modalAddress && (
+        <LazyComponent>
+          <Address
+            show={modalAddress}
+            onHideAddress={() => setModalAddress(!modalAddress)}
+            updateAddress={() => setAddressUpdated(!addressUpdated)}
+            fromCheckout={true}
+          />
+        </LazyComponent>
+      )}
     </div >
   );
 }  

@@ -10,7 +10,6 @@ import Swal from 'sweetalert2';
 import { AdvancedImage } from '@cloudinary/react';
 import { cloudinaryImg } from '../../helpers/cloudinary';
 import LazyComponent from '../../helpers/lazyComponents';
-import { type_ord } from '../../helpers/constants';
 
 const CASH_PUBLIC_ID = 'Payments/Efectivo'
 const TRANS_PUBLIC_ID = 'Payments/Transferencia'
@@ -23,8 +22,7 @@ export default function PaymentDate() {
   const navigate = useNavigate();
   const { offers, address, locks } = useSelector((state) => state.clientReducer);
   const user = useMemo(() => localStorage.getItem('user'), []);
-  const cartKey = order_type === type_ord.REORDER ? 'reorder_cart' : 'cart';
-  const cart = JSON.parse(localStorage.getItem(cartKey));
+  const cart = JSON.parse(localStorage.getItem('cart'));
 
   const [isLoading, setIsLoading] = useState(true);
   const [selectedPaymentType, setSelectedPaymentType] = useState(null);

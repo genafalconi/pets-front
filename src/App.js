@@ -1,5 +1,4 @@
 import './App.scss'
-import 'sweetalert2/src/sweetalert2.scss'
 import { Route, Routes } from "react-router-dom";
 import Landing from "./components/Home/Landing";
 import Products from "./components/Product/Products";

@@ -5,44 +5,54 @@ import { REMOVE_LOCK_SUBPROD_USER } from '../../redux/actions';
 import Swal from 'sweetalert2';
 
 export default function Timer() {
-
   const dispatch = useDispatch();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [duration, setDuration] = useState(600000);
 
   const formatTime = (duration) => {
     const minutes = Math.floor(duration / 60000);
     const seconds = ((duration % 60000) / 1000).toFixed(0);
-
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   }
 
   const formattedTime = formatTime(duration);
 
   useEffect(() => {
+    const savedDuration = localStorage.getItem('timer_duration');
+    if (savedDuration) {
+      setDuration(parseInt(savedDuration, 10));
+    }
+  }, []);
+
+  useEffect(() => {
     const finishTimer = () => {
-      dispatch(REMOVE_LOCK_SUBPROD_USER())
+      dispatch(REMOVE_LOCK_SUBPROD_USER());
       Swal.fire({
-        title: 'Se termino el tiempo!',
-        text: 'Volveras a la pantalla inicial',
+        title: 'Se terminó el tiempo!',
+        text: 'Volverás a la pantalla inicial',
         icon: 'info'
       }).then(() => {
-        window.location = '/'
-      })
-    }
+        navigate('/');
+      });
+    };
 
     const interval = setInterval(() => {
       setDuration(prevDuration => {
-        if (prevDuration <= 1000) {
+        const newDuration = prevDuration - 1000;
+        if (newDuration <= 0) {
           clearInterval(interval);
-          finishTimer()
+          finishTimer();
+          return 0;
         }
-        return prevDuration - 1000;
+        return newDuration;
       });
     }, 1000);
 
-    return () => clearInterval(interval);
-  }, [dispatch, navigate, setDuration]);
+    return () => {
+      clearInterval(interval);
+      localStorage.setItem('timer_duration', duration.toString());
+    };
+  }, [dispatch, navigate, duration]);
 
   return (
     <div className='timer'>
