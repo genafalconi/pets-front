@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { firebaseAuth, providerGoogle } from "../../helpers/firebase";
-import { LOGIN_WITH_GOOGLE, REGISTER_WITH_EMAIL, SAVE_LOCAL_CART } from "../../redux/actions";
+import { LOGIN_WITH_GOOGLE, REGISTER_WITH_EMAIL } from "../../redux/actions";
 import { signInWithPopup } from "firebase/auth";
 import { Form, Button, Spinner, Modal, Col } from 'react-bootstrap';
 import Swal from "sweetalert2";
@@ -10,13 +10,14 @@ import { AdvancedImage } from "@cloudinary/react";
 import { cloudinaryImg } from "../../helpers/cloudinary";
 import { Formik } from 'formik';
 import * as yup from 'yup';
+import { type_ord } from "../../helpers/constants";
 
 const GOOGLE_PUBLIC_ID = 'Ppales/Google'
 
 export default function Register({ show, onHideLogin, onHideRegister, onModalClose }) {
 
   const dispatch = useDispatch()
-  const cartReducer = useSelector((state) => state.clientReducer.cart)
+  const cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : null;
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -35,14 +36,24 @@ export default function Register({ show, onHideLogin, onHideRegister, onModalClo
 
   const registerUser = (values) => {
     setIsLoading(true)
-    dispatch(REGISTER_WITH_EMAIL(values))
+
+    let modifiedCart = cart
+    if (cart && Object.keys(cart).length > 0) {
+      const modifiedSubproducts = cart.subproducts.map(({ subproduct }) => {
+        const { name, quantity, ...rest } = subproduct;
+        return { subproduct: rest, quantity };
+      });
+
+      modifiedCart = {
+        ...cart,
+        subproducts: modifiedSubproducts
+      };
+    }
+
+    dispatch(REGISTER_WITH_EMAIL({ userdata: values, cart: modifiedCart, order_type: type_ord.ORDER }))
       .then((response) => {
         if (response.payload.status === 201) {
-          if (Object.keys(cartReducer).length !== 0) {
-            dispatch(SAVE_LOCAL_CART(cartReducer)).then((res) => {
-              onHideRegister()
-            })
-          }
+          onHideRegister()
           Swal.fire({
             title: 'Usuario creado correctamente',
             text: `Mail: ${response.payload.data.email}`,
@@ -95,7 +106,7 @@ export default function Register({ show, onHideLogin, onHideRegister, onModalClo
 
   useEffect(() => {
 
-  }, [token, userLocal, isLoading, cartReducer])
+  }, [token, userLocal, isLoading, cart])
 
   return (
     <Modal

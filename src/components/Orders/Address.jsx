@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
 import Modal from 'react-bootstrap/Modal';
 import '../../styles/modals/modalAddress.scss';
-import { CREATE_USER_ADDRESS, GET_USER_ADDRESS } from '../../redux/actions';
+import { CREATE_USER_ADDRESS, DELETE_USER_ADDRESS, GET_USER_ADDRESS } from '../../redux/actions';
 import GoogleMaps from '../atomic/GoogleMaps';
 import { MdOutlineDelete } from 'react-icons/md'
 import Form from 'react-bootstrap/Form';
@@ -14,7 +14,7 @@ import LazyComponent from '../../helpers/lazyComponents';
 export default function Address({ show, onHideAddress, updateAddress, fromCheckout }) {
 
   const dispatch = useDispatch()
-  const addresses = useSelector((state) => state.clientReducer.addresses)
+  const { addresses } = useSelector((state) => state.clientReducer)
 
   const [searchByMaps, setSearchByMaps] = useState(false)
   const [isConfirmed, setIsConfirmed] = useState(false)
@@ -37,8 +37,8 @@ export default function Address({ show, onHideAddress, updateAddress, fromChecko
     })
   }
 
-  const getUserAddresses = async (isOpen) => {
-    if (show || isOpen) {
+  const getUserAddresses = useCallback(async () => {
+    if (show) {
       setIsLoading(true)
       dispatch(GET_USER_ADDRESS()).then((res) => {
         if (res.payload) {
@@ -46,17 +46,17 @@ export default function Address({ show, onHideAddress, updateAddress, fromChecko
         }
       })
     }
-  }
+  }, [dispatch, show])
 
-  const validateInputs = () => {
+  const validateInputs = useCallback(() => {
     if (address.street.length !== 0) return true
-  }
+  }, [address.street.length])
 
   const handleSearchMaps = () => {
     setSearchByMaps(!searchByMaps)
   }
 
-  const handleCreateAddress = () => {
+  const handleCreateAddress = useCallback(() => {
     const validation = validateInputs()
     if (validation) {
       setIsLoadingButton(true)
@@ -65,24 +65,22 @@ export default function Address({ show, onHideAddress, updateAddress, fromChecko
         if (Object.keys(res.payload).length !== 0) {
           setIsLoadingButton(false)
           updateAddress()
-          if (fromCheckout) onHideAddress()
+          if (fromCheckout) {
+            onHideAddress()
+          }
           setIsConfirmed(false)
         }
       })
     }
-  }
+  }, [dispatch, address, fromCheckout, onHideAddress, updateAddress, validateInputs])
 
-  const handleDeleteAddress = () => {
-    console.log('borro')
-  }
+  const handleDeleteAddress = useCallback((address_id) => {
+    dispatch(DELETE_USER_ADDRESS(address_id))
+  }, [dispatch])
 
   useEffect(() => {
-    console.log(addresses)
-    if (addresses?.length === 0) {
-      getUserAddresses()
-    }
-    // eslint-disable-next-line
-  }, [show, updateAddress])
+    getUserAddresses()
+  }, [getUserAddresses])
 
   return (
     <Modal
@@ -115,7 +113,7 @@ export default function Address({ show, onHideAddress, updateAddress, fromChecko
                         <div className='address-item'>
                           <div className='address-item_title'>
                             <h5 className='m-0'>{elem.street} {elem.number} {elem.floor} {elem.flat}</h5>
-                            <MdOutlineDelete onClick={() => handleDeleteAddress(elem._id)} />
+                            <MdOutlineDelete className='address-item_delete' onClick={() => handleDeleteAddress(elem._id)} />
                           </div>
                           <div className='address-item_details'>
                             <p>{elem.city} - {elem.province}</p>

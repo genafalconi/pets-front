@@ -7,6 +7,7 @@ import { MdOutlineDelete } from 'react-icons/md'
 import '../../styles/components/cart.scss'
 import { REMOVE_FROM_CART, REMOVE_FROM_LOCAL_CART } from "../../redux/actions"
 import ProductQuantity from "../atomic/ProductQuantity"
+import { Col, Row } from "react-bootstrap"
 
 export default function Cart() {
 
@@ -75,18 +76,20 @@ export default function Cart() {
                       <div className="product-name">
                         <h3>{elem?.subproduct?.product?.name?.length > 0 ? elem?.subproduct?.product?.name : elem?.subproduct?.name}</h3>
                       </div>
-                      <div className="product-details">
-                        <div className="product-size">
+                      <Row className="product-details">
+                        <Col className="product-size">
                           {elem.subproduct?.size}kg
-                        </div>
-                        <ProductQuantity quantity={elem.quantity} idSubprod={elem.subproduct?._id} stock={elem.subproduct?.stock} />
-                        <div className="product-price">
+                        </Col>
+                        <Col>
+                          <ProductQuantity quantity={elem.quantity} idSubprod={elem.subproduct?._id} stock={elem.subproduct?.stock} />
+                        </Col>
+                        <Col className="product-price">
                           ${elem.subproduct?.sell_price}
-                        </div>
-                        <div className="product-remove">
+                        </Col>
+                        <Col className="product-remove">
                           <MdOutlineDelete onClick={() => removeFromCart(elem.subproduct)} />
-                        </div>
-                      </div>
+                        </Col>
+                      </Row>
                     </div>
                   </Dropdown.Item>
                 ))

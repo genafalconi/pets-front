@@ -88,6 +88,16 @@
   justify-content: space-between;
 }
 
+.address-item_delete {
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.address-item_delete:hover {
+  box-shadow: 0px 0px 5px 5px rgba(0, 0, 0, 0.2);
+}
+
 .address-item_details {
   display: flex;
   font-size: 0.8rem;

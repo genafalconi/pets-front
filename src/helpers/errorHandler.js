@@ -8,5 +8,6 @@ export default function errorHandler(error) {
     icon: 'error',
     timer: 2500,
     timerProgressBar: true
-  }).then(() => window.location.href = '/')
+  })
+  // .then(() => window.location.href = '/')
 }

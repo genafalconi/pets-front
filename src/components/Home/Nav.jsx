@@ -3,7 +3,7 @@ import { FiLogIn } from 'react-icons/fi'
 import { MdSearch } from 'react-icons/md'
 import Form from 'react-bootstrap/Form';
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import Login from '../UserSesion/Login'
 import UserOptions from '../UserSesion/UserOptions'
 import Register from '../UserSesion/Register'
@@ -12,7 +12,7 @@ import Address from '../Orders/Address'
 import { useDispatch, useSelector } from 'react-redux'
 import { LOGOUT } from '../../redux/actions'
 import eventBus from '../../helpers/event-bus'
-import { firebaseAuth } from '../../helpers/firebase'
+// import { firebaseAuth } from '../../helpers/firebase'
 import Dropdown from 'react-bootstrap/Dropdown';
 import { AdvancedImage } from '@cloudinary/react'
 import { cloudinaryImg } from '../../helpers/cloudinary'
@@ -34,6 +34,8 @@ export default function Nav() {
   const [inputErrors, setInputErrors] = useState(null)
   const inputRef = useRef(null)
 
+  const animal = new URLSearchParams(useLocation().search).get("animal");
+  const endpoint = window.location.pathname
   const token = localStorage.getItem('token')
   const userLocal = localStorage.getItem('user')
   const { user: userReducer } = useSelector((state) => state.clientReducer)
@@ -45,8 +47,18 @@ export default function Nav() {
   }
 
   const handleSearchInput = (value) => {
-    navigate(`/products?input=${value}`)
-    inputRef.current.value = ''
+    let query = '';
+    if (value) {
+      query = `?input=${value}`;
+    }
+    if (animal) {
+      if (query) {
+        query += `&animal=${animal}`;
+      } else {
+        query = `?animal=${animal}`;
+      }
+    }
+    navigate(`/products${query}`);
   }
 
   const handleKeyDown = (e) => {
@@ -88,7 +100,6 @@ export default function Nav() {
       setActiveSesion(true)
     }
 
-    const endpoint = window.location.pathname
     handleCartDisplay(endpoint)
 
     const expiredSesionHandler = () => {
@@ -97,14 +108,15 @@ export default function Nav() {
     }
     eventBus.on('expired-sesion', expiredSesionHandler)
 
-    const unsubscribe = firebaseAuth.onIdTokenChanged(async (user) => {
-      if (user) {
-        const newToken = await user.getIdToken()
-        localStorage.setItem('token', newToken)
-      } else {
-        localStorage.removeItem('token')
-      }
-    })
+    // const unsubscribe = firebaseAuth.onIdTokenChanged(async (user) => {
+    //   console.log('aca', user)
+    //   if (user) {
+    //     const newToken = await user.getIdToken()
+    //     localStorage.setItem('token', newToken)
+    //   } else {
+    //     localStorage.removeItem('token')
+    //   }
+    // })
 
     if (!token) {
       setModalAddress(false)
@@ -112,9 +124,9 @@ export default function Nav() {
 
     return () => {
       eventBus.off('expired-sesion', expiredSesionHandler)
-      unsubscribe()
+      // unsubscribe()
     }
-  }, [token, userLocal, modalLogin, modalRegister, userReducer, dispatch, handleCartDisplay])
+  }, [token, userLocal, modalLogin, modalRegister, userReducer, dispatch, endpoint, handleCartDisplay])
 
   return (
     <>

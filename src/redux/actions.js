@@ -12,17 +12,23 @@ import errorHandler from '../helpers/errorHandler';
 const { REACT_APP_AUTH, REACT_APP_CART, REACT_APP_PROD, REACT_APP_ORDER, REACT_APP_OFFER } = process.env;
 
 export const LOGIN_WITH_EMAIL = createAsyncThunk(
-  'LOGIN_WITH_EMAIL', async (dataLogin) => {
+  'LOGIN_WITH_EMAIL', async ({ userdata, cart, order_type }) => {
     try {
-      const { user } = await signInWithEmailAndPassword(firebaseAuth, dataLogin.email, dataLogin.password)
+      const { user } = await signInWithEmailAndPassword(firebaseAuth, userdata.email, userdata.password)
       if (user) {
         const token = await user.getIdToken()
-        const res = await request(req_constants.POST, `${REACT_APP_AUTH}/auth/login`, null, user, token)
+        const res = await request(req_constants.POST, `${REACT_APP_AUTH}/auth/login`, null, { user: userdata, cart }, token)
 
         if (res.status === 201) {
           localStorage.setItem('user', res.data.user?._id)
           localStorage.setItem('admin', res.data.user?.admin)
-          localStorage.setItem('cart', JSON.stringify(res.data.cart ? res.data.cart : {}))
+
+          if (order_type === type_ord.ORDER) {
+            localStorage.setItem('cart', JSON.stringify(res.data.cart ? res.data.cart : {}))
+          } else {
+            localStorage.setItem('reorder_cart', JSON.stringify(res.data.cart ? res.data.cart : {}))
+          }
+
           const isLoggedUser = localStorage.getItem('user')
           if (isLoggedUser) {
             localStorage.setItem('token', token)
@@ -69,18 +75,15 @@ export const LOGIN_WITH_EMAIL = createAsyncThunk(
 )
 
 export const LOGIN_WITH_GOOGLE = createAsyncThunk(
-  'LOGIN_WITH_GOOGLE', async (user) => {
+  'LOGIN_WITH_GOOGLE', async ({ userdata, cart, token }) => {
     try {
-      const token = localStorage.getItem('token')
-      const res = await request(req_constants.POST, `${REACT_APP_AUTH}/auth/login`, null, user, token)
-
+      const res = await request(req_constants.POST, `${REACT_APP_AUTH}/auth/login`, null, { user: userdata, cart })
       if (res.status === 201) {
-        localStorage.setItem('token', token)
         localStorage.setItem('user', res?.data?.user?._id)
         localStorage.setItem('admin', res.data.user?.admin)
         localStorage.setItem('cart', JSON.stringify(res?.data?.cart))
 
-        return { ...res, token: token }
+        return { ...res, token }
       }
     } catch (error) {
       return errorHandler(error)
@@ -89,12 +92,12 @@ export const LOGIN_WITH_GOOGLE = createAsyncThunk(
 )
 
 export const REGISTER_WITH_EMAIL = createAsyncThunk(
-  'REGISTER_WITH_EMAIL', async (register) => {
+  'REGISTER_WITH_EMAIL', async ({ userdata, cart }) => {
     try {
-      const { user } = await createUserWithEmailAndPassword(firebaseAuth, register.email, register.password)
+      const { user } = await createUserWithEmailAndPassword(firebaseAuth, userdata.email, userdata.password)
       if (user) {
         const token = await user.getIdToken()
-        const res = await request(req_constants.POST, `${REACT_APP_AUTH}/auth/register`, null, register, token)
+        const res = await request(req_constants.POST, `${REACT_APP_AUTH}/auth/register`, null, { user: userdata, cart }, token)
 
         localStorage.setItem('token', token)
         localStorage.setItem('user', res?.data?._id)
@@ -128,9 +131,7 @@ export const REGISTER_WITH_EMAIL = createAsyncThunk(
 export const VERIFY_TOKEN = createAsyncThunk(
   'VERIFY_TOKEN', async () => {
     try {
-      const token = localStorage.getItem('token')
-      const res = await request(req_constants.GET, `${REACT_APP_AUTH}/auth/verify-token`, null, null, token)
-
+      const res = await request(req_constants.GET, `${REACT_APP_AUTH}/auth/verify-token`, null, null)
       return res?.data
     } catch (error) {
       return errorHandler(error)
@@ -147,6 +148,7 @@ export const LOGOUT = createAsyncThunk(
       localStorage.removeItem('admin')
       localStorage.getItem('reorder_cart') && localStorage.removeItem('reorder_cart')
       localStorage.getItem('order') && localStorage.removeItem('order')
+      localStorage.getItem('timer_duration') && localStorage.removeItem('timer_duration')
       await firebaseAuth.signOut()
 
     } catch (error) {
@@ -164,10 +166,8 @@ export const LOGOUT = createAsyncThunk(
 export const GET_USER_CART = createAsyncThunk(
   'GET_USER_CART', async () => {
     try {
-      const token = localStorage.getItem('token')
       const idUser = localStorage.getItem('user')
-
-      const res = await request(req_constants.GET, `${REACT_APP_CART}/cart/${idUser}`, null, null, token)
+      const res = await request(req_constants.GET, `${REACT_APP_CART}/cart/${idUser}`, null, null)
       localStorage.setItem('cart', JSON.stringify(res?.data))
 
       return res
@@ -180,10 +180,8 @@ export const GET_USER_CART = createAsyncThunk(
 export const ADD_TO_CART = createAsyncThunk(
   'ADD_TO_CART', async (subprod) => {
     try {
-      const token = localStorage.getItem('token')
       const idUser = localStorage.getItem('user')
-
-      const res = await request(req_constants.POST, `${REACT_APP_CART}/cart/add/${idUser}`, null, subprod, token)
+      const res = await request(req_constants.POST, `${REACT_APP_CART}/cart/add/${idUser}`, null, subprod)
       return res?.data
     } catch (error) {
       return errorHandler(error)
@@ -194,10 +192,8 @@ export const ADD_TO_CART = createAsyncThunk(
 export const REMOVE_FROM_CART = createAsyncThunk(
   'REMOVE_FROM_CART', async (subprod) => {
     try {
-      const token = localStorage.getItem('token')
       const idUser = localStorage.getItem('user')
-
-      const res = await request(req_constants.DELETE, `${REACT_APP_CART}/cart/remove/${idUser}`, null, subprod, token)
+      const res = await request(req_constants.DELETE, `${REACT_APP_CART}/cart/remove/${idUser}`, null, subprod)
       return res?.data
     } catch (error) {
       return errorHandler(error)
@@ -254,27 +250,6 @@ export const ADD_TO_LOCAL_CART = createAsyncThunk(
   }
 )
 
-export const SAVE_LOCAL_CART = createAsyncThunk(
-  'SAVE_LOCAL_CART', async (cart, order_type) => {
-    try {
-      const token = localStorage.getItem('token')
-      const idUser = localStorage.getItem('user')
-      if (cart) {
-        const res = await request(req_constants.POST, `${REACT_APP_CART}/cart/create/${idUser}`, null, cart, token)
-        if (order_type === type_ord.ORDER) {
-          localStorage.setItem('cart', JSON.stringify(res?.data))
-        } else {
-          localStorage.setItem('reorder_cart', JSON.stringify(res?.data))
-        }
-        return res?.data
-      }
-      return true
-    } catch (error) {
-      return errorHandler(error)
-    }
-  }
-)
-
 export const SAVE_RE_ORDER_CART = createAsyncThunk(
   'SAVE_RE_ORDER_CART', async (cart) => {
     try {
@@ -283,7 +258,7 @@ export const SAVE_RE_ORDER_CART = createAsyncThunk(
         cart.user = idUser
       }
       cart.active = true
-      localStorage.setItem('reorder_cart', JSON.stringify(cart))
+      localStorage.setItem('cart', JSON.stringify(cart))
       return cart
     } catch (error) {
       return errorHandler(error)
@@ -292,17 +267,13 @@ export const SAVE_RE_ORDER_CART = createAsyncThunk(
 )
 
 export const GET_ACTIVE_PRODUCTS = createAsyncThunk(
-  'GET_ACTIVE_PRODUCTS', async ({ animal, page }) => {
+  'GET_ACTIVE_PRODUCTS', async (page) => {
     try {
-      const token = localStorage.getItem('token')
       let param = ''
-      if (animal && animal !== '') {
-        param = `?animal=${animal}`
-      }
       if (page && page !== 1) {
-        param = param === '' ? `?page=${page}` : `${param}&page=${page}`
+        param = `?page=${page}`
       }
-      const res = await request(req_constants.GET, `${REACT_APP_PROD}/products/active${param}`, null, null, token)
+      const res = await request(req_constants.GET, `${REACT_APP_PROD}/products/active${param}`, null, null)
       return res?.data
     } catch (error) {
       return errorHandler(error)
@@ -313,8 +284,7 @@ export const GET_ACTIVE_PRODUCTS = createAsyncThunk(
 export const GET_FILTER_PRODUCTS = createAsyncThunk(
   'GET_FILTER_PRODUCTS', async (filterData) => {
     try {
-      const token = localStorage.getItem('token')
-      const res = await request(req_constants.POST, `${REACT_APP_PROD}/products/filter`, null, filterData, token)
+      const res = await request(req_constants.POST, `${REACT_APP_PROD}/products/filter`, null, filterData)
       return res?.data
     } catch (error) {
       return errorHandler(error)
@@ -325,9 +295,8 @@ export const GET_FILTER_PRODUCTS = createAsyncThunk(
 export const CREATE_USER_ADDRESS = createAsyncThunk(
   'CREATE_USER_ADDRESS', async (address) => {
     try {
-      const token = localStorage.getItem('token')
       const idUser = localStorage.getItem('user')
-      const res = await request(req_constants.POST, `${REACT_APP_AUTH}/user/address/${idUser}`, null, address, token)
+      const res = await request(req_constants.POST, `${REACT_APP_AUTH}/user/address/${idUser}`, null, address)
       return res?.data
     } catch (error) {
       return errorHandler(error)
@@ -338,9 +307,8 @@ export const CREATE_USER_ADDRESS = createAsyncThunk(
 export const GET_USER_ADDRESS = createAsyncThunk(
   'GET_USER_ADDRESS', async () => {
     try {
-      const token = localStorage.getItem('token')
       const idUser = localStorage.getItem('user')
-      const res = await request(req_constants.GET, `${REACT_APP_AUTH}/user/address/${idUser}`, null, null, token)
+      const res = await request(req_constants.GET, `${REACT_APP_AUTH}/user/address/${idUser}`, null, null)
       return res?.data
     } catch (error) {
       return errorHandler(error)
@@ -354,11 +322,21 @@ export const SET_USER_ADDRESS = createAsyncThunk(
   }
 )
 
+export const DELETE_USER_ADDRESS = createAsyncThunk(
+  'DELETE_USER_ADDRESS', async (idAddress) => {
+    try {
+      const res = await request(req_constants.DELETE, `${REACT_APP_AUTH}/user/address/${idAddress}`, null, null)
+      return res?.data
+    } catch (error) {
+      return errorHandler(error)
+    }
+  }
+)
+
 export const UPDATE_LOCAL_SUBPRODUCT_QUANTITY = createAsyncThunk(
   'UPDATE_LOCAL_SUBPRODUCT_QUANTITY', async (subprodNewQuantity) => {
     try {
       let cart = localStorage.getItem('cart')
-
       if (cart) {
         cart = JSON.parse(cart)
         const updatedCart = updateSubprodQuantity(subprodNewQuantity, cart)
@@ -374,10 +352,8 @@ export const UPDATE_LOCAL_SUBPRODUCT_QUANTITY = createAsyncThunk(
 export const UPDATE_SUBPRODUCT_QUANTITY = createAsyncThunk(
   'UPDATE_SUBPRODUCT_QUANTITY', async (subprodNewQuantity) => {
     try {
-      const token = localStorage.getItem('token')
       const idUser = localStorage.getItem('user')
-      const res = await request(req_constants.PUT, `${REACT_APP_CART}/cart/update/quantity/${idUser}`, null, subprodNewQuantity, token)
-
+      const res = await request(req_constants.PUT, `${REACT_APP_CART}/cart/update/quantity/${idUser}`, null, subprodNewQuantity)
       return res?.data
     } catch (error) {
       return errorHandler(error)
@@ -388,8 +364,7 @@ export const UPDATE_SUBPRODUCT_QUANTITY = createAsyncThunk(
 export const LOCK_SUBPROD_USER = createAsyncThunk(
   'LOCK_SUBPROD_USER', async (lockCart) => {
     try {
-      const token = localStorage.getItem('token')
-      const res = await request(req_constants.POST, `${REACT_APP_PROD}/subproducts/lock`, null, lockCart, token)
+      const res = await request(req_constants.POST, `${REACT_APP_PROD}/subproducts/lock`, null, lockCart)
       return res?.data
     } catch (error) {
       return errorHandler(error)
@@ -400,10 +375,8 @@ export const LOCK_SUBPROD_USER = createAsyncThunk(
 export const REMOVE_LOCK_SUBPROD_USER = createAsyncThunk(
   'REMOVE_LOCK_SUBPROD_USER', async () => {
     try {
-      const token = localStorage.getItem('token')
       const idUser = localStorage.getItem('user')
-      const res = await request(req_constants.DELETE, `${REACT_APP_PROD}/subproducts/lock/${idUser}`, null, null, token)
-
+      const res = await request(req_constants.DELETE, `${REACT_APP_PROD}/subproducts/lock/${idUser}`, null, null)
       return res?.data
     } catch (error) {
       return errorHandler(error)
@@ -414,9 +387,7 @@ export const REMOVE_LOCK_SUBPROD_USER = createAsyncThunk(
 export const GET_OPEN_OFFERS = createAsyncThunk(
   'GET_OPEN_OFFERS', async () => {
     try {
-      const token = localStorage.getItem('token')
-      const res = await request(req_constants.GET, `${REACT_APP_OFFER}/offers/open`, null, null, token)
-
+      const res = await request(req_constants.GET, `${REACT_APP_OFFER}/offers/open`, null, null)
       return res?.data
     } catch (error) {
       return errorHandler(error)
@@ -427,9 +398,7 @@ export const GET_OPEN_OFFERS = createAsyncThunk(
 export const CREATE_USER_ORDER = createAsyncThunk(
   'CREATE_USER_ORDER', async (orderData) => {
     try {
-      const token = localStorage.getItem('token')
-      const res = await request(req_constants.POST, `${REACT_APP_ORDER}/orders/new`, null, orderData, token)
-
+      const res = await request(req_constants.POST, `${REACT_APP_ORDER}/orders/new`, null, orderData)
       if (res.status === 201) {
         localStorage.removeItem('cart')
         localStorage.removeItem('reorder_cart')
@@ -445,9 +414,7 @@ export const CREATE_USER_ORDER = createAsyncThunk(
 export const GET_USER_ORDER = createAsyncThunk(
   'GET_USER_ORDER', async (orderId) => {
     try {
-      const token = localStorage.getItem('token')
-      const res = await request(req_constants.GET, `${REACT_APP_ORDER}/orders/order/${orderId}`, null, null, token)
-
+      const res = await request(req_constants.GET, `${REACT_APP_ORDER}/orders/order/${orderId}`, null, null)
       return res?.data
     } catch (error) {
       return errorHandler(error)
@@ -458,10 +425,8 @@ export const GET_USER_ORDER = createAsyncThunk(
 export const GET_ACCOUNT_INFO = createAsyncThunk(
   'GET_ACCOUNT_INFO', async () => {
     try {
-      const token = localStorage.getItem('token')
       const user = localStorage.getItem('user')
-      const res = await request(req_constants.GET, `${REACT_APP_AUTH}/user/info/${user}`, null, null, token)
-
+      const res = await request(req_constants.GET, `${REACT_APP_AUTH}/user/info/${user}`, null, null)
       return res?.data
     } catch (error) {
       return errorHandler(error)
@@ -472,10 +437,8 @@ export const GET_ACCOUNT_INFO = createAsyncThunk(
 export const GET_ACCOUNT_ORDERS = createAsyncThunk(
   'GET_ACCOUNT_ORDERS', async () => {
     try {
-      const token = localStorage.getItem('token')
       const user = localStorage.getItem('user')
-      const res = await request(req_constants.GET, `${REACT_APP_AUTH}/user/orders/${user}`, null, null, token)
-
+      const res = await request(req_constants.GET, `${REACT_APP_AUTH}/user/orders/${user}`, null, null)
       return res?.data
     } catch (error) {
       return errorHandler(error)
@@ -494,10 +457,12 @@ export const RESET_PASSWORD = createAsyncThunk(
 )
 
 export const SEARCH_PRODUCTS = createAsyncThunk(
-  'SEARCH_PRODUCTS', async ({ input_value, page }) => {
+  'SEARCH_PRODUCTS', async ({ input_value, page, animal }) => {
     try {
       if (!page) page = 1
-      let param = `?input=${input_value}&page=${page}`
+      let param = `?page=${page}`
+      if (animal) param += `&animal=${animal}`
+      if (input_value) param += `&input=${input_value}`
       const res = await request(req_constants.GET, `${REACT_APP_PROD}/products/search${param}`, null, null, null)
       return res?.data
     } catch (error) {

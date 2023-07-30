@@ -2,8 +2,12 @@ import axios from "axios";
 import Swal from 'sweetalert2';
 import eventBus from "./event-bus";
 
-export const request = async (method, url, params, data, token) => {
+export const request = async (method, url, params, data, ext_token) => {
 
+  let token = localStorage.getItem('token')
+  if (ext_token) {
+    token = ext_token
+  }
   const config = {
     method: method,
     url: url,
