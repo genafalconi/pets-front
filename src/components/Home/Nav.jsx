@@ -107,7 +107,7 @@ export default function Nav() {
       dispatch(LOGOUT())
     }
     eventBus.on('expired-sesion', expiredSesionHandler)
-
+console.log(token)
     // const unsubscribe = firebaseAuth.onIdTokenChanged(async (user) => {
     //   console.log('aca', user)
     //   if (user) {

@@ -1,12 +1,10 @@
 {
   "hosting": {
-    "public": "build",
-    "site": "petszone-arg",
+    "public": "public",
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**",
-      ".env"
+      "**/node_modules/**"
     ],
     "rewrites": [
       {
