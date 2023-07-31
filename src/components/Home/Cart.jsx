@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react"
 import Dropdown from 'react-bootstrap/Dropdown'
-import { FaShoppingCart } from 'react-icons/fa'
+import { FiShoppingCart } from 'react-icons/fi'
 import { useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { MdOutlineDelete } from 'react-icons/md'
@@ -60,7 +60,7 @@ export default function Cart() {
         <div className="total-cart-icon">
           <span>{totalQuantityCart}</span>
         </div>
-        <FaShoppingCart className='user-nav_cart_icon' size={25} />
+        <FiShoppingCart className='user-nav_cart_icon' size={20} />
       </Dropdown.Toggle>
       <Dropdown.Menu className="dropdown-cart-items" onClick={(e) => e.stopPropagation()}>
         {

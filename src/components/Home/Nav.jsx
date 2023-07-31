@@ -154,12 +154,12 @@ console.log(token)
                 :
                 <Dropdown className="d-inline_mx-2">
                   <Dropdown.Toggle id="dropdown-autoclose-true" className='dropdown-custom-search'>
-                    <MdSearch className='icon-search' size={25} />
+                    <MdSearch className='icon-search' size={20} />
                   </Dropdown.Toggle>
                   <Dropdown.Menu className='dropdown-custom-menu'>
                     <Dropdown.Item className='dropdown-search-item' onClick={(e) => e.stopPropagation()}>
                       <Form.Control className='input-search' type="text" placeholder='Buscar...' ref={inputRef} value={searchInput} onKeyDown={handleKeyDown} />
-                      <MdSearch className='action-search-icon' size={25} onClick={() => handleSearchInput(inputRef.current.value)} />
+                      <MdSearch className='action-search-icon' size={20} onClick={() => handleSearchInput(inputRef.current.value)} />
                     </Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
@@ -179,7 +179,7 @@ console.log(token)
               </div>
               :
               <div className='link-modal'>
-                <FiLogIn className='icon-nav' size={25} onClick={handleLogin} />
+                <FiLogIn className='icon-nav' size={20} onClick={handleLogin} />
               </div>
           }
           {
