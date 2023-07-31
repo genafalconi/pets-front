@@ -26,13 +26,13 @@
       min-height: max-content;
       padding-left: 1.5%;
       width: auto;
+      max-width: 5rem;
     }
   }
 
   .search-bar {
     display: flex;
-    align-items: flex-start;
-    margin-left: 2rem;
+    align-items: center;
   }
 
   .icon-search {
@@ -202,5 +202,20 @@
 
   .action-search-icon:hover {
     cursor: pointer;
+  }
+
+  @media only screen and (max-width: 768px) {
+
+    .logo-nav {
+      font-size: 1.2rem;
+
+      img {
+        height: 8vh;
+        min-height: max-content;
+        padding-left: 1.5%;
+        width: auto;
+        max-width: 5rem;
+      }
+    }
   }
 }

@@ -46,7 +46,7 @@ export default function UserOptions({ onHideAddress }) {
     <div className="user-nav_sesion_options">
       <Dropdown className="d-inline_mx-2">
         <Dropdown.Toggle id="dropdown-autoclose-true" className='dropdown-custom'>
-          <FaUser className='user-nav_sesion_icon' size={25} />
+          <FaUser className='user-nav_sesion_icon' size={20} />
         </Dropdown.Toggle>
         <Dropdown.Menu className='dropdown-custom-menu'>
           <Dropdown.Item href='/account'>Cuenta</Dropdown.Item>
