@@ -8,6 +8,8 @@ import '../../styles/components/cart.scss'
 import { REMOVE_FROM_CART, REMOVE_FROM_LOCAL_CART } from "../../redux/actions"
 import ProductQuantity from "../atomic/ProductQuantity"
 import { Col, Row } from "react-bootstrap"
+import { AdvancedImage } from "@cloudinary/react"
+import { cloudinaryImg } from "../../helpers/cloudinary"
 
 export default function Cart() {
 
@@ -20,9 +22,9 @@ export default function Cart() {
   let cartStorage = JSON.parse(localStorage.getItem('cart'))
   const user = localStorage.getItem('user')
 
-  const removeFromCart = useCallback(async (subprod) => {
+  const removeFromCart = useCallback((subprod) => {
     if (cartStorage) {
-      await dispatch(REMOVE_FROM_LOCAL_CART(subprod)).then((res) => {
+      dispatch(REMOVE_FROM_LOCAL_CART(subprod)).then((res) => {
         if (res.payload?.subproducts?.length === 0) {
           setEmptyCart(true)
         }
@@ -72,6 +74,9 @@ export default function Cart() {
               {
                 cartStorage?.subproducts?.map((elem) => (
                   <Dropdown.Item key={elem.subproduct?._id} className="cart-item" onClick={(e) => e.stopPropagation()}>
+                    <div className="img-cart">
+                      <AdvancedImage cldImg={cloudinaryImg(elem?.subproduct?.product?.image?.length > 0 ? elem?.subproduct?.product?.image : elem?.subproduct?.image)} />
+                    </div>
                     <div className="cart-product-card">
                       <div className="product-name">
                         <h3>{elem?.subproduct?.product?.name?.length > 0 ? elem?.subproduct?.product?.name : elem?.subproduct?.name}</h3>
@@ -102,7 +107,7 @@ export default function Cart() {
                 </div>
                 {
                   emptyCart ? ''
-                    : <div className="primary-button">
+                    : <div className="call-to-action_button cart-button">
                       <button onClick={handlePayCart}>Pagar</button>
                     </div>
                 }

@@ -161,29 +161,6 @@
   }
 }
 
-.product-card_add {
-  margin-top: 0.5rem;
-  width: 100%;
-}
-
-.product-card_add button {
-  width: 40%;
-  padding: 0.5rem;
-  background-color: $primary-button-color;
-  border: none;
-  color: $primary-text-button-color;
-  font-size: 1.2rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-}
-
-.product-card_add button:hover {
-  background-color: $secondary-button-color;
-  color: $secondary-text-button-color;
-  border: 1px solid $secondary-text-button-color;
-}
-
 .pagination {
   display: flex;
   justify-content: center;
@@ -224,7 +201,7 @@
   align-items: center;
   padding: 12px;
   margin-bottom: 2px;
-  position: absolute;
+  position: fixed;
   top: 5%;
   left: 80%;
   background-color: $background-color;
@@ -256,7 +233,7 @@
 .animal-search-image {
   width: 3rem;
   object-fit: cover;
-
+  cursor: pointer;
 }
 
 .selected {

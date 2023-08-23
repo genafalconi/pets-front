@@ -70,37 +70,39 @@ export default function Order() {
                   </div>
                 </div>
               </div>
-              <div className="order-info">
-                <div className="subtitle">
-                  <h2>Direccion</h2>
-                </div>
-                <div className="address-order">
-                  <div className="address-name">
-                    <p>{order.address?.street} {order.address?.number}</p>
+              <div className="order-info order-info-details">
+                <div>
+                  <div className="subtitle">
+                    <h2>Direccion</h2>
                   </div>
-                  <div className="address-details">
-                    <div className="col1">
-                      <p>Piso: {order.address?.floor ? order.address.floor : '-'}</p>
-                      <p>Dpto: {order.address?.flat ? order.address.flat : '-'}</p>
+                  <div className="address-order">
+                    <div className="address-name">
+                      <p>{order.address?.street} {order.address?.number}</p>
                     </div>
-                    <div className="col2">
-                      <p>Ciudad: {order.address?.city}</p>
-                      <p>Provincia: {order.address?.province}</p>
+                    <div className="address-details">
+                      <div className="col1">
+                        <p>Piso: {order.address?.floor ? order.address.floor : '-'}</p>
+                        <p>Dpto: {order.address?.flat ? order.address.flat : '-'}</p>
+                      </div>
+                      <div className="col2">
+                        <p>Ciudad: {order.address?.city}</p>
+                        <p>Provincia: {order.address?.province}</p>
+                      </div>
+                    </div>
+                    <div className="address-extra">
+                      <p>{order.address?.extra}</p>
                     </div>
                   </div>
-                  <div className="address-extra">
-                    <p>{order.address?.extra}</p>
+                </div>
+                <div>
+                  <div className="subtitle">
+                    <h2>Entrega</h2>
                   </div>
-                </div>
-              </div>
-              <div className="order-info">
-                <div className="subtitle">
-                  <h2>Entrega</h2>
-                </div>
-                <div className="offer-order">
-                  <div className="order-details">
-                    <p>Fecha: {order.offer?.weekday.charAt(0).toUpperCase() + order.offer?.weekday.slice(1)} {new Date(order.offer?.date).toLocaleDateString()}</p>
-                    <p>Horario: {order.offer?.from} a {order.offer?.to}</p>
+                  <div className="offer-order">
+                    <div className="order-details">
+                      <p>Fecha: {order.offer?.weekday.charAt(0).toUpperCase() + order.offer?.weekday.slice(1)} {new Date(order.offer?.date).toLocaleDateString()}</p>
+                      <p>Horario: {order.offer?.from} a {order.offer?.to}</p>
+                    </div>
                   </div>
                 </div>
               </div>

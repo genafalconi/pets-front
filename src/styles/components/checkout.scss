@@ -48,6 +48,16 @@
   align-items: flex-start;
 }
 
+.item-img {
+  width: 20%;
+}
+
+.item-img>img {
+  width: 100%;
+  min-width: 3rem;
+  max-width: 5rem;
+}
+
 .item-name h5 {
   font-size: 18px;
   margin: 0;
@@ -83,6 +93,12 @@
 .checkout {
   display: flex;
   justify-content: center;
+  margin: 2rem 0;
+
+  button {
+    width: 20%;
+    min-width: max-content;
+  }
 }
 
 .address-details {
@@ -155,8 +171,7 @@
   }
 }
 
-/* For devices with a maximum width of 767px */
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 1000px) {
   .checkout-container {
     flex-direction: column;
     margin: 7%;
@@ -179,5 +194,14 @@
   .address {
     width: 100%;
     margin-right: 0;
+  }
+}
+
+@media screen and (max-width: 550px) {
+  .item-img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
   }
 }

@@ -144,6 +144,7 @@ export default function Checkout() {
                             sell_price={item.subproduct.sell_price}
                             size={item.subproduct.size}
                             quantity={item.quantity}
+                            image={item.subproduct.product.image ? item.subproduct.product.image : item.subproduct.image}
                           />
                         </LazyComponent>
                       );
@@ -189,7 +190,7 @@ export default function Checkout() {
                     </div>
                   </div>
                 </div>
-                <div className={validContinue ? "primary-button checkout" : "disabled-button checkout"}>
+                <div className={validContinue ? "call-to-action_button checkout" : "disabled-button checkout"}>
                   <button disabled={!validContinue} onClick={handleCoordinate}>Continuar</button>
                 </div>
               </>

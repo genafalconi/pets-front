@@ -19,8 +19,10 @@ export default function Timer() {
 
   useEffect(() => {
     const savedDuration = localStorage.getItem('timer_duration');
-    if (savedDuration) {
+    if (savedDuration !== 0) {
       setDuration(parseInt(savedDuration, 10));
+    } else {
+      setDuration(600000)
     }
   }, []);
 
@@ -29,11 +31,11 @@ export default function Timer() {
       dispatch(REMOVE_LOCK_SUBPROD_USER());
       Swal.fire({
         title: 'Se terminó el tiempo!',
-        text: 'Volverás a la pantalla inicial',
         icon: 'info'
-      }).then(() => {
-        navigate('/');
-      });
+      })
+      navigate('/');
+      setDuration(600000)
+      localStorage.setItem('timer_duration', duration.toString())
     };
 
     const interval = setInterval(() => {

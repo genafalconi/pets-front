@@ -10,7 +10,7 @@ import Register from '../UserSesion/Register'
 import Cart from './Cart'
 import Address from '../Orders/Address'
 import { useDispatch, useSelector } from 'react-redux'
-import { LOGOUT } from '../../redux/actions'
+import { LOGOUT, VERIFY_TOKEN } from '../../redux/actions'
 import eventBus from '../../helpers/event-bus'
 // import { firebaseAuth } from '../../helpers/firebase'
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -96,9 +96,9 @@ export default function Nav() {
   }, [])
 
   useEffect(() => {
-    if (token && userLocal) {
-      setActiveSesion(true)
-    }
+    dispatch(VERIFY_TOKEN()).then((res) => {
+      res.payload ? setActiveSesion(true) : setActiveSesion(false)
+    })
 
     handleCartDisplay(endpoint)
 
@@ -107,16 +107,6 @@ export default function Nav() {
       dispatch(LOGOUT())
     }
     eventBus.on('expired-sesion', expiredSesionHandler)
-console.log(token)
-    // const unsubscribe = firebaseAuth.onIdTokenChanged(async (user) => {
-    //   console.log('aca', user)
-    //   if (user) {
-    //     const newToken = await user.getIdToken()
-    //     localStorage.setItem('token', newToken)
-    //   } else {
-    //     localStorage.removeItem('token')
-    //   }
-    // })
 
     if (!token) {
       setModalAddress(false)
@@ -124,7 +114,6 @@ console.log(token)
 
     return () => {
       eventBus.off('expired-sesion', expiredSesionHandler)
-      // unsubscribe()
     }
   }, [token, userLocal, modalLogin, modalRegister, userReducer, dispatch, endpoint, handleCartDisplay])
 

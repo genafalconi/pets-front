@@ -23,7 +23,7 @@ export default function Register({ show, onHideLogin, onHideRegister, onModalClo
 
   const validationSchema = yup.object().shape({
     email: yup.string().email('Correo electrónico inválido').required('Correo electrónico requerido'),
-    fullName: yup.string().required('Nombre y Apellido requeridos'),
+    full_name: yup.string().required('Nombre y Apellido requeridos'),
     phone: yup.string().required('Teléfono requerido'),
     password: yup.string()
       .min(6, 'La contraseña debe tener al menos 6 caracteres')
@@ -77,7 +77,7 @@ export default function Register({ show, onHideLogin, onHideRegister, onModalClo
         const user = result.user;
         const userLocal = {
           email: user.email,
-          fullName: user.displayName,
+          full_name: user.displayName,
           id: user.uid,
           phoneNumber: user.phoneNumber
         }
@@ -125,7 +125,7 @@ export default function Register({ show, onHideLogin, onHideRegister, onModalClo
           validationSchema={validationSchema}
           initialValues={{
             email: '',
-            fullName: '',
+            full_name: '',
             phone: '',
             password: '',
           }}
@@ -164,14 +164,14 @@ export default function Register({ show, onHideLogin, onHideRegister, onModalClo
                 <Form.Control
                   type="text"
                   placeholder="Nombre y Apellido"
-                  name="fullName"
-                  value={values.fullName}
+                  name="full_name"
+                  value={values.full_name}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  isInvalid={touched.fullName && !!errors.fullName}
+                  isInvalid={touched.full_name && !!errors.full_name}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {errors.fullName}
+                  {errors.full_name}
                 </Form.Control.Feedback>
               </Form.Group>
               <Form.Group as={Col} controlId="validationFormikPhone">

@@ -1,4 +1,4 @@
-export const addLocalCart = (subProduct) => {
+export const addLocalCart = (subProduct, user) => {
 
   cart?.subproducts?.push({ subproduct: subProduct, quantity: subProduct.quantity })
   let newTotalP = 0, newCant = 0
@@ -12,6 +12,7 @@ export const addLocalCart = (subProduct) => {
   cart.active = true
   cart.total_price = newTotalP
   cart.total_products = newCant
+  cart.user = user
 
   return cart
 }

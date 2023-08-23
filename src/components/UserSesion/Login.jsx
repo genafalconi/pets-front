@@ -35,15 +35,15 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
   const loginGoogle = () => {
     if (validGoogleButton) {
       setValidGoogleButton(false);
-      setIsLoading(true);
       signInWithPopup(firebaseAuth, providerGoogle)
-        .then((result) => {
+      .then((result) => {
+          setIsLoading(true);
           const user = result.user;
           const userLocal = {
             email: user.email,
-            fullName: user.displayName,
+            full_name: user.displayName,
             id: user.uid,
-            phoneNumber: user.phoneNumber
+            phone: user.phoneNumber
           };
 
           let modifiedCart = cart
@@ -58,9 +58,7 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
               subproducts: modifiedSubproducts
             };
           }
-          dispatch(LOGIN_WITH_GOOGLE(
-            { userdata: userLocal, cart: modifiedCart, token: result.user.accessToken }
-          ))
+          dispatch(LOGIN_WITH_GOOGLE({ userdata: userLocal, cart: modifiedCart, token: result.user.accessToken }))
             .then((response) => {
               if (response.payload.status === 201) {
                 localStorage.setItem('token', user.accessToken);
@@ -68,14 +66,15 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
               }
               setValidGoogleButton(true);
             })
+          setIsLoading(false);
         })
         .catch((error) => {
           const errorMessage = error.message;
           return errorMessage;
         })
-        .finally(() => {
-          setIsLoading(false);
-        });
+        .finally((fin) => {
+          setIsLoading(false)
+        })
     }
   };
 
