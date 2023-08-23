@@ -1,10 +1,11 @@
-import { useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
 import { ADD_TO_CART, ADD_TO_LOCAL_CART } from "../../redux/actions"
 import '../../styles/components/product.scss'
 import { cloudinaryImg } from "../../helpers/cloudinary"
 import { AdvancedImage } from '@cloudinary/react';
 import { Button, Spinner } from 'react-bootstrap';
+import NewProd from "./NewProd"
 
 export default function ProductCart({ data }) {
 
@@ -13,14 +14,15 @@ export default function ProductCart({ data }) {
 
   const [prodSizeSelected, setProdSizeSelected] = useState(data?.subproducts[0]?._id)
   const [quantity, setQuantity] = useState(1)
-  const [newProd, setNewProd] = useState(false)
+  const [newProd, setNewProd] = useState(null)
+  const [showNewProd, setShowNewProd] = useState(false)
   const [sizeSelected, setSizeSelected] = useState(data?.subproducts[0]?._id)
   const [isLoading, setIsLoading] = useState(false)
   const [hasError, setHasError] = useState(false)
 
   const sortedSubproducts = [...data.subproducts].sort((a, b) => a.size - b.size);
 
-  const addToCart = (data) => {
+  const addToCart = useCallback((data) => {
     const subprod = data?.subproducts.find((elem) => elem._id === prodSizeSelected)
 
     if (quantity > 0 && subprod.stock >= quantity) {
@@ -30,20 +32,13 @@ export default function ProductCart({ data }) {
         buy_price: subprod?.buy_price,
         sell_price: subprod?.sell_price,
         size: subprod?.size,
-        category: subprod?.category,
-        animal: subprod?.animal,
-        brand: subprod?.brand,
-        animal_size: subprod?.animal_size,
-        animal_age: subprod?.animal_age,
-        active: subprod?.active,
         stock: subprod?.stock,
+        image: data?.image,
         quantity: quantity,
         name: data.name
       }
       setNewProd(subProdToAdd)
-      setTimeout(() => {
-        setNewProd(false)
-      }, 3000)
+      setShowNewProd(true)
 
       dispatch(ADD_TO_LOCAL_CART(subProdToAdd))
       if (user) {
@@ -62,7 +57,7 @@ export default function ProductCart({ data }) {
     } else {
       setHasError(true)
     }
-  }
+  }, [dispatch, prodSizeSelected, quantity, user])
 
   const changeQuantity = (event) => {
     if (event.target.name === 'asc') {
@@ -76,6 +71,17 @@ export default function ProductCart({ data }) {
     setProdSizeSelected(id)
     setSizeSelected(id)
   }
+
+  useEffect(() => {
+    if (showNewProd) {
+      const timer = setTimeout(() => {
+        setNewProd(null)
+        setShowNewProd(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showNewProd]);
 
   return (
     <>
@@ -116,42 +122,21 @@ export default function ProductCart({ data }) {
               </p>
             </div>
           </div>
-          <div className="product-card_add">
+          <div className="call-to-action_button">
             {
               isLoading ?
-                <Button className='product-card_add' disabled>
+                <Button className={`${isLoading ? 'call-to-action_button_disabled' : 'call-to-action_button'}`} disabled>
                   <Spinner as="span" animation="border" size='sm' role="status" aria-hidden="true" />
                 </Button>
                 :
-                <Button className='product-card_add' onClick={() => addToCart(data)} disabled={hasError}>Agregar</Button>
+                <Button className='call-to-action_button' onClick={() => addToCart(data)} disabled={hasError}>Agregar</Button>
             }
           </div>
         </div>
       </div>
-      <>
-        {
-          newProd ?
-            <div key={newProd.id} className="cart-item-added">
-              <div className="cart-product-card">
-                <div className="product-name">
-                  <h3>{newProd.name}</h3>
-                </div>
-                <div className="product-details">
-                  <div className="product-size">
-                    {newProd.size}kg
-                  </div>
-                  <div className="product-quantity">
-                    {newProd.quantity} un
-                  </div>
-                  <div className="product-price">
-                    <p>${newProd.sell_price.toFixed(2)}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            : ''
-        }
-      </>
+      {
+        showNewProd && <NewProd product={newProd} />
+      }
     </>
   )
 }  

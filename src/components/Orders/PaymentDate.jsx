@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 import { AdvancedImage } from '@cloudinary/react';
 import { cloudinaryImg } from '../../helpers/cloudinary';
 import LazyComponent from '../../helpers/lazyComponents';
+import { Button } from 'react-bootstrap';
 
 const CASH_PUBLIC_ID = 'Payments/Efectivo'
 const TRANS_PUBLIC_ID = 'Payments/Transferencia'
@@ -148,12 +149,13 @@ export default function PaymentDate() {
               </div>
               {
                 isConfirmed ?
-                  <div className='primary-button'>
+                  <Button className='call-to-action_button_disabled' disabled>
                     <Spinner as="span" animation="border" size='sm' role="status" aria-hidden="true" />
-                  </div>
+                  </Button>
                   :
-                  <div className={validContinue ? "primary-button" : "disabled-button"}>
-                    <button onClick={validContinue ? handleConfirm : undefined} disabled={!validContinue}>Confirmar</button>
+                  <div className='call-to-action_button payment'>
+                    <Button className={`${!validContinue ? 'call-to-action_button_disabled' : 'call-to-action_button'}`}
+                      onClick={validContinue ? handleConfirm : undefined} disabled={!validContinue}>Confirmar</Button>
                   </div>
               }
             </div>

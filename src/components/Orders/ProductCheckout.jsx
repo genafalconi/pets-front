@@ -1,8 +1,13 @@
+import { AdvancedImage } from '@cloudinary/react'
 import '../../styles/components/checkout.scss'
+import { cloudinaryImg } from '../../helpers/cloudinary'
 
-export default function ProductCheckout({ id, product_name, size, sell_price, quantity }) {
+export default function ProductCheckout({ id, product_name, size, sell_price, quantity, image }) {
   return (
     <div className="container-checkout" key={id}>
+      <div className="item-img">
+        <AdvancedImage className='image-item' cldImg={cloudinaryImg(image)} />
+      </div>
       <div className="item-details">
         <div className="item-name">
           <h5>{product_name}</h5>

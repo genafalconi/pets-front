@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { GET_ACTIVE_PRODUCTS, SEARCH_PRODUCTS } from "../../redux/actions";
 import ProductCart from "./ProductCard";
 import LazyComponent from "../../helpers/lazyComponents";
@@ -12,22 +12,23 @@ export default function Products() {
 
   const input = new URLSearchParams(useLocation().search).get("input");
   const animal = new URLSearchParams(useLocation().search).get("animal");
+
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { products, products_filtered, current_page, total_pages } = useSelector((state) => state.clientReducer);
+  const { products, current_page, total_pages } = useSelector((state) => state.clientReducer);
 
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(current_page);
   const [selectedAnimal, setSelectedAnimal] = useState(animal);
-  const [isFiltered, setIsFiltered] = useState(false);
 
   const activeProducts = useMemo(() => {
-    const productsToRender = isFiltered ? products_filtered : products;
+    const productsToRender = products;
     return Array.isArray(productsToRender) && productsToRender?.map((elem) => (
       <LazyComponent key={elem._id}>
         <ProductCart data={elem} />
       </LazyComponent>
     ));
-  }, [products, products_filtered, isFiltered]);
+  }, [products]);
 
   const handlePageClick = (pageNumber) => {
     if (pageNumber <= total_pages && pageNumber >= 1) {
@@ -51,15 +52,8 @@ export default function Products() {
 
   const handleAnimalSelected = useCallback((selectedAnimal) => {
     setSelectedAnimal(selectedAnimal);
-    setIsLoading(true)
-    dispatch(SEARCH_PRODUCTS({ input_value: input, page: currentPage, animal: selectedAnimal }))
-      .then((res) => {
-        if (res.payload) {
-          setCurrentPage(1);
-        }
-        setIsLoading(false)
-      })
-  }, [dispatch, currentPage, input]);
+    navigate(`/products?animal=${selectedAnimal}${input ? `&input=${input}` : ''}`)
+  }, [input, navigate]);
 
   useEffect(() => {
     if (!input && !animal) {
@@ -88,7 +82,7 @@ export default function Products() {
               <h2>No hay productos</h2>
             )}
           </div>
-          <CustomPagination currentPage={currentPage} totalPages={total_pages} handlePageClick={handlePageClick}/>
+          <CustomPagination currentPage={currentPage} totalPages={total_pages} handlePageClick={handlePageClick} />
         </div>
       )}
     </div>

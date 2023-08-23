@@ -224,6 +224,7 @@ export const ADD_TO_LOCAL_CART = createAsyncThunk(
     try {
       let cart = localStorage.getItem('cart')
       let reorderCart = localStorage.getItem('reorder-cart')
+      let user = localStorage.getItem('user')
       let newCart, updatedCart, isReorder
 
       if (reorderCart && Object.keys(reorderCart).length !== 0) {
@@ -239,7 +240,7 @@ export const ADD_TO_LOCAL_CART = createAsyncThunk(
         localStorage.setItem(isReorder ? 'reorder-cart' : 'cart', JSON.stringify(updatedCart))
         return updatedCart
       } else {
-        newCart = addLocalCart(subprod)
+        newCart = addLocalCart(subprod, user)
         localStorage.setItem(isReorder ? 'reorder-cart' : 'cart', JSON.stringify(newCart))
         return newCart
       }

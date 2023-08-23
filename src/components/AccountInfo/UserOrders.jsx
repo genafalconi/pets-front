@@ -17,7 +17,7 @@ export default function UserOrders() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const [userOrders, setUserOrders] = useState(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const user = useMemo(() => localStorage.getItem('user'), []);
 
   const handleBadge = (status) => {
@@ -50,7 +50,7 @@ export default function UserOrders() {
   const handleReOrder = useCallback(async (cart) => {
     setIsLoading(true)
     const { _id, ...newCart } = cart;
-    await dispatch(SAVE_RE_ORDER_CART(newCart)).then((res) => {
+    dispatch(SAVE_RE_ORDER_CART(newCart)).then((res) => {
       navigate('/checkout/re-order')
     })
     setIsLoading(false)
@@ -62,6 +62,7 @@ export default function UserOrders() {
         if (res.payload) {
           setUserOrders(res.payload)
         }
+        setIsLoading(false)
       })
   }, [dispatch, user])
 
@@ -78,64 +79,68 @@ export default function UserOrders() {
             </Card.Title>
           </Card>
           {
-            userOrders ? (
+            !isLoading ? (
               <Accordion key={userOrders._id} className='accordion-orders'>
-                {userOrders?.map((u_ord) => {
-                  return u_ord?.orders?.map((ord) => (
-                    <Accordion.Item key={ord?._id} eventKey={ord?._id}>
-                      <Accordion.Header style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <div className='accordion-header d-flex w-100 card-title m-0 p-1 justify-content-around fs-6 text align-items-center'>
-                          <div className="info-accordion">
-                            <h5>{new Date(ord.createdAt)?.toLocaleDateString()}</h5>
-                          </div>
-                          <div className="info-accordion">
-                            <h5>${ord?.cart?.total_price?.toFixed(2)}</h5>
-                          </div>
-                          <div className="info-accordion">
-                            <h5>
-                              <Badge bg={handleBadge(ord?.status)?.variant} className="ms-2">
-                                {handleBadge(ord?.status)?.text}
-                              </Badge>
-                            </h5>
-                          </div>
-                        </div>
-                      </Accordion.Header>
-                      <Accordion.Body>
-                        <Table striped bordered hover className={`table-orders ${ord?.status === ord_constants.DELIVERED ? '' : 'm-0'}`}>
-                          <thead>
-                            <tr>
-                              <th>Producto</th>
-                              <th>Cantidad</th>
-                              <th>Total</th>
-                            </tr>
-                          </thead>
-                          <tbody className='table-body'>
-                            {ord?.cart?.subproducts?.map((sub) => (
-                              <tr key={sub?.subproduct?._id}>
-                                <td>{`${sub?.subproduct?.product?.name} ${sub?.subproduct?.size}kg`}</td>
-                                <td>{sub?.quantity}</td>
-                                <td>${sub?.subproduct?.sell_price?.toFixed(2)}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </Table>
-                        {
-                          ord?.status === ord_constants.DELIVERED &&
-                          <div className='d-flex align-items-center justify-content-end mt-3'>
+                {
+                  userOrders?.orders?.length !== 0 ?
+                    userOrders?.orders?.map((ord) => {
+                      return (
+                        <Accordion.Item key={ord?._id} eventKey={ord?._id}>
+                          <Accordion.Header style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <div className='accordion-header d-flex w-100 card-title m-0 p-1 justify-content-around fs-6 text align-items-center'>
+                              <div className="info-accordion">
+                                <h5>{new Date(ord.createdAt)?.toLocaleDateString()}</h5>
+                              </div>
+                              <div className="info-accordion">
+                                <h5>${ord?.cart?.total_price?.toFixed(2)}</h5>
+                              </div>
+                              <div className="info-accordion">
+                                <h5>
+                                  <Badge bg={handleBadge(ord?.status)?.variant} className="ms-2">
+                                    {handleBadge(ord?.status)?.text}
+                                  </Badge>
+                                </h5>
+                              </div>
+                            </div>
+                          </Accordion.Header>
+                          <Accordion.Body>
+                            <Table striped bordered hover className={`table-orders ${ord?.status === ord_constants.DELIVERED ? '' : 'm-0'}`}>
+                              <thead>
+                                <tr>
+                                  <th>Producto</th>
+                                  <th>Cantidad</th>
+                                  <th>Total</th>
+                                </tr>
+                              </thead>
+                              <tbody className='table-body'>
+                                {ord?.cart?.subproducts?.map((sub) => (
+                                  <tr key={sub?.subproduct?._id}>
+                                    <td>{`${sub?.subproduct?.product?.name} ${sub?.subproduct?.size}kg`}</td>
+                                    <td>{sub?.quantity}</td>
+                                    <td>${sub?.subproduct?.sell_price?.toFixed(2)}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </Table>
                             {
-                              isLoading ?
-                                <Button variant='success'>
-                                  <Spinner as="span" animation="border" size='sm' role="status" aria-hidden="true" />
-                                </Button>
-                                :
-                                <Button variant="success" onClick={() => handleReOrder(ord?.cart)}>Re-compra</Button>
+                              ord?.status === ord_constants.DELIVERED &&
+                              <div className='d-flex align-items-center justify-content-end mt-3'>
+                                {
+                                  isLoading ?
+                                    <Button variant='success'>
+                                      <Spinner as="span" animation="border" size='sm' role="status" aria-hidden="true" />
+                                    </Button>
+                                    :
+                                    <Button variant="success" onClick={() => handleReOrder(ord?.cart)}>Re-compra</Button>
+                                }
+                              </div>
                             }
-                          </div>
-                        }
-                      </Accordion.Body>
-                    </Accordion.Item>
-                  ))
-                })}
+                          </Accordion.Body>
+                        </Accordion.Item>
+                      )
+                    })
+                    : <h2>No hay pedidos</h2>
+                }
               </Accordion>
             ) : (
               <Placeholder as={Accordion} animation="glow" className='accordion-orders'>

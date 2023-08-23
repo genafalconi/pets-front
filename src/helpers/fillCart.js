@@ -1,6 +1,6 @@
 export const fillCart = (subProduct, cart) => {
   const existSubProd = cart?.subproducts?.findIndex((elem) => subProduct._id === elem.subproduct._id)
-  
+
   if (existSubProd !== -1) {
     cart.subproducts[existSubProd].quantity += subProduct.quantity
   } else {
