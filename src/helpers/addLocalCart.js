@@ -1,3 +1,11 @@
+const cart = {
+  subproducts: [],
+  total_products: 0,
+  total_price: 0,
+  user: '',
+  active: false
+}
+
 export const addLocalCart = (subProduct, user) => {
 
   cart?.subproducts?.push({ subproduct: subProduct, quantity: subProduct.quantity })
@@ -15,12 +23,4 @@ export const addLocalCart = (subProduct, user) => {
   cart.user = user
 
   return cart
-}
-
-const cart = {
-  subproducts: [],
-  total_products: 0,
-  total_price: 0,
-  user: '',
-  active: false
 }

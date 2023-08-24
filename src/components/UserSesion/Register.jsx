@@ -10,13 +10,15 @@ import { AdvancedImage } from "@cloudinary/react";
 import { cloudinaryImg } from "../../helpers/cloudinary";
 import { Formik } from 'formik';
 import * as yup from 'yup';
-import { type_ord } from "../../helpers/constants";
 
 const GOOGLE_PUBLIC_ID = 'Ppales/Google'
 
 export default function Register({ show, onHideLogin, onHideRegister, onModalClose }) {
 
   const dispatch = useDispatch()
+
+  const token = localStorage.getItem('token');
+  const userLocal = localStorage.getItem('user');
   const cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : null;
 
   const [isLoading, setIsLoading] = useState(false)
@@ -30,9 +32,6 @@ export default function Register({ show, onHideLogin, onHideRegister, onModalClo
       .max(20, 'La contraseña debe tener menos de 20 caracteres')
       .required('Contraseña requerida'),
   });
-
-  let token = localStorage.getItem('token')
-  let userLocal = localStorage.getItem('user')
 
   const registerUser = (values) => {
     setIsLoading(true)
@@ -50,18 +49,17 @@ export default function Register({ show, onHideLogin, onHideRegister, onModalClo
       };
     }
 
-    dispatch(REGISTER_WITH_EMAIL({ userdata: values, cart: modifiedCart, order_type: type_ord.ORDER }))
+    dispatch(REGISTER_WITH_EMAIL({ userdata: values, cart: modifiedCart }))
       .then((response) => {
         if (response.payload.status === 201) {
           onHideRegister()
           Swal.fire({
             title: 'Usuario creado correctamente',
-            text: `Mail: ${response.payload.data.email}`,
+            text: `Mail: ${response.payload.data.user.email}`,
             icon: 'success'
           })
         }
         setIsLoading(false)
-        handleHide()
       }).catch((error) => {
         const errorMessage = error.message;
         setIsLoading(false)
@@ -71,6 +69,19 @@ export default function Register({ show, onHideLogin, onHideRegister, onModalClo
 
   const registerWithGoogle = () => {
     setIsLoading(true)
+
+    let modifiedCart = cart
+    if (cart && Object.keys(cart).length > 0) {
+      const modifiedSubproducts = cart.subproducts.map(({ subproduct }) => {
+        const { name, quantity, ...rest } = subproduct;
+        return { subproduct: rest, quantity };
+      });
+
+      modifiedCart = {
+        ...cart,
+        subproducts: modifiedSubproducts
+      };
+    }
     signInWithPopup(firebaseAuth, providerGoogle)
       .then((result) => {
         // const credential = GoogleAuthProvider.credentialFromResult(result);
@@ -83,8 +94,8 @@ export default function Register({ show, onHideLogin, onHideRegister, onModalClo
         }
         localStorage.setItem('user', JSON.stringify(userLocal))
         localStorage.setItem('token', user.accessToken)
-        dispatch(LOGIN_WITH_GOOGLE(userLocal))
-        handleHide()
+        dispatch(LOGIN_WITH_GOOGLE({ userdata: userLocal, cart: modifiedCart, token: result.user.accessToken }))
+        onHideRegister()
       }).catch((error) => {
         const errorMessage = error.message;
         // const credential = GoogleAuthProvider.credentialFromError(error);

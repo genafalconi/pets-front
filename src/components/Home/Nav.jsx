@@ -96,11 +96,25 @@ export default function Nav() {
   }, [])
 
   useEffect(() => {
-    dispatch(VERIFY_TOKEN()).then((res) => {
-      res.payload ? setActiveSesion(true) : setActiveSesion(false)
-    })
+    const storedToken = localStorage.getItem('token');
+    if (storedToken) {
+      dispatch(VERIFY_TOKEN()).then((res) => {
+        if (res.payload) {
+          setActiveSesion(true)
+        } else {
+          setActiveSesion(false)
+          dispatch(LOGOUT())
+        }
+      })
+    }
+  }, [dispatch])
 
+  useEffect(() => {
     handleCartDisplay(endpoint)
+
+    if (token && userReducer) {
+      setActiveSesion(true)
+    }
 
     const expiredSesionHandler = () => {
       setActiveSesion(false)
