@@ -1,0 +1,26 @@
+name: Deploy to Firebase Hosting
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Delete build folder
+        run: rm -rf build
+
+      - name: Build project
+        run: npm run build
+
+      - name: Deploy to Firebase Hosting
+        run: firebase deploy --only hosting:petszone-arg
