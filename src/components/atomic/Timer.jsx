@@ -7,7 +7,12 @@ import Swal from 'sweetalert2';
 export default function Timer() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [duration, setDuration] = useState(600000);
+  const endpoint = window.location.href.split('/');
+  const ischeckout = endpoint[endpoint.length - 1]
+
+  const initialDuration = 600000
+
+  const [duration, setDuration] = useState(parseInt(initialDuration, 10));
 
   const formatTime = (duration) => {
     const minutes = Math.floor(duration / 60000);
@@ -18,13 +23,14 @@ export default function Timer() {
   const formattedTime = formatTime(duration);
 
   useEffect(() => {
-    const savedDuration = localStorage.getItem('timer_duration');
-    if (savedDuration !== 0) {
+    const savedDuration = localStorage.getItem('timer_duration') && parseInt(localStorage.getItem('timer_duration'));
+    if (savedDuration !== null && savedDuration !== '0') {
       setDuration(parseInt(savedDuration, 10));
     } else {
-      setDuration(600000)
+      setDuration(parseInt(initialDuration, 10))
+      localStorage.setItem('timer_duration', initialDuration.toString())
     }
-  }, []);
+  }, [ischeckout]);
 
   useEffect(() => {
     const finishTimer = () => {
@@ -34,8 +40,7 @@ export default function Timer() {
         icon: 'info'
       })
       navigate('/');
-      setDuration(600000)
-      localStorage.setItem('timer_duration', duration.toString())
+      setDuration(initialDuration)
     };
 
     const interval = setInterval(() => {

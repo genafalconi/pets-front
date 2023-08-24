@@ -27,27 +27,32 @@ const initialState = {
 
 export const clientReducer = createReducer(initialState, (builder) => {
     builder.addCase(LOGIN_WITH_EMAIL.fulfilled, (state, action) => {
-        state.user = action.payload.data?.user?._id
-        state.cart = action.payload.data?.cart
+        state.user = action.payload.data.user._id
+        state.cart = action.payload.data.cart
         state.token = action.payload.token
         state.user_auth = true
-        state.user_admin = action.payload.data?.user?.admin
+        state.user_admin = action.payload.data.user.admin
     })
     builder.addCase(LOGIN_WITH_GOOGLE.fulfilled, (state, action) => {
-        state.user = action.payload.data?.user?._id
-        state.cart = action.payload.data?.cart
+        state.user = action.payload.data.user._id
+        state.cart = action.payload.data.cart
         state.token = action.payload.token
         state.user_auth = true
+        state.user_admin = action.payload.data.user.admin
     })
     builder.addCase(REGISTER_WITH_EMAIL.fulfilled, (state, action) => {
-        state.user = action.payload.data._id
+        state.user = action.payload.data.user._id
+        state.cart = action.payload.data.cart
         state.token = action.payload.token
         state.user_auth = true
+        state.user_admin = action.payload.data.user.admin
     })
     builder.addCase(LOGOUT.fulfilled, (state, action) => {
         state.user = ''
         state.token = ''
         state.cart = {}
+        state.user_auth = false
+        state.user_admin = false
     })
     builder.addCase(VERIFY_TOKEN.fulfilled, (state, action) => {
         state.user_auth = action.payload

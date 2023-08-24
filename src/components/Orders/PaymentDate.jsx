@@ -153,7 +153,7 @@ export default function PaymentDate() {
                     <Spinner as="span" animation="border" size='sm' role="status" aria-hidden="true" />
                   </Button>
                   :
-                  <div className='call-to-action_button payment'>
+                  <div className='call-to-action_button clickable'>
                     <Button className={`${!validContinue ? 'call-to-action_button_disabled' : 'call-to-action_button'}`}
                       onClick={validContinue ? handleConfirm : undefined} disabled={!validContinue}>Confirmar</Button>
                   </div>

@@ -13,27 +13,22 @@ export default function ProtectedRoute({ children }) {
   const [validToken, setValidToken] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const userAuth = useSelector((state) => state.clientReducer.user_auth);
-  const token = useSelector((state) => state.clientReducer.token);
+  const { token, user_auth } = useSelector((state) => state.clientReducer);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const verifyTokenValidity = useCallback(async () => {
-    try {
-      await dispatch(VERIFY_TOKEN())
-        .then((res) => {
-          setValidToken(res.payload);
-          setIsLoading(false);
-        });
-    } catch (error) {
-      console.log(error);
-    }
+  const verifyTokenValidity = useCallback(() => {
+    dispatch(VERIFY_TOKEN())
+      .then((res) => {
+        setValidToken(res.payload);
+        setIsLoading(false);
+      });
   }, [dispatch]);
 
   useEffect(() => {
     const verifyToken = () => {
-      if (token && userAuth) {
+      if (token && user_auth) {
         verifyTokenValidity();
       } else {
         setIsLoading(false);
@@ -42,7 +37,7 @@ export default function ProtectedRoute({ children }) {
     };
     verifyToken();
 
-  }, [verifyTokenValidity, token, userAuth]);
+  }, [verifyTokenValidity, token, user_auth]);
 
   const handleModalClose = () => {
     if (!token && !validToken) {

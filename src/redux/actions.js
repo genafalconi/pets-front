@@ -100,7 +100,8 @@ export const REGISTER_WITH_EMAIL = createAsyncThunk(
         const res = await request(req_constants.POST, `${REACT_APP_AUTH}/auth/register`, null, { user: userdata, cart }, token)
 
         localStorage.setItem('token', token)
-        localStorage.setItem('user', res?.data?._id)
+        localStorage.setItem('user', res?.data?.user._id)
+        localStorage.setItem('cart', JSON.stringify(res?.data?.cart))
         Swal.fire({
           title: 'Usuario creado correctamente',
           text: `Email: ${res?.data?.email}`,
@@ -146,9 +147,9 @@ export const LOGOUT = createAsyncThunk(
       localStorage.removeItem('user')
       localStorage.removeItem('cart')
       localStorage.removeItem('admin')
-      localStorage.getItem('reorder_cart') && localStorage.removeItem('reorder_cart')
-      localStorage.getItem('order') && localStorage.removeItem('order')
-      localStorage.getItem('timer_duration') && localStorage.removeItem('timer_duration')
+      localStorage.removeItem('reorder_cart')
+      localStorage.removeItem('order')
+      localStorage.removeItem('timer_duration')
       await firebaseAuth.signOut()
 
     } catch (error) {
