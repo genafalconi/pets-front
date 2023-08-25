@@ -65,3 +65,32 @@ export const BrandDto = {
   UNIK: 'UNIK',
   OPTIMUM: 'OPTIMUM'
 }
+
+
+export const carouelImages = [
+  {
+    name: 'Image1',
+    img: 'Carusel/sportive-dog-performing-during-lure-coursing-competition_1_fuu1je',
+    text: `Bienvenidos a Pet's Zone`
+  },
+  {
+    name: 'Image2',
+    img: 'Carusel/close-up-beautiful-cat-with-owner_1_cnizg7',
+    text: 'Entregas GRATIS a domicilio'
+  },
+  {
+    name: 'Image3',
+    img: 'Carusel/close-up-portrait-beautiful-cat_1_rpst7l',
+    text: 'Somos la primer comunidad integral para mascotas'
+  },
+  {
+    name: 'Image4',
+    img: 'Carusel/cute-scottish-straight-gray-cat-hunting-playing_mn7pmx',
+    text: 'Pagas una vez que recibis tu pedido en condiciones'
+  },
+  {
+    name: 'Image5',
+    img: 'Carusel/hungry-white-brown-dog-with-big-ears-brown-eyes-ready-eat-bowl-full-food_cytspy',
+    text: 'Suscribite a nuestra re-compra automatica'
+  }
+]

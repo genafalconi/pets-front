@@ -1,10 +1,11 @@
 import { createReducer } from "@reduxjs/toolkit"
-import { ADD_TO_CART, ADD_TO_LOCAL_CART, CREATE_USER_ADDRESS, CREATE_USER_ORDER, DELETE_USER_ADDRESS, GET_ACCOUNT_INFO, GET_ACCOUNT_ORDERS, GET_ACTIVE_PRODUCTS, GET_FILTER_PRODUCTS, GET_OPEN_OFFERS, GET_USER_ADDRESS, GET_USER_CART, GET_USER_ORDER, LOCK_SUBPROD_USER, LOGIN_WITH_EMAIL, LOGIN_WITH_GOOGLE, LOGOUT, REGISTER_WITH_EMAIL, REMOVE_FROM_CART, REMOVE_FROM_LOCAL_CART, SAVE_RE_ORDER_CART, SEARCH_PRODUCTS, SET_USER_ADDRESS, UPDATE_LOCAL_SUBPRODUCT_QUANTITY, UPDATE_SUBPRODUCT_QUANTITY, VERIFY_TOKEN } from "./actions"
+import { ADD_TO_CART, ADD_TO_LOCAL_CART, CREATE_USER_ADDRESS, CREATE_USER_ORDER, DELETE_USER_ADDRESS, GET_ACCOUNT_INFO, GET_ACCOUNT_ORDERS, GET_ACTIVE_PRODUCTS, GET_FILTER_PRODUCTS, GET_HIGHLIGHT_SUBPRODS, GET_OPEN_OFFERS, GET_USER_ADDRESS, GET_USER_CART, GET_USER_ORDER, LOCK_SUBPROD_USER, LOGIN_WITH_EMAIL, LOGIN_WITH_GOOGLE, LOGOUT, REGISTER_WITH_EMAIL, REMOVE_FROM_CART, REMOVE_FROM_LOCAL_CART, SAVE_RE_ORDER_CART, SEARCH_PRODUCTS, SET_USER_ADDRESS, UPDATE_LOCAL_SUBPRODUCT_QUANTITY, UPDATE_SUBPRODUCT_QUANTITY, VERIFY_TOKEN } from "./actions"
 
 const initialState = {
     token: localStorage.getItem('token'),
     products: [],
     products_filtered: [],
+    highlights: [],
     product: {},
     categories: [],
     breeds: [],
@@ -126,5 +127,8 @@ export const clientReducer = createReducer(initialState, (builder) => {
         state.current_page = action.payload.page
         state.total_pages = action.payload.total_pages
         state.total_products = action.payload.total_products
+    })
+    builder.addCase(GET_HIGHLIGHT_SUBPRODS.fulfilled, (state, action) => {
+        state.highlights = action.payload
     })
 })
