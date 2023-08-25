@@ -472,3 +472,14 @@ export const SEARCH_PRODUCTS = createAsyncThunk(
     }
   }
 )
+
+export const GET_HIGHLIGHT_SUBPRODS = createAsyncThunk(
+  'GET_HIGHLIGHT_SUBPRODS', async () => {
+    try {
+      const res = await request(req_constants.GET, `${REACT_APP_PROD}/subproducts/highlight`, null, null, null)
+      return res?.data
+    } catch (error) {
+      return errorHandler(error)
+    }
+  }
+)
