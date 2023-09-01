@@ -483,3 +483,14 @@ export const GET_HIGHLIGHT_SUBPRODS = createAsyncThunk(
     }
   }
 )
+
+export const GET_LANDING_IMAGES = createAsyncThunk(
+  'GET_LANDING_IMAGES', async (type) => {
+    try {
+      const res = await request(req_constants.GET, `${REACT_APP_PROD}/products/landing-images?type=${type}`, null, null, null)
+      return res?.data
+    } catch (error) {
+      return errorHandler(error)
+    }
+  }
+)

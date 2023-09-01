@@ -70,27 +70,27 @@ export const BrandDto = {
 export const carouelImages = [
   {
     name: 'Image1',
-    img: 'Landing/CAROUSEL/sportive-dog-performing-during-lure-coursing-competition_1_fuu1je',
+    img: 'Landing/CAROUSEL/sportive-dog-performing-during-lure-coursing-competition_1_zdiqiz',
     text: `Bienvenidos a Pet's Zone`
   },
   {
     name: 'Image2',
-    img: 'Landing/CAROUSEL/close-up-beautiful-cat-with-owner_1_cnizg7',
+    img: 'Landing/CAROUSEL/close-up-beautiful-cat-with-owner_1_cnizg7_zl0tlu',
     text: 'Entregas GRATIS a domicilio'
   },
   {
     name: 'Image3',
-    img: 'Landing/CAROUSEL/close-up-portrait-beautiful-cat_1_rpst7l',
+    img: 'Landing/CAROUSEL/close-up-portrait-beautiful-cat_1_rpst7l_eptzvt',
     text: 'Somos la primer comunidad integral para mascotas'
   },
   {
     name: 'Image4',
-    img: 'Landing/CAROUSEL/cute-scottish-straight-gray-cat-hunting-playing_mn7pmx',
+    img: 'Landing/CAROUSEL/cute-scottish-straight-gray-cat-hunting-playing_mn7pmx_sbbuva',
     text: 'Pagas una vez que recibis tu pedido en condiciones'
   },
   {
     name: 'Image5',
-    img: 'Landing/CAROUSEL/hungry-white-brown-dog-with-big-ears-brown-eyes-ready-eat-bowl-full-food_cytspy',
+    img: 'Landing/CAROUSEL/hungry-white-brown-dog-with-big-ears-brown-eyes-ready-eat-bowl-full-food_cytspy_va5mrg',
     text: 'Suscribite a nuestra re-compra automatica'
   }
 ]
