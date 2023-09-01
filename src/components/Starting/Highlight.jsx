@@ -48,7 +48,7 @@ export default function Highlights() {
         {!isLoading ? (
           chunkHighlights(highlights, itemsPerLine).map((chunk, index) => (
             <Carousel.Item key={index}>
-              <div className="d-flex">
+              <div className="d-flex justify-content-center">
                 {chunk.map((elem, innerIndex) => (
                   <Card key={innerIndex} className="highlight-card">
                     <div className="highlight-image">
