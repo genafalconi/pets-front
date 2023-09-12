@@ -19,7 +19,6 @@
     font-weight: bold;
     justify-content: flex-start;
     font-size: 1.5rem;
-    width: 50%;
 
     img {
       height: 4rem;
@@ -28,6 +27,24 @@
       width: auto;
       max-width: 5rem;
     }
+  }
+
+  .product-link {
+    font-size: 1.2rem;
+    text-decoration: none;
+    color: white;
+    margin-left: 1rem;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+  }
+
+  .product-link:hover {
+    transform: scale(1.05);
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .search-bar {

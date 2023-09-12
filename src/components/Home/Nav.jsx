@@ -139,6 +139,9 @@ export default function Nav() {
             <AdvancedImage cldImg={cloudinaryImg(LOGO_PUBLIC_ID)} alt='Logo' />
           </Link>
           <p>Pets Zone</p>
+        </div>
+        <div className="nav-links">
+          <a href="/products" className='product-link'>Productos</a>
           <div className="search-bar">
             {
               window.innerWidth > 768 ?
@@ -161,7 +164,16 @@ export default function Nav() {
                   </Dropdown.Toggle>
                   <Dropdown.Menu className='dropdown-custom-menu'>
                     <Dropdown.Item className='dropdown-search-item' onClick={(e) => e.stopPropagation()}>
-                      <Form.Control className='input-search' type="text" placeholder='Buscar...' ref={inputRef} value={searchInput} onKeyDown={handleKeyDown} />
+                      <Form.Control
+                        className='input-search'
+                        type="text"
+                        placeholder='Buscar...'
+                        ref={inputRef}
+                        onKeyDown={handleKeyDown}
+                        value={searchInput}
+                        maxLength={35}
+                        onChange={(e) => validateInput(e.target.value)}
+                      />
                       <MdSearch className='action-search-icon' size={20} onClick={() => handleSearchInput(inputRef.current.value)} />
                     </Dropdown.Item>
                   </Dropdown.Menu>

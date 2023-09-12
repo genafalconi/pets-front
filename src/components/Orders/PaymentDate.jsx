@@ -11,6 +11,7 @@ import { AdvancedImage } from '@cloudinary/react';
 import { cloudinaryImg } from '../../helpers/cloudinary';
 import LazyComponent from '../../helpers/lazyComponents';
 import { Button } from 'react-bootstrap';
+import InfoPayment from '../atomic/InfoPayment';
 
 const CASH_PUBLIC_ID = 'Payments/Efectivo'
 const TRANS_PUBLIC_ID = 'Payments/Transferencia'
@@ -102,6 +103,7 @@ export default function PaymentDate() {
             <div className="title">
               <h1>Coordinar</h1>
             </div>
+            <InfoPayment />
             <div className="coordinate-container">
               <div className="date">
                 <div className="subtitle">
@@ -119,7 +121,7 @@ export default function PaymentDate() {
               </div>
               <div className="payment">
                 <div className="subtitle">
-                  <h2>Tipo de pago</h2>
+                  <h2>Método de pago</h2>
                 </div>
                 <div className='payment-type d-flex align-items-center justify-content-center'>
                   <div className='d-flex flex-column'>
@@ -138,13 +140,13 @@ export default function PaymentDate() {
                 <div className='mt-3'>
                   {
                     selectedPaymentType ? ''
-                      : <span className="error-labels">Selecciona un metodo de pago</span>
+                      : <span className="error-labels">Selecciona un método de pago</span>
                   }
                 </div>
               </div>
             </div>
             <div className='coordinate-buttons'>
-              <div className="secondary-button">
+              <div className="secondary-button go-back">
                 <button onClick={handleGoBack}>Volver</button>
               </div>
               {

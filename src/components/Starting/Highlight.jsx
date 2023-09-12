@@ -1,15 +1,20 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { GET_HIGHLIGHT_SUBPRODS } from "../../redux/actions";
+import { ADD_TO_CART, ADD_TO_LOCAL_CART, GET_HIGHLIGHT_SUBPRODS } from "../../redux/actions";
 import { Button, Card, Carousel, Spinner } from "react-bootstrap";
 import { cloudinaryImg } from "../../helpers/cloudinary";
 import { AdvancedImage } from "@cloudinary/react";
 import '../../styles/components/landing.scss';
+import NewProd from "../Product/NewProd";
 
 export default function Highlights() {
   const dispatch = useDispatch();
   const { highlights } = useSelector((state) => state.clientReducer);
+
   const [isLoading, setIsLoading] = useState(true);
+  const [showNewProd, setShowNewProd] = useState(false);
+  const [newProd, setNewProd] = useState(null);
+  const user = localStorage.getItem('user')
 
   let itemsPerLine = 4;
 
@@ -23,9 +28,38 @@ export default function Highlights() {
     itemsPerLine = 4;
   }
 
-  const addToCart = () => {
-    // Implement your addToCart logic here
-  };
+  const addToCart = useCallback((data) => {
+    const subprod = highlights.find((elem) => elem._id === data._id)
+console.log(subprod)
+    const subProdToAdd = {
+      _id: subprod?._id,
+      product: subprod?.product?._id,
+      buy_price: subprod?.buy_price,
+      sell_price: subprod?.sell_price,
+      size: subprod?.size,
+      stock: subprod?.stock,
+      image: subprod?.product?.image,
+      quantity: 1,
+      name: subprod?.product?.name
+    }
+    setNewProd(subProdToAdd)
+    setShowNewProd(true)
+
+    dispatch(ADD_TO_LOCAL_CART(subProdToAdd))
+    if (user) {
+      setIsLoading(true);
+      dispatch(ADD_TO_CART(subProdToAdd))
+        .then(() => {
+          setIsLoading(false);
+          setShowNewProd(false);
+        })
+        .catch((error) => {
+          setIsLoading(false);
+          setShowNewProd(false);
+        });
+    }
+
+  }, [dispatch, highlights, user])
 
   useEffect(() => {
     dispatch(GET_HIGHLIGHT_SUBPRODS()).then((res) => setIsLoading(false));
@@ -38,7 +72,7 @@ export default function Highlights() {
     }
     return chunkedArr;
   };
-
+  console.log(highlights)
   return (
     <div className="highlight-container">
       <div className="subtitle d-flex justify-content-center">
@@ -74,6 +108,9 @@ export default function Highlights() {
           <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
         )}
       </Carousel>
+      {
+        showNewProd && <NewProd product={newProd} />
+      }
     </div>
   );
 }
