@@ -9,6 +9,7 @@ export default function Landing() {
       <LazyComponent>
         <Carousel />
         <Highlights />
+        <br />
       </LazyComponent>
     </>
   );

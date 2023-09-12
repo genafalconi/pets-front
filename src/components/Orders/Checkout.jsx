@@ -10,6 +10,7 @@ import PaymentDate from './PaymentDate';
 import eventBus from '../../helpers/event-bus';
 import Address from './Address';
 import LazyComponent from '../../helpers/lazyComponents';
+import InfoCheckout from '../atomic/InfoCheckout';
 
 export default function Checkout() {
 
@@ -130,6 +131,7 @@ export default function Checkout() {
                 <div className="title">
                   <h1>Resumen</h1>
                 </div>
+                <InfoCheckout />
                 <div className="checkout-container">
                   <div className="cart-items">
                     <div className="subtitle">

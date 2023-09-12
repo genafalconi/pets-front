@@ -9,9 +9,15 @@
 
 .clickable {
   width: auto;
+
   button {
+    height: 3rem;
     width: max-content;
   }
+}
+
+.go-back>button {
+  height: 3rem;
 }
 
 .date {

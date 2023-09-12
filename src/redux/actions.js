@@ -32,6 +32,7 @@ export const LOGIN_WITH_EMAIL = createAsyncThunk(
           const isLoggedUser = localStorage.getItem('user')
           if (isLoggedUser) {
             localStorage.setItem('token', token)
+            localStorage.setItem('user_auth', true)
           }
 
           return { ...res, token: token }
@@ -82,6 +83,7 @@ export const LOGIN_WITH_GOOGLE = createAsyncThunk(
         localStorage.setItem('user', res?.data?.user?._id)
         localStorage.setItem('admin', res.data.user?.admin)
         localStorage.setItem('cart', JSON.stringify(res?.data?.cart))
+        localStorage.setItem('user_auth', true)
 
         return { ...res, token }
       }

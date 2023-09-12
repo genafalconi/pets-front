@@ -98,12 +98,21 @@
     transform: translateY(-4px);
   }
 
-  .highlight-image img {
-    max-width: 60%;
-    height: auto;
-    height: 166px;
+  .highlight-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border-radius: 8px;
+    max-height: 15rem;
+    overflow: hidden;
+    padding: 10px;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .highlight-image img {
+    height: 12rem;
+    width: auto;
+    object-fit: cover;
   }
 
   .card-title {
@@ -141,12 +150,8 @@
 .custom-carousel {
   margin: auto;
   background-color: #f8f9fa;
-  height: 430px;
+  height: 100%;
   width: 80%;
-}
-
-.custom-carousel .carousel-inner {
-  height: 430px;
 }
 
 .custom-carousel .carousel-control-prev,
