@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react';
-import Spinner from 'react-bootstrap/Spinner';
 import ProductCheckout from './ProductCheckout';
 import '../../styles/components/checkout.scss'
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,6 +10,7 @@ import eventBus from '../../helpers/event-bus';
 import Address from './Address';
 import LazyComponent from '../../helpers/lazyComponents';
 import InfoCheckout from '../atomic/InfoCheckout';
+import DogAnimation from '../atomic/DogAnimation';
 
 export default function Checkout() {
 
@@ -120,9 +120,7 @@ export default function Checkout() {
     <div className="content-page">
       {
         isLoading ? (
-          <div className="loading">
-            <Spinner as="span" animation="border" size="lg" role="status" aria-hidden="true" />
-          </div>
+          <DogAnimation />
         ) : (
           <>
             <Timer />
