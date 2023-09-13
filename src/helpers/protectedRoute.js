@@ -3,8 +3,8 @@ import Login from '../components/UserSesion/Login';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { VERIFY_TOKEN } from '../redux/actions';
-import Spinner from 'react-bootstrap/Spinner';
 import Register from '../components/UserSesion/Register';
+import DogAnimation from '../components/atomic/DogAnimation';
 
 export default function ProtectedRoute({ children }) {
 
@@ -48,9 +48,7 @@ export default function ProtectedRoute({ children }) {
   return (
     <>
       {isLoading ? (
-        <div className="loading">
-          <Spinner as="span" animation="border" size="lg" role="status" aria-hidden="true" />
-        </div>
+        <DogAnimation />
       ) : (
         <>
           {!token || (token && !validToken) ? (

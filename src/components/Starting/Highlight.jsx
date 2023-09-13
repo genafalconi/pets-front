@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ADD_TO_CART, ADD_TO_LOCAL_CART, GET_HIGHLIGHT_SUBPRODS } from "../../redux/actions";
-import { Button, Card, Carousel, Spinner } from "react-bootstrap";
+import { Button, Card, Carousel } from "react-bootstrap";
 import { cloudinaryImg } from "../../helpers/cloudinary";
 import { AdvancedImage } from "@cloudinary/react";
 import '../../styles/components/landing.scss';
 import NewProd from "../Product/NewProd";
+import DogAnimation from "../atomic/DogAnimation";
 
-export default function Highlights() {
+export default function Highlights({ setIsLoadingHighlight }) {
   const dispatch = useDispatch();
   const { highlights } = useSelector((state) => state.clientReducer);
 
@@ -30,7 +31,7 @@ export default function Highlights() {
 
   const addToCart = useCallback((data) => {
     const subprod = highlights.find((elem) => elem._id === data._id)
-console.log(subprod)
+
     const subProdToAdd = {
       _id: subprod?._id,
       product: subprod?.product?._id,
@@ -62,8 +63,11 @@ console.log(subprod)
   }, [dispatch, highlights, user])
 
   useEffect(() => {
-    dispatch(GET_HIGHLIGHT_SUBPRODS()).then((res) => setIsLoading(false));
-  }, [dispatch]);
+    dispatch(GET_HIGHLIGHT_SUBPRODS()).then((res) => {
+      setIsLoading(false)
+      setIsLoadingHighlight(false)
+    });
+  }, [dispatch, setIsLoadingHighlight]);
 
   const chunkHighlights = (arr, size) => {
     const chunkedArr = [];
@@ -72,45 +76,51 @@ console.log(subprod)
     }
     return chunkedArr;
   };
-  console.log(highlights)
+
   return (
-    <div className="highlight-container">
-      <div className="subtitle d-flex justify-content-center">
-        <h2>Productos destacados</h2>
-      </div>
-      <Carousel className="custom-carousel">
-        {!isLoading ? (
-          chunkHighlights(highlights, itemsPerLine).map((chunk, index) => (
-            <Carousel.Item key={index}>
-              <div className="d-flex justify-content-center">
-                {chunk.map((elem, innerIndex) => (
-                  <Card key={innerIndex} className="highlight-card">
-                    <div className="highlight-image">
-                      <AdvancedImage cldImg={cloudinaryImg(elem.product.image)} />
-                    </div>
-                    <Card.Body>
-                      <div className="highlight-details">
-                        <Card.Title>{elem.product.name}</Card.Title>
-                        <Card.Text className="item-size">{elem.size}kg</Card.Text>
-                        <Card.Text className="old-price">${(elem.sell_price).toFixed(2)}</Card.Text>
-                        <Card.Text className="new-price">${(elem.sell_price * 0.95).toFixed(2)}</Card.Text>
-                      </div>
-                      <div className="call-to-action_button highlight-btn">
-                        <Button onClick={() => addToCart(elem)}>Agregar</Button>
-                      </div>
-                    </Card.Body>
-                  </Card>
-                ))}
-              </div>
-            </Carousel.Item>
-          ))
-        ) : (
-          <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-        )}
-      </Carousel>
+    <>
       {
-        showNewProd && <NewProd product={newProd} />
+        isLoading ? (
+          <DogAnimation />
+        ) : (
+          <div className="highlight-container">
+            <div className="subtitle d-flex justify-content-center">
+              <h2>Productos destacados</h2>
+            </div>
+            <Carousel className="custom-carousel">
+              {
+                chunkHighlights(highlights, itemsPerLine).map((chunk, index) => (
+                  <Carousel.Item key={index}>
+                    <div className="d-flex justify-content-center">
+                      {chunk.map((elem, innerIndex) => (
+                        <Card key={innerIndex} className="highlight-card">
+                          <div className="highlight-image">
+                            <AdvancedImage cldImg={cloudinaryImg(elem.product.image)} />
+                          </div>
+                          <Card.Body>
+                            <div className="highlight-details">
+                              <Card.Title>{elem.product.name}</Card.Title>
+                              <Card.Text className="item-size">{elem.size}kg</Card.Text>
+                              <Card.Text className="old-price">${(elem.sell_price).toFixed(2)}</Card.Text>
+                              <Card.Text className="new-price">${(elem.sell_price * 0.95).toFixed(2)}</Card.Text>
+                            </div>
+                            <div className="call-to-action_button highlight-btn">
+                              <Button onClick={() => addToCart(elem)}>Agregar</Button>
+                            </div>
+                          </Card.Body>
+                        </Card>
+                      ))}
+                    </div>
+                  </Carousel.Item>
+                ))
+              }
+            </Carousel>
+            {
+              showNewProd && <NewProd product={newProd} />
+            }
+          </div>
+        )
       }
-    </div>
+    </>
   );
 }

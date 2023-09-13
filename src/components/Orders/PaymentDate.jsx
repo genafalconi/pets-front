@@ -12,6 +12,7 @@ import { cloudinaryImg } from '../../helpers/cloudinary';
 import LazyComponent from '../../helpers/lazyComponents';
 import { Button } from 'react-bootstrap';
 import InfoPayment from '../atomic/InfoPayment';
+import DogAnimation from '../atomic/DogAnimation';
 
 const CASH_PUBLIC_ID = 'Payments/Efectivo'
 const TRANS_PUBLIC_ID = 'Payments/Transferencia'
@@ -95,9 +96,7 @@ export default function PaymentDate() {
     <>
       {
         isLoading ? (
-          <div className="loading">
-            <Spinner as="span" animation="border" size="lg" role="status" aria-hidden="true" />
-          </div>
+          <DogAnimation />
         ) : (
           <>
             <div className="title">

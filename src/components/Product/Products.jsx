@@ -1,5 +1,4 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
-import { Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { GET_ACTIVE_PRODUCTS, SEARCH_PRODUCTS } from "../../redux/actions";
@@ -7,6 +6,7 @@ import ProductCart from "./ProductCard";
 import LazyComponent from "../../helpers/lazyComponents";
 import getAnimalBySearch from "../../helpers/getAnimalBySearch";
 import CustomPagination from "../atomic/CustomPagination";
+import DogAnimation from "../atomic/DogAnimation";
 
 export default function Products() {
 
@@ -66,9 +66,7 @@ export default function Products() {
   return (
     <div className="content-page">
       {isLoading ? (
-        <div className="loading">
-          <Spinner as="span" animation="border" size="xl" role="status" aria-hidden="true" />
-        </div>
+        <DogAnimation />
       ) : (
         <div className="products-container">
           <div className="title">

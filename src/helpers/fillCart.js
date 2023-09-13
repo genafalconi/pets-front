@@ -4,7 +4,11 @@ export const fillCart = (subProduct, cart) => {
   if (existSubProd !== -1) {
     cart.subproducts[existSubProd].quantity += subProduct.quantity
   } else {
-    cart.subproducts.push({ subproduct: subProduct, quantity: subProduct.quantity })
+    cart.subproducts.push({
+      subproduct: subProduct,
+      quantity: subProduct.quantity,
+      profit: (subProduct.sell_price - subProduct.buy_price) * subProduct.quantity
+    })
   }
 
   let newTotalP = 0, newCant = 0
