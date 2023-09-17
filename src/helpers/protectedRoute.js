@@ -19,25 +19,21 @@ export default function ProtectedRoute({ children }) {
   const navigate = useNavigate();
 
   const verifyTokenValidity = useCallback(() => {
-    dispatch(VERIFY_TOKEN())
-      .then((res) => {
-        setValidToken(res.payload);
-        setIsLoading(false);
-      });
-  }, [dispatch]);
+    if (token && user_auth) {
+      dispatch(VERIFY_TOKEN())
+        .then((res) => {
+          setValidToken(res.payload);
+          setIsLoading(false);
+        });
+    } else {
+      setIsLoading(false);
+      setModalLogin(true);
+    }
+  }, [dispatch, token, user_auth]);
 
   useEffect(() => {
-    const verifyToken = () => {
-      if (token && user_auth) {
-        verifyTokenValidity();
-      } else {
-        setIsLoading(false);
-        setModalLogin(true);
-      }
-    };
-    verifyToken();
-
-  }, [verifyTokenValidity, token, user_auth]);
+    verifyTokenValidity();
+  }, [verifyTokenValidity]);
 
   const handleModalClose = () => {
     if (!token && !validToken) {

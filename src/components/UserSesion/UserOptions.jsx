@@ -1,6 +1,6 @@
 import Dropdown from 'react-bootstrap/Dropdown';
 import '../../styles/components/nav.scss'
-import { FiUser } from 'react-icons/fi'
+import { FiUserCheck } from 'react-icons/fi'
 import { useDispatch, useSelector } from 'react-redux';
 import { LOGOUT } from '../../redux/actions';
 import { useNavigate } from 'react-router-dom';
@@ -46,7 +46,7 @@ export default function UserOptions({ onHideAddress }) {
     <div className="user-nav_sesion_options">
       <Dropdown className="d-inline_mx-2">
         <Dropdown.Toggle id="dropdown-autoclose-true" className='dropdown-custom'>
-          <FiUser className='user-nav_sesion_icon' size={20} />
+          <FiUserCheck className='user-nav_sesion_icon' size={20} />
         </Dropdown.Toggle>
         <Dropdown.Menu className='dropdown-custom-menu'>
           <Dropdown.Item href='/account'>Cuenta</Dropdown.Item>

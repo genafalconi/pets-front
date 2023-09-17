@@ -21,13 +21,36 @@
   z-index: 110;
 }
 
+
+.dropdown-custom {
+  background-color: $pets-yellow;
+  color: $background-color;
+  border: none;
+  cursor: pointer;
+}
+
+.dropdown-custom.btn.show {
+  background-color: $pets-yellow;
+  color: $background-color;
+  border: none;
+  cursor: pointer;
+}
+
+.dropdown-custom:hover,
+.dropdown-custom:focus,
+.dropdown-custom:first-child:active,
+.dropdown-custom:first-child:active:focus-visible {
+  border: none;
+  background-color: $pets-yellow;
+  box-shadow: none;
+}
+
 .title {
   position: absolute;
   top: 10%;
   font-size: 2rem;
   font-weight: bold;
   text-align: start;
-  letter-spacing: 2px;
   color: $text-color;
   width: 100%;
   height: 10%;
@@ -40,6 +63,10 @@
   h1 {
     margin-left: 5%;
   }
+}
+
+.filter-title {
+  top: 13%;
 }
 
 .subtitle>h2 {
@@ -57,13 +84,13 @@
 }
 
 .call-to-action_button_disabled {
-  background-color: $pets-red !important;
+  background-color: $pets-violet !important;
 }
 
 .call-to-action_button button {
   width: 40%;
   padding: 0.5rem;
-  background-color: $pets-red;
+  background-color: $pets-violet;
   border: none;
   color: $primary-text-button-color;
   font-size: 1.2rem;
@@ -73,23 +100,23 @@
 }
 
 .call-to-action_button button:first-child:active {
-  background-color: $pets-red;
+  background-color: $pets-violet;
   color: $primary-text-button-color;
-  border: 1px solid $pets-red;
+  border: 1px solid $pets-violet;
 }
 
 .call-to-action_button button:hover {
   background-color: $secondary-button-color;
-  color: $pets-red;
-  border: 1px solid $pets-red;
+  color: $pets-violet;
+  border: 1px solid $pets-violet;
 }
 
 .call-to-action_button button:focus-visible {
-  box-shadow: 0 0 0 0.25rem rgba(98, 0, 0, 0.5);
+  box-shadow: 0 0 0 0.25rem rgba(123, 44, 191, .75);
 }
 
 .content-page {
-  margin-top: 5rem;
+  margin-top: 6rem;
 }
 
 .container-checkout {
@@ -120,7 +147,12 @@
 }
 
 .container-address.selected {
-  border: 2px solid blue;
+  border: 2px solid $pets-violet;
+}
+
+.form-check-input:checked {
+  background-color: $pets-violet !important;
+  border-color: $pets-violet !important;
 }
 
 .primary-button>button {
@@ -259,6 +291,10 @@
 @media screen and (max-width: 550px) {
   .container-checkout {
     flex-direction: column;
+  }
+
+  .call-to-action_button button {
+    width: 100%;
   }
 }
 

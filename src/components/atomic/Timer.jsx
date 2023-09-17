@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { REMOVE_LOCK_SUBPROD_USER } from '../../redux/actions';
 import Swal from 'sweetalert2';
 
 export default function Timer() {
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const endpoint = window.location.href.split('/');
@@ -12,6 +13,7 @@ export default function Timer() {
 
   const initialDuration = 600000
 
+  const { reset_timer } = useSelector((state) => state.clientReducer);
   const [duration, setDuration] = useState(parseInt(initialDuration, 10));
 
   const formatTime = (duration) => {
@@ -60,6 +62,14 @@ export default function Timer() {
       localStorage.setItem('timer_duration', duration.toString());
     };
   }, [dispatch, navigate, duration]);
+
+  useEffect(() => {
+    const resetTimer = () => {
+      setDuration(initialDuration);
+      localStorage.setItem('timer_duration', initialDuration.toString())
+    };
+    resetTimer();
+  }, [reset_timer]);
 
   return (
     <div className='timer'>

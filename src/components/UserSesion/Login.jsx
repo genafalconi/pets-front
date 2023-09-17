@@ -33,11 +33,11 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
   });
 
   const loginGoogle = () => {
+    setIsLoading(true)
     if (validGoogleButton) {
       setValidGoogleButton(false);
       signInWithPopup(firebaseAuth, providerGoogle)
-      .then((result) => {
-          setIsLoading(true);
+        .then((result) => {
           const user = result.user;
           const userLocal = {
             email: user.email,
@@ -66,14 +66,13 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
               }
               setValidGoogleButton(true);
             })
-          setIsLoading(false);
+            .finally((fin) => {
+              setIsLoading(false);
+            })
         })
         .catch((error) => {
           const errorMessage = error.message;
           return errorMessage;
-        })
-        .finally((fin) => {
-          setIsLoading(false)
         })
     }
   };
@@ -124,7 +123,9 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
   return (
     <Modal
       show={show}
-      onHide={handleHide}
+      onHide={!isLoading && handleHide}
+      backdrop={!isLoading && true}
+      keyboard={!isLoading}
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >

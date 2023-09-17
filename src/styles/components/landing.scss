@@ -1,3 +1,5 @@
+@import '../variables';
+
 .animal-selection {
   display: flex;
   justify-content: space-evenly;
@@ -144,9 +146,13 @@
   .highlight-btn>button {
     width: 100%;
   }
+
+  .highlight-btn>button:disabled {
+    background-color: $pets-violet;
+    border-color: $pets-violet;
+  }
 }
 
-//Highlight carousel
 .custom-carousel {
   margin: auto;
   background-color: #f8f9fa;
