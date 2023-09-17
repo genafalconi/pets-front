@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import eventBus from '../../helpers/event-bus';
-import { CREATE_USER_ORDER, GET_OPEN_OFFERS } from '../../redux/actions';
+import { CREATE_USER_ORDER, GET_OPEN_OFFERS, RESET_TIMER } from '../../redux/actions';
 import Spinner from 'react-bootstrap/Spinner';
 import '../../styles/components/coordinate.scss'
 import Offers from '../atomic/Offers';
@@ -71,7 +71,10 @@ export default function PaymentDate() {
       })
       .catch((error) => {
         setIsLoading(false);
-      });
+      })
+      .finally((fin) => {
+        dispatch(RESET_TIMER())
+      })
   }, [cart, dispatch, user, selectedOfferData, selectedPaymentType, address, locks, navigate, order_type]);
 
   useEffect(() => {
@@ -144,22 +147,22 @@ export default function PaymentDate() {
                 </div>
               </div>
             </div>
-            <div className='coordinate-buttons'>
-              <div className="secondary-button go-back">
-                <button onClick={handleGoBack}>Volver</button>
-              </div>
-              {
-                isConfirmed ?
-                  <Button className='call-to-action_button_disabled' disabled>
-                    <Spinner as="span" animation="border" size='sm' role="status" aria-hidden="true" />
-                  </Button>
-                  :
+            {
+              isConfirmed ?
+                <Button className='call-to-action_button_disabled' disabled>
+                  <Spinner as="span" animation="border" size='sm' role="status" aria-hidden="true" />
+                </Button>
+                :
+                <div className='coordinate-buttons'>
+                  <div className="secondary-button go-back">
+                    <button onClick={handleGoBack}>Volver</button>
+                  </div>
                   <div className='call-to-action_button clickable'>
                     <Button className={`${!validContinue ? 'call-to-action_button_disabled' : 'call-to-action_button'}`}
                       onClick={validContinue ? handleConfirm : undefined} disabled={!validContinue}>Confirmar</Button>
                   </div>
-              }
-            </div>
+                </div>
+            }
           </>
         )
       }

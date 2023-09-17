@@ -34,6 +34,10 @@
   margin: 2.5%;
 }
 
+.call-to-action_button_disabled:disabled {
+  border-color: $pets-violet;
+}
+
 .primary-button {
   margin-left: 1%;
 }

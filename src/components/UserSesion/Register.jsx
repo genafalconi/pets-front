@@ -100,7 +100,10 @@ export default function Register({ show, onHideLogin, onHideRegister, onModalClo
         const errorMessage = error.message;
         // const credential = GoogleAuthProvider.credentialFromError(error);
         return errorMessage
-      });
+      })
+      .finally((fin) => {
+        setIsLoading(false)
+      })
   }
 
   const showLogin = () => {
@@ -122,7 +125,9 @@ export default function Register({ show, onHideLogin, onHideRegister, onModalClo
   return (
     <Modal
       show={show}
-      onHide={handleHide}
+      onHide={!isLoading && handleHide}
+      backdrop={!isLoading && true}
+      keyboard={!isLoading}
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >

@@ -14,7 +14,10 @@ export const request = async (method, url, params, data, ext_token) => {
     params: params,
     data: data,
     headers: {
-      'Authorization': `Bearer ${token}`
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Content-Type'
     }
   }
 

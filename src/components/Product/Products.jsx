@@ -69,7 +69,7 @@ export default function Products() {
         <DogAnimation />
       ) : (
         <div className="products-container">
-          <div className="title">
+          <div className="title filter-title">
             <h1>Productos</h1>
             {getAnimalBySearch(selectedAnimal, handleAnimalSelected)}
           </div>

@@ -16,7 +16,6 @@ export default function Landing() {
     <LazyComponent>
       <Carousel isLoadingHighlight={isLoadingHighlight} />
       <Highlights setIsLoadingHighlight={setIsLoadingHighlight} />
-      <br />
     </LazyComponent>
   );
 }

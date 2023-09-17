@@ -57,11 +57,14 @@ export default function Cart() {
   }, [cartStorage, handleCartQuantity, totalQuantityCart]);
 
   return (
-    <Dropdown className={`dropdown-cart${window.location.pathname === '/checkout' ? ' d-none' : ''}`}>
+    <Dropdown className='dropdown-cart'>
       <Dropdown.Toggle id="dropdown-autoclose-true" className='dropdown-custom'>
-        <div className="total-cart-icon">
-          <span>{totalQuantityCart}</span>
-        </div>
+        {
+          totalQuantityCart !== 0 &&
+          <div className="total-cart-icon">
+            <span>{totalQuantityCart}</span>
+          </div>
+        }
         <FiShoppingCart className='user-nav_cart_icon' size={20} />
       </Dropdown.Toggle>
       <Dropdown.Menu className="dropdown-cart-items" onClick={(e) => e.stopPropagation()}>
@@ -89,7 +92,7 @@ export default function Cart() {
                           <ProductQuantity quantity={elem.quantity} idSubprod={elem.subproduct?._id} stock={elem.subproduct?.stock} />
                         </Col>
                         <Col className="product-price">
-                          ${elem.subproduct?.sell_price}
+                          ${elem.subproduct?.highlight ? elem.subproduct?.sale_price : elem.subproduct?.sell_price}
                         </Col>
                         <Col className="product-remove">
                           <MdOutlineDelete onClick={() => removeFromCart(elem.subproduct)} />

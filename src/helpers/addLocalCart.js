@@ -7,7 +7,6 @@ const cart = {
 }
 
 export const addLocalCart = (subProduct, user) => {
-console.log(subProduct)
   cart?.subproducts?.push({ 
     subproduct: subProduct, 
     quantity: subProduct.quantity,

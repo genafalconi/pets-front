@@ -1,9 +1,9 @@
 import '../../styles/components/nav.scss'
-import { FiLogIn } from 'react-icons/fi'
+import { FiUserX } from 'react-icons/fi'
 import { MdSearch } from 'react-icons/md'
 import Form from 'react-bootstrap/Form';
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import Login from '../UserSesion/Login'
 import UserOptions from '../UserSesion/UserOptions'
 import Register from '../UserSesion/Register'
@@ -12,13 +12,12 @@ import Address from '../Orders/Address'
 import { useDispatch, useSelector } from 'react-redux'
 import { LOGOUT, VERIFY_TOKEN } from '../../redux/actions'
 import eventBus from '../../helpers/event-bus'
-// import { firebaseAuth } from '../../helpers/firebase'
-import Dropdown from 'react-bootstrap/Dropdown';
 import { AdvancedImage } from '@cloudinary/react'
 import { cloudinaryImg } from '../../helpers/cloudinary'
 import LazyComponent from '../../helpers/lazyComponents'
 import { endpoints } from '../../helpers/constants';
 import { validateSearchInput } from '../../helpers/validateInputs';
+import '../../styles/components/nav.scss';
 
 const LOGO_PUBLIC_ID = 'Ppales/Logo'
 
@@ -30,6 +29,7 @@ export default function Nav() {
   const [modalAddress, setModalAddress] = useState(false)
   const [addressUpdated, setAddressUpdated] = useState(false)
   const [showCart, setShowCart] = useState(true)
+  const [showFilter, setShowFilter] = useState(true)
   const [searchInput, setSearchInput] = useState('')
   const [inputErrors, setInputErrors] = useState(null)
   const inputRef = useRef(null)
@@ -81,6 +81,19 @@ export default function Nav() {
     }
   }
 
+  const handleFilters = useCallback((endpoint) => {
+    switch (endpoint) {
+      case '/products':
+        setShowFilter(true)
+        break;
+      case '/':
+        setShowFilter(true)
+        break;
+      default:
+        setShowFilter(false)
+    }
+  }, [])
+
   const handleCartDisplay = useCallback((endpoint) => {
     switch (endpoint) {
       case endpoints.CHECKOUT_ORD:
@@ -111,6 +124,7 @@ export default function Nav() {
 
   useEffect(() => {
     handleCartDisplay(endpoint)
+    handleFilters(endpoint)
 
     if (token && userReducer) {
       setActiveSesion(true)
@@ -129,56 +143,33 @@ export default function Nav() {
     return () => {
       eventBus.off('expired-sesion', expiredSesionHandler)
     }
-  }, [token, userLocal, modalLogin, modalRegister, userReducer, dispatch, endpoint, handleCartDisplay])
+  }, [token, userLocal, modalLogin, modalRegister, userReducer, dispatch, endpoint, handleCartDisplay, handleFilters])
 
   return (
     <>
       <nav className='nav'>
-        <div className='logo-nav'>
-          <Link to={'/'}>
-            <AdvancedImage cldImg={cloudinaryImg(LOGO_PUBLIC_ID)} alt='Logo' />
-          </Link>
+        <div className='logo-nav' onClick={() => navigate('/')}>
+          <AdvancedImage cldImg={cloudinaryImg(LOGO_PUBLIC_ID)} alt='Logo' />
           <p>Pets Zone</p>
         </div>
         <div className="nav-links">
-          <a href="/products" className='product-link'>Productos</a>
           <div className="search-bar">
-            {
-              window.innerWidth > 768 ?
-                <div className='div-search'>
-                  <Form.Control
-                    className='input-search'
-                    type="text"
-                    placeholder='Buscar...'
-                    ref={inputRef}
-                    onKeyDown={handleKeyDown}
-                    value={searchInput}
-                    maxLength={35}
-                    onChange={(e) => validateInput(e.target.value)} />
+            <div className='div-search'>
+              <Form.Control
+                className='input-search'
+                type="text"
+                placeholder='Buscar...'
+                ref={inputRef}
+                onKeyDown={handleKeyDown}
+                value={searchInput}
+                maxLength={35}
+                onChange={(e) => validateInput(e.target.value)}
+              />
+              {
+                window.innerWidth > 768 &&
                   <MdSearch className='action-search-icon' size={25} onClick={() => handleSearchInput(inputRef.current.value)} />
-                </div>
-                :
-                <Dropdown className="d-inline_mx-2">
-                  <Dropdown.Toggle id="dropdown-autoclose-true" className='dropdown-custom-search'>
-                    <MdSearch className='icon-search' size={20} />
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu className='dropdown-custom-menu'>
-                    <Dropdown.Item className='dropdown-search-item' onClick={(e) => e.stopPropagation()}>
-                      <Form.Control
-                        className='input-search'
-                        type="text"
-                        placeholder='Buscar...'
-                        ref={inputRef}
-                        onKeyDown={handleKeyDown}
-                        value={searchInput}
-                        maxLength={35}
-                        onChange={(e) => validateInput(e.target.value)}
-                      />
-                      <MdSearch className='action-search-icon' size={20} onClick={() => handleSearchInput(inputRef.current.value)} />
-                    </Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
-            }
+              }
+            </div>
             {
               inputErrors?.length > 0 && <span>{inputErrors}</span>
             }
@@ -194,7 +185,7 @@ export default function Nav() {
               </div>
               :
               <div className='link-modal'>
-                <FiLogIn className='icon-nav' size={20} onClick={handleLogin} />
+                <FiUserX className='icon-nav' size={20} onClick={handleLogin} />
               </div>
           }
           {
@@ -207,6 +198,14 @@ export default function Nav() {
           }
         </div>
       </nav>
+      {
+        showFilter &&
+        <nav className='nav filter'>
+          <a href="/products">Productos</a>
+          <a href="/products?animal=DOG">Perro</a>
+          <a href="/products?animal=CAT">Gato</a>
+        </nav>
+      }
       {modalLogin && (
         <LazyComponent>
           <Login

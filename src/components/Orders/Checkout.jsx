@@ -141,7 +141,7 @@ export default function Checkout() {
                           <ProductCheckout
                             id={item.subproduct._id}
                             product_name={item.subproduct.product.name ? item.subproduct.product.name : item.subproduct.name}
-                            sell_price={item.subproduct.sell_price}
+                            sell_price={item.subproduct.highlight ? item.subproduct.sale_price : item.subproduct.sell_price}
                             size={item.subproduct.size}
                             quantity={item.quantity}
                             image={item.subproduct.product.image ? item.subproduct.product.image : item.subproduct.image}
@@ -193,6 +193,8 @@ export default function Checkout() {
                 <div className={validContinue ? "call-to-action_button checkout" : "disabled-button checkout"}>
                   <button disabled={!validContinue} onClick={handleCoordinate}>Continuar</button>
                 </div>
+                <br />
+                <br />
               </>
             ) : (
               <LazyComponent>

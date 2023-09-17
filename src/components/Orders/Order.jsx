@@ -58,7 +58,11 @@ export default function Order() {
                               <p>Cantidad: {elem.quantity}</p>
                             </div>
                             <div className="prod-price">
-                              <p>Precio: ${elem.subproduct.sell_price.toFixed(2)}</p>
+                              <p>Precio: ${
+                                elem.subproduct.highlight ?
+                                  elem.subproduct.sell_price.toFixed(2)
+                                  : elem.subproduct.sale_price.toFixed(2)
+                              }</p>
                             </div>
                           </div>
                         </div>

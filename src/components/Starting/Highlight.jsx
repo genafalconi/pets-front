@@ -1,21 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { ADD_TO_CART, ADD_TO_LOCAL_CART, GET_HIGHLIGHT_SUBPRODS } from "../../redux/actions";
-import { Button, Card, Carousel } from "react-bootstrap";
-import { cloudinaryImg } from "../../helpers/cloudinary";
-import { AdvancedImage } from "@cloudinary/react";
+import { GET_HIGHLIGHT_SUBPRODS } from "../../redux/actions";
+import { Carousel } from "react-bootstrap";
 import '../../styles/components/landing.scss';
-import NewProd from "../Product/NewProd";
 import DogAnimation from "../atomic/DogAnimation";
+import HighlightCard from "./HighlightCard";
 
 export default function Highlights({ setIsLoadingHighlight }) {
   const dispatch = useDispatch();
   const { highlights } = useSelector((state) => state.clientReducer);
 
   const [isLoading, setIsLoading] = useState(true);
-  const [showNewProd, setShowNewProd] = useState(false);
-  const [newProd, setNewProd] = useState(null);
-  const user = localStorage.getItem('user')
 
   let itemsPerLine = 4;
 
@@ -29,45 +24,16 @@ export default function Highlights({ setIsLoadingHighlight }) {
     itemsPerLine = 4;
   }
 
-  const addToCart = useCallback((data) => {
-    const subprod = highlights.find((elem) => elem._id === data._id)
-
-    const subProdToAdd = {
-      _id: subprod?._id,
-      product: subprod?.product?._id,
-      buy_price: subprod?.buy_price,
-      sell_price: subprod?.sell_price,
-      size: subprod?.size,
-      stock: subprod?.stock,
-      image: subprod?.product?.image,
-      quantity: 1,
-      name: subprod?.product?.name
-    }
-    setNewProd(subProdToAdd)
-    setShowNewProd(true)
-
-    dispatch(ADD_TO_LOCAL_CART(subProdToAdd))
-    if (user) {
-      setIsLoading(true);
-      dispatch(ADD_TO_CART(subProdToAdd))
-        .then(() => {
-          setIsLoading(false);
-          setShowNewProd(false);
-        })
-        .catch((error) => {
-          setIsLoading(false);
-          setShowNewProd(false);
-        });
-    }
-
-  }, [dispatch, highlights, user])
-
-  useEffect(() => {
+  const getHighlightProds = useCallback(() => {
     dispatch(GET_HIGHLIGHT_SUBPRODS()).then((res) => {
       setIsLoading(false)
       setIsLoadingHighlight(false)
     });
-  }, [dispatch, setIsLoadingHighlight]);
+  }, [dispatch, setIsLoadingHighlight])
+
+  useEffect(() => {
+    getHighlightProds()
+  }, [getHighlightProds]);
 
   const chunkHighlights = (arr, size) => {
     const chunkedArr = [];
@@ -85,7 +51,7 @@ export default function Highlights({ setIsLoadingHighlight }) {
         ) : (
           <div className="highlight-container">
             <div className="subtitle d-flex justify-content-center">
-              <h2>Productos destacados</h2>
+              <h2>Ofertas</h2>
             </div>
             <Carousel className="custom-carousel">
               {
@@ -93,34 +59,20 @@ export default function Highlights({ setIsLoadingHighlight }) {
                   <Carousel.Item key={index}>
                     <div className="d-flex justify-content-center">
                       {chunk.map((elem, innerIndex) => (
-                        <Card key={innerIndex} className="highlight-card">
-                          <div className="highlight-image">
-                            <AdvancedImage cldImg={cloudinaryImg(elem.product.image)} />
-                          </div>
-                          <Card.Body>
-                            <div className="highlight-details">
-                              <Card.Title>{elem.product.name}</Card.Title>
-                              <Card.Text className="item-size">{elem.size}kg</Card.Text>
-                              <Card.Text className="old-price">${(elem.sell_price).toFixed(2)}</Card.Text>
-                              <Card.Text className="new-price">${(elem.sell_price * 0.95).toFixed(2)}</Card.Text>
-                            </div>
-                            <div className="call-to-action_button highlight-btn">
-                              <Button onClick={() => addToCart(elem)}>Agregar</Button>
-                            </div>
-                          </Card.Body>
-                        </Card>
+                        <HighlightCard
+                          item={elem}
+                          index={innerIndex}
+                        />
                       ))}
                     </div>
                   </Carousel.Item>
                 ))
               }
             </Carousel>
-            {
-              showNewProd && <NewProd product={newProd} />
-            }
           </div>
         )
       }
+      <br />
     </>
   );
 }

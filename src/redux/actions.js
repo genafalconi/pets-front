@@ -142,6 +142,12 @@ export const VERIFY_TOKEN = createAsyncThunk(
   }
 )
 
+export const RESET_TIMER = createAsyncThunk(
+  'RESET_TIMER', async () => {
+    return true
+  }
+)
+
 export const LOGOUT = createAsyncThunk(
   'LOGOUT', async () => {
     try {
@@ -151,6 +157,7 @@ export const LOGOUT = createAsyncThunk(
       localStorage.removeItem('admin')
       localStorage.removeItem('reorder_cart')
       localStorage.removeItem('order')
+      localStorage.removeItem('user_auth')
       localStorage.removeItem('timer_duration')
       await firebaseAuth.signOut()
 
@@ -185,6 +192,9 @@ export const ADD_TO_CART = createAsyncThunk(
     try {
       const idUser = localStorage.getItem('user')
       const res = await request(req_constants.POST, `${REACT_APP_CART}/cart/add/${idUser}`, null, subprod)
+      if (res.data) {
+        localStorage.setItem('cart', JSON.stringify(res.data))
+      }
       return res?.data
     } catch (error) {
       return errorHandler(error)
