@@ -45,9 +45,9 @@ export const request = async (method, url, params, data, ext_token) => {
         timerProgressBar: true,
         showConfirmButton: false
       })
-      // .then(() => {
-      //   window.location.href = '/'
-      // })
+      .then(() => {
+        window.location.href = '/'
+      })
       throw new Error(error);
     }
   }

@@ -22,7 +22,6 @@
     "react-scripts": "5.0.1",
     "reactfire": "^4.2.2",
     "sweetalert2": "^11.7.0",
-    "urllib": "^3.16.1",
     "web-vitals": "^2.1.4",
     "yup": "^1.2.0"
   },

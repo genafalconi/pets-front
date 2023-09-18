@@ -1,28 +1,25 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
 import Modal from 'react-bootstrap/Modal';
 import '../../styles/modals/modalAddress.scss';
-import { CREATE_USER_ADDRESS, DELETE_USER_ADDRESS, GET_USER_ADDRESS } from '../../redux/actions';
+import { CREATE_USER_ADDRESS, UPDATE_USER_ADDRESS } from '../../redux/actions';
 import GoogleMaps from '../atomic/GoogleMaps';
-import { MdOutlineDelete } from 'react-icons/md'
 import Form from 'react-bootstrap/Form';
 import { Col, Row } from 'react-bootstrap';
 import LazyComponent from '../../helpers/lazyComponents';
 
-export default function Address({ show, onHideAddress, updateAddress, fromCheckout }) {
+export default function Address({ show, onHideAddress, updateAddress, fromCheckout, editAddress }) {
 
   const dispatch = useDispatch()
-  const { addresses } = useSelector((state) => state.clientReducer)
 
   const [searchByMaps, setSearchByMaps] = useState(false)
-  const [isConfirmed, setIsConfirmed] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
   const [isLoadingButton, setIsLoadingButton] = useState(false)
   const [address, setAddress] = useState({
+    id: '',
     street: '',
-    number: 0,
+    number: '',
     floor: '',
     flat: '',
     city: '',
@@ -37,17 +34,6 @@ export default function Address({ show, onHideAddress, updateAddress, fromChecko
     })
   }
 
-  const getUserAddresses = useCallback(async () => {
-    if (show) {
-      setIsLoading(true)
-      dispatch(GET_USER_ADDRESS()).then((res) => {
-        if (res.payload) {
-          setIsLoading(false)
-        }
-      })
-    }
-  }, [dispatch, show])
-
   const validateInputs = useCallback(() => {
     if (address.street.length !== 0) return true
   }, [address.street.length])
@@ -59,28 +45,48 @@ export default function Address({ show, onHideAddress, updateAddress, fromChecko
   const handleCreateAddress = useCallback(() => {
     const validation = validateInputs()
     if (validation) {
+    console.log('aca create')
       setIsLoadingButton(true)
-      setIsConfirmed(true)
       dispatch(CREATE_USER_ADDRESS(address)).then((res) => {
         if (Object.keys(res.payload).length !== 0) {
           setIsLoadingButton(false)
-          updateAddress()
+          if (updateAddress) updateAddress()
           if (fromCheckout) {
             onHideAddress()
           }
-          setIsConfirmed(false)
         }
       })
     }
   }, [dispatch, address, fromCheckout, onHideAddress, updateAddress, validateInputs])
 
-  const handleDeleteAddress = useCallback((address_id) => {
-    dispatch(DELETE_USER_ADDRESS(address_id))
-  }, [dispatch])
+  const handleEditAddress = useCallback(() => {
+    const validation = validateInputs()
+    console.log('aca update')
+    if (validation) {
+      setIsLoadingButton(true)
+      dispatch(UPDATE_USER_ADDRESS(address)).then((res) => {
+        if (Object.keys(res.payload).length !== 0) {
+          setIsLoadingButton(false)
+          onHideAddress()
+        }
+      })
+    }
+  }, [dispatch, address, onHideAddress, validateInputs])
 
   useEffect(() => {
-    getUserAddresses()
-  }, [getUserAddresses])
+    if (editAddress !== null) {
+      setAddress({
+        id: editAddress.id || '',
+        street: editAddress.street || '',
+        number: editAddress.number || '',
+        floor: editAddress.floor || '',
+        flat: editAddress.flat || '',
+        city: editAddress.city || '',
+        province: editAddress.province || '',
+        extra: editAddress.extra || ''
+      });
+    }
+  }, [editAddress])
 
   return (
     <Modal
@@ -97,49 +103,18 @@ export default function Address({ show, onHideAddress, updateAddress, fromChecko
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className='modal-address-body'>
-        <div className='address-table-scroll'>
-          {
-            isLoading ? (
-              <div className="loading-address">
-                <Spinner as="span" animation="border" size="lg" role="status" aria-hidden="true" />
-              </div>
-            ) : (
-              <div className='address-table'>
-                {
-                  Array.isArray(addresses) &&
-                  addresses.map((elem) => {
-                    return (
-                      <LazyComponent key={elem._id}>
-                        <div className='address-item'>
-                          <div className='address-item_title'>
-                            <h5 className='m-0'>{elem.street} {elem.number} {elem.floor} {elem.flat}</h5>
-                            <MdOutlineDelete className='address-item_delete' onClick={() => handleDeleteAddress(elem._id)} />
-                          </div>
-                          <div className='address-item_details'>
-                            <p>{elem.city} - {elem.province}</p>
-                            <p>{elem.extra}</p>
-                          </div>
-                        </div>
-                      </LazyComponent>
-                    )
-                  })
-                }
-              </div>
-            )
-          }
-        </div>
         <Form className='modal-body_form-address'>
           <Row>
             <Col>
               <Form.Group className="mb-3" controlId="formBasicStreet">
                 <Form.Label>Calle:</Form.Label>
-                <Form.Control name='street' type="text" onChange={handleChange} />
+                <Form.Control name='street' type="text" defaultValue={address.street} onChange={handleChange} />
               </Form.Group>
             </Col>
             <Col>
               <Form.Group className="mb-3" controlId="formBasicNro">
                 <Form.Label>Numero</Form.Label>
-                <Form.Control name='number' type="text" onChange={handleChange} />
+                <Form.Control name='number' type="text" defaultValue={address.number} onChange={handleChange} />
               </Form.Group>
             </Col>
           </Row>
@@ -147,13 +122,13 @@ export default function Address({ show, onHideAddress, updateAddress, fromChecko
             <Col>
               <Form.Group className="mb-3" controlId="formBasicFloor">
                 <Form.Label>Piso</Form.Label>
-                <Form.Control name='floor' type="text" placeholder="Nro" onChange={handleChange} />
+                <Form.Control name='floor' type="text" placeholder="Nro" defaultValue={address.floor} onChange={handleChange} />
               </Form.Group>
             </Col>
             <Col>
               <Form.Group className="mb-3" controlId="formBasicFlat">
                 <Form.Label>Departamento</Form.Label>
-                <Form.Control name='flat' type="text" placeholder="Nro" onChange={handleChange} />
+                <Form.Control name='flat' type="text" placeholder="Nro" defaultValue={address.flat} onChange={handleChange} />
               </Form.Group>
             </Col>
           </Row>
@@ -161,13 +136,13 @@ export default function Address({ show, onHideAddress, updateAddress, fromChecko
             <Col>
               <Form.Group className="mb-3" controlId="formBasicCity">
                 <Form.Label>Ciudad</Form.Label>
-                <Form.Control name='city' type="text" onChange={handleChange} />
+                <Form.Control name='city' type="text" defaultValue={address.city} onChange={handleChange} />
               </Form.Group>
             </Col>
             <Col>
               <Form.Group className="mb-3" controlId="formBasicProvince">
                 <Form.Label>Provincia</Form.Label>
-                <Form.Control name='province' type="text" onChange={handleChange} />
+                <Form.Control name='province' type="text" defaultValue={address.province} onChange={handleChange} />
               </Form.Group>
             </Col>
             <Col>
@@ -177,7 +152,7 @@ export default function Address({ show, onHideAddress, updateAddress, fromChecko
             <Col>
               <Form.Group className="mb-3" controlId="formBasicExtra">
                 <Form.Label>Comentarios</Form.Label>
-                <Form.Control name='extra' type="text" onChange={handleChange} />
+                <Form.Control name='extra' type="text" defaultValue={address.extra} onChange={handleChange} />
               </Form.Group>
             </Col>
           </Row>
@@ -190,7 +165,7 @@ export default function Address({ show, onHideAddress, updateAddress, fromChecko
               </div>
               :
               <div className="d-flex justify-content-center">
-                <Button className='w-25' onClick={isConfirmed ? null : handleCreateAddress}>Crear</Button>
+                <Button className='w-25' onClick={editAddress ? handleEditAddress : handleCreateAddress}>Crear</Button>
               </div>
           }
         </Form>

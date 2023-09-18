@@ -14,8 +14,9 @@ export default function UserOptions({ onHideAddress }) {
   const user_admin = JSON.parse(localStorage.getItem('admin'))
   const isAdmin = useSelector((state) => state.clientReducer.user_admin)
 
-  const handleAddress = () => {
-    onHideAddress()
+  const handleOrders = () => {
+    const user = localStorage.getItem('user');
+    navigate(`/orders/${user}`)
   }
 
   const handleLogout = (event) => {
@@ -50,7 +51,7 @@ export default function UserOptions({ onHideAddress }) {
         </Dropdown.Toggle>
         <Dropdown.Menu className='dropdown-custom-menu'>
           <Dropdown.Item href='/account'>Cuenta</Dropdown.Item>
-          <Dropdown.Item onClick={() => handleAddress()}>Direcciones</Dropdown.Item>
+          <Dropdown.Item onClick={handleOrders}>Pedidos</Dropdown.Item>
           <Dropdown.Item onClick={handleLogout}>Cerrar sesion</Dropdown.Item>
           {
             user_admin && (
