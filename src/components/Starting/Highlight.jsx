@@ -25,10 +25,18 @@ export default function Highlights({ setIsLoadingHighlight }) {
   }
 
   const getHighlightProds = useCallback(() => {
-    dispatch(GET_HIGHLIGHT_SUBPRODS()).then((res) => {
-      setIsLoading(false)
-      setIsLoadingHighlight(false)
-    });
+    if (Array.isArray(highlights)) {
+      if (highlights.length === 0) {
+        dispatch(GET_HIGHLIGHT_SUBPRODS()).then((res) => {
+          setIsLoading(false)
+          setIsLoadingHighlight(false)
+        });
+      } else {
+        setIsLoading(false);
+        setIsLoadingHighlight(false);
+      }
+    }
+    // eslint-disable-next-line
   }, [dispatch, setIsLoadingHighlight])
 
   useEffect(() => {
@@ -62,6 +70,7 @@ export default function Highlights({ setIsLoadingHighlight }) {
                         <HighlightCard
                           item={elem}
                           index={innerIndex}
+                          key={innerIndex}
                         />
                       ))}
                     </div>

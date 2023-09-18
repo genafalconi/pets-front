@@ -49,33 +49,31 @@ export default function HighlightCard({ item, index }) {
   }, [dispatch, highlights, user, setIsLoading, setNewProd, setShowNewProd])
 
   return (
-    <>
-      <Card key={item._id} className="highlight-card">
-        <div className="highlight-image">
-          <AdvancedImage cldImg={cloudinaryImg(item.product.image)} />
+    <Card key={item._id} className="highlight-card">
+      <div className="highlight-image">
+        <AdvancedImage cldImg={cloudinaryImg(item.product.image)} />
+      </div>
+      <Card.Body>
+        <div className="highlight-details">
+          <Card.Title>{item.product.name}</Card.Title>
+          <Card.Text className="item-size">{item.size}kg</Card.Text>
+          <Card.Text className="old-price">${(item.sell_price).toFixed(2)}</Card.Text>
+          <Card.Text className="new-price">${(item.sell_price * 0.95).toFixed(2)}</Card.Text>
         </div>
-        <Card.Body>
-          <div className="highlight-details">
-            <Card.Title>{item.product.name}</Card.Title>
-            <Card.Text className="item-size">{item.size}kg</Card.Text>
-            <Card.Text className="old-price">${(item.sell_price).toFixed(2)}</Card.Text>
-            <Card.Text className="new-price">${(item.sell_price * 0.95).toFixed(2)}</Card.Text>
-          </div>
-          <div className="call-to-action_button highlight-btn">
-            {
-              isLoading ?
-                <Button disabled>
-                  <Spinner as="span" animation="border" size='sm' role="status" aria-hidden="true" />
-                </Button>
-                :
-                <Button onClick={() => addToCart(item)}>Agregar</Button>
-            }
-          </div>
-        </Card.Body>
-      </Card>
+        <div className="call-to-action_button highlight-btn">
+          {
+            isLoading ?
+              <Button disabled>
+                <Spinner as="span" animation="border" size='sm' role="status" aria-hidden="true" />
+              </Button>
+              :
+              <Button onClick={() => addToCart(item)}>Agregar</Button>
+          }
+        </div>
+      </Card.Body>
       {
         showNewProd && <NewProd product={newProd} />
       }
-    </>
+    </Card>
   )
 }

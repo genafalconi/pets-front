@@ -330,6 +330,18 @@ export const GET_USER_ADDRESS = createAsyncThunk(
   }
 )
 
+export const UPDATE_USER_ADDRESS = createAsyncThunk(
+  'UPDATE_USER_ADDRESS', async (addressData) => {
+    try {
+      const idUser = localStorage.getItem('user')
+      const res = await request(req_constants.PUT, `${REACT_APP_AUTH}/user/address/${idUser}`, null, addressData)
+      return res?.data
+    } catch (error) {
+      return errorHandler(error)
+    }
+  }
+)
+
 export const SET_USER_ADDRESS = createAsyncThunk(
   'SET_USER_ADDRESS', (id) => {
     return id

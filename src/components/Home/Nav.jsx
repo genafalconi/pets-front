@@ -81,6 +81,11 @@ export default function Nav() {
     }
   }
 
+  const handleFiltersClick = (event) => {
+    console.log(event)
+    navigate(event.target.id)
+  }
+
   const handleFilters = useCallback((endpoint) => {
     switch (endpoint) {
       case '/products':
@@ -167,7 +172,7 @@ export default function Nav() {
               />
               {
                 window.innerWidth > 768 &&
-                  <MdSearch className='action-search-icon' size={25} onClick={() => handleSearchInput(inputRef.current.value)} />
+                <MdSearch className='action-search-icon' size={25} onClick={() => handleSearchInput(inputRef.current.value)} />
               }
             </div>
             {
@@ -201,9 +206,9 @@ export default function Nav() {
       {
         showFilter &&
         <nav className='nav filter'>
-          <a href="/products">Productos</a>
-          <a href="/products?animal=DOG">Perro</a>
-          <a href="/products?animal=CAT">Gato</a>
+          <p id={'/products'} onClick={handleFiltersClick}>Productos</p>
+          <p id={'/products?animal=DOG'} onClick={handleFiltersClick}>Perro</p>
+          <p id={'/products?animal=CAT'} onClick={handleFiltersClick}>Gato</p>
         </nav>
       }
       {modalLogin && (

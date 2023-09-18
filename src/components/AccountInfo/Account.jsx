@@ -1,9 +1,9 @@
 import ListGroup from 'react-bootstrap/ListGroup';
 import PersonalInfo from './PersonalInfo';
-import UserOrders from './UserOrders';
 import Settings from './Settings';
 import { useState } from 'react';
 import '../../styles/components/account.scss'
+import UserAddresses from './UserAddresses';
 
 export default function Account() {
 
@@ -24,8 +24,8 @@ export default function Account() {
             <ListGroup.Item id='info' action onClick={displayInfoById}>
               Informacion personal
             </ListGroup.Item>
-            <ListGroup.Item id='orders' action onClick={displayInfoById}>
-              Mis pedidos
+            <ListGroup.Item id='addresses' action onClick={displayInfoById}>
+              Direcciones
             </ListGroup.Item>
             {/* <ListGroup.Item id='setting' action onClick={displayInfoById}>
               Configuracion
@@ -34,7 +34,7 @@ export default function Account() {
         </div>
         <div className="item-selected">
           {selectedItemId === 'info' && <PersonalInfo />}
-          {selectedItemId === 'orders' && <UserOrders />}
+          {selectedItemId === 'addresses' && <UserAddresses />}
           {selectedItemId === 'setting' && <Settings />}
         </div>
       </div>

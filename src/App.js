@@ -9,6 +9,7 @@ import ProtectedRoute from './helpers/protectedRoute';
 import LazyComponent from './helpers/lazyComponents';
 import Account from './components/AccountInfo/Account';
 import AutoLogout from './components/atomic/AutoLogout';
+import UserOrders from './components/AccountInfo/UserOrders';
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
         <Route exact path="/checkout/:order_type" element={<ProtectedRoute><LazyComponent><Checkout /></LazyComponent></ProtectedRoute>} />
         <Route exact path="/new-order" element={<ProtectedRoute><LazyComponent><Order /></LazyComponent></ProtectedRoute>} />
         <Route exact path="/account" element={<ProtectedRoute><LazyComponent><Account /></LazyComponent></ProtectedRoute>} />
+        <Route exact path="/orders/:user_id" element={<ProtectedRoute><LazyComponent><UserOrders /></LazyComponent></ProtectedRoute>} />
       </Routes>
     </div>
   );

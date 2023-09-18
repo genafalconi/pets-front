@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import '../../styles/components/offers.scss';
+import { Table } from 'react-bootstrap';
 
 function formatOfferDate(dateString) {
   const date = new Date(dateString);
@@ -22,7 +23,7 @@ export default function Offers({ offers, setSelectedOfferData }) {
   return (
     <div className="offers-table">
       {offers?.map((offer) => (
-        <table key={offer._id}>
+        <Table striped bordered variant="dark" hover key={offer._id}>
           <thead>
             <tr>
               <th>{`${offer.weekday.toUpperCase()} ${formatOfferDate(offer.date)}`}</th>
@@ -40,7 +41,7 @@ export default function Offers({ offers, setSelectedOfferData }) {
               </td>
             </tr>
           </tbody>
-        </table>
+        </Table>
       ))}
     </div>
   );
