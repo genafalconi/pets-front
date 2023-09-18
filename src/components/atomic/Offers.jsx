@@ -23,7 +23,7 @@ export default function Offers({ offers, setSelectedOfferData }) {
   return (
     <div className="offers-table">
       {offers?.map((offer) => (
-        <Table striped bordered variant="dark" hover key={offer._id}>
+        <Table striped bordered hover key={offer._id}>
           <thead>
             <tr>
               <th>{`${offer.weekday.toUpperCase()} ${formatOfferDate(offer.date)}`}</th>

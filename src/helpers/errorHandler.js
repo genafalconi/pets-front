@@ -9,5 +9,9 @@ export default function errorHandler(error) {
     timer: 2500,
     timerProgressBar: true
   })
-  .then(() => window.location.href = '/')
+    .then(() => {
+      if (process.env.REACT_APP_ERROR_HANDLERS === 'true') {
+        window.location.href = '/'
+      }
+    })
 }

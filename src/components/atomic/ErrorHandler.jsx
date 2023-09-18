@@ -25,9 +25,11 @@ export default class ErrorHandler extends Component {
       timerProgressBar: true,
       showConfirmButton: false
     })
-    .then(() => {
-      window.location.href = '/';
-    });
+      .then(() => {
+        if (process.env.REACT_APP_ERROR_HANDLERS === 'true') {
+          window.location.href = '/'
+        }
+      });
   };
 
   render() {

@@ -43,6 +43,10 @@
   color: $text-color;
   cursor: pointer;
 
+  p {
+    white-space: nowrap;
+  }
+
   img {
     height: 4rem;
     max-height: 5rem;
