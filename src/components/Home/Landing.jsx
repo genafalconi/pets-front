@@ -3,6 +3,7 @@ import '../../App.scss'
 import LazyComponent from '../../helpers/lazyComponents';
 import Highlights from '../Starting/Highlight';
 import Carousel from '../Starting/ImageCarousel';
+import TextHomecoming from '../Starting/TextHomecoming';
 
 export default function Landing() {
 
@@ -14,6 +15,7 @@ export default function Landing() {
 
   return (
     <LazyComponent>
+      <TextHomecoming />
       <Carousel isLoadingHighlight={isLoadingHighlight} />
       <Highlights setIsLoadingHighlight={setIsLoadingHighlight} />
     </LazyComponent>

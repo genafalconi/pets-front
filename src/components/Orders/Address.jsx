@@ -45,7 +45,6 @@ export default function Address({ show, onHideAddress, updateAddress, fromChecko
   const handleCreateAddress = useCallback(() => {
     const validation = validateInputs()
     if (validation) {
-    console.log('aca create')
       setIsLoadingButton(true)
       dispatch(CREATE_USER_ADDRESS(address)).then((res) => {
         if (Object.keys(res.payload).length !== 0) {
@@ -61,7 +60,6 @@ export default function Address({ show, onHideAddress, updateAddress, fromChecko
 
   const handleEditAddress = useCallback(() => {
     const validation = validateInputs()
-    console.log('aca update')
     if (validation) {
       setIsLoadingButton(true)
       dispatch(UPDATE_USER_ADDRESS(address)).then((res) => {
@@ -74,7 +72,7 @@ export default function Address({ show, onHideAddress, updateAddress, fromChecko
   }, [dispatch, address, onHideAddress, validateInputs])
 
   useEffect(() => {
-    if (editAddress !== null) {
+    if (editAddress) {
       setAddress({
         id: editAddress.id || '',
         street: editAddress.street || '',

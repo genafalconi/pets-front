@@ -46,7 +46,9 @@ export const request = async (method, url, params, data, ext_token) => {
         showConfirmButton: false
       })
       .then(() => {
-        window.location.href = '/'
+        if(process.env.REACT_APP_ERROR_HANDLERS === 'true') {
+          window.location.href = '/'
+        }
       })
       throw new Error(error);
     }
