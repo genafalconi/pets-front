@@ -51,6 +51,7 @@ export default function HighlightCard({ item, index }) {
   return (
     <>
       <Card key={item._id} className="highlight-card">
+      <span className="label-highlight">OFERTA</span>
         <div className="highlight-image">
           <AdvancedImage cldImg={cloudinaryImg(item.product.image)} />
         </div>
@@ -59,7 +60,7 @@ export default function HighlightCard({ item, index }) {
             <Card.Title>{item.product.name}</Card.Title>
             <Card.Text className="item-size">{item.size}kg</Card.Text>
             <Card.Text className="old-price">${(item.sell_price).toFixed(2)}</Card.Text>
-            <Card.Text className="new-price">${(item.sell_price * 0.95).toFixed(2)}</Card.Text>
+            <Card.Text className="new-price">${(item.sale_price).toFixed(2)}</Card.Text>
           </div>
           <div className="call-to-action_button highlight-btn">
             {
