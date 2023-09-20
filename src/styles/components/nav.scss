@@ -277,6 +277,74 @@ input[type="text"] {
   margin-left: -35px;
 }
 
+.footer {
+  position: absolute;
+  background-color: #F5C12D;
+  display: flex;
+  justify-content: space-around;
+  padding: 1rem;
+  width: 100%;
+  font-size: 0.9rem;
+
+  .service {
+
+    p {
+      font-size: 1rem;
+      font-weight: bold;
+      text-align: start;
+      margin-bottom: 0.5rem;
+    }
+
+    ul {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, auto);
+      gap: 5px;
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      border: 1px solid $pets-violet;
+      padding: 5px;
+      text-align: center;
+    }
+  }
+
+  .info-company {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .contact {
+    display: flex;
+    flex-direction: column;
+
+    p {
+      font-size: 1rem;
+      font-weight: bold;
+      text-align: start;
+      margin-bottom: 0.5rem;
+    }
+
+    .icons-redes {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .icons-redes svg {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      margin: 0 10px;
+    }
+
+  }
+}
+
 @media only screen and (max-width: 768px) {
 
   .logo-nav {
@@ -293,5 +361,13 @@ input[type="text"] {
 
   .search-bar {
     margin: 0;
+  }
+
+}
+
+@media only screen and (min-width: 768px) {
+  .data-text>ul {
+    display: flex;
+    justify-content: space-around;
   }
 }

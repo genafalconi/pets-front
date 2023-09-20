@@ -4,6 +4,7 @@ import LazyComponent from '../../helpers/lazyComponents';
 import Highlights from '../Starting/Highlight';
 import Carousel from '../Starting/ImageCarousel';
 import TextHomecoming from '../Starting/TextHomecoming';
+import Footer from '../Starting/Footer';
 
 export default function Landing() {
 
@@ -18,6 +19,7 @@ export default function Landing() {
       <TextHomecoming />
       <Carousel isLoadingHighlight={isLoadingHighlight} />
       <Highlights setIsLoadingHighlight={setIsLoadingHighlight} />
+      <Footer isLoadingHighlight={isLoadingHighlight} />
     </LazyComponent>
   );
 }
