@@ -19,7 +19,7 @@ export default function ProductQuantity({ quantity, idSubprod, stock }) {
         updateQuantity(updatedQuantity);
       }
     } else {
-      if (newQuantity !== 0) {
+      if (newQuantity !== 1) {
         const updatedQuantity = newQuantity - 1;
         setNewQuantity(updatedQuantity);
         updateQuantity(updatedQuantity);

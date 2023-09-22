@@ -81,8 +81,9 @@ export default function Cart() {
                       <AdvancedImage cldImg={cloudinaryImg(elem?.subproduct?.product?.image?.length > 0 ? elem?.subproduct?.product?.image : elem?.subproduct?.image)} />
                     </div>
                     <div className="cart-product-card">
-                      <div className="product-name">
+                      <div className="product-name-cart">
                         <h3>{elem?.subproduct?.product?.name?.length > 0 ? elem?.subproduct?.product?.name : elem?.subproduct?.name}</h3>
+                        <MdOutlineDelete className="product-remove" onClick={() => removeFromCart(elem.subproduct)} />
                       </div>
                       <Row className="product-details">
                         <Col className="product-size">
@@ -92,10 +93,7 @@ export default function Cart() {
                           <ProductQuantity quantity={elem.quantity} idSubprod={elem.subproduct?._id} stock={elem.subproduct?.stock} />
                         </Col>
                         <Col className="product-price">
-                          ${elem.subproduct?.highlight ? elem.subproduct?.sale_price : elem.subproduct?.sell_price}
-                        </Col>
-                        <Col className="product-remove">
-                          <MdOutlineDelete onClick={() => removeFromCart(elem.subproduct)} />
+                          ${elem.subproduct?.highlight ? (elem.subproduct?.sale_price).toFixed(2) : (elem.subproduct?.sell_price).toFixed(2)}
                         </Col>
                       </Row>
                     </div>
@@ -106,7 +104,7 @@ export default function Cart() {
               <Dropdown.Item className="cart-final-item">
                 <div className="cart-total-price" onClick={(e) => e.stopPropagation()}>
                   <p>Total:</p>
-                  <p>${cartStorage?.total_price ? cartStorage?.total_price : 0}</p>
+                  <p>${cartStorage?.total_price ? (cartStorage?.total_price).toFixed(2) : 0}</p>
                 </div>
                 {
                   emptyCart ? ''

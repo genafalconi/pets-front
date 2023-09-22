@@ -28,7 +28,7 @@ export default function ImageCarousel({ isLoadingHighlight }) {
     <>
       {
         !isLoadingHighlight && (
-          <Carousel>
+          <Carousel className="img-carousel">
             {
               carousel.map((elem) => {
                 return (

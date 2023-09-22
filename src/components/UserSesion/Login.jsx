@@ -35,6 +35,7 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
   const loginGoogle = () => {
     setIsLoading(true)
     if (validGoogleButton) {
+      setValidLoginButton(false)
       setValidGoogleButton(false);
       signInWithPopup(firebaseAuth, providerGoogle)
         .then((result) => {
@@ -68,6 +69,8 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
             })
             .finally((fin) => {
               setIsLoading(false);
+              setValidLoginButton(true);
+              setValidGoogleButton(true);
             })
         })
         .catch((error) => {
@@ -87,6 +90,7 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
   const loginWithEmail = (values) => {
     setIsLoading(true);
     setValidLoginButton(false);
+    setValidGoogleButton(false);
     let modifiedCart = cart
     if (cart && Object.keys(cart).length > 0) {
       const modifiedSubproducts = cart.subproducts.map(({ subproduct }) => {
@@ -108,6 +112,8 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
       })
       .finally(() => {
         setIsLoading(false);
+        setValidLoginButton(true);
+        setValidGoogleButton(true);
       });
   };
 
@@ -198,7 +204,8 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
             </Form>
           )}
         </Formik>
-        <AdvancedImage cldImg={cloudinaryImg(GOOGLE_PUBLIC_ID)} className='modal-body_google' alt="signInGoogle" onClick={loginGoogle} />
+        <AdvancedImage cldImg={cloudinaryImg(GOOGLE_PUBLIC_ID)} className='modal-body_google' alt="signInGoogle"
+          onClick={loginGoogle} disabled={validGoogleButton} />
       </Modal.Body>
       <Modal.Footer className='modal-login-footer'>
         <p>Todavía no tenes cuenta?</p>

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import '../../styles/components/offers.scss';
-import { Table } from 'react-bootstrap';
 
 function formatOfferDate(dateString) {
   const date = new Date(dateString);
@@ -12,36 +11,32 @@ function formatOfferDate(dateString) {
 export default function Offers({ offers, setSelectedOfferData }) {
   const [selectedOffer, setSelectedOffer] = useState(null);
 
-  const handleOfferClick = (offer) => {
-    setSelectedOffer((prevOffer) => (prevOffer === offer ? null : offer));
-  };
-
   useEffect(() => {
     setSelectedOfferData(selectedOffer);
   }, [selectedOffer, setSelectedOfferData]);
 
+  const handleOfferClick = (offer) => {
+    setSelectedOffer((prevSelectedOffer) =>
+      prevSelectedOffer === offer ? null : offer
+    );
+  };
+
   return (
-    <div className="offers-table">
+    <div className="offers-container">
       {offers?.map((offer) => (
-        <Table striped bordered hover key={offer._id}>
-          <thead>
-            <tr>
-              <th>{`${offer.weekday.toUpperCase()} ${formatOfferDate(offer.date)}`}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              key={offer.id}
-              onClick={() => handleOfferClick(offer)}
-              className={selectedOffer === offer ? 'selected-offer' : ''}
-            >
-              <td>
-                <p>{offer.from}-{offer.to}</p>
-                <p>GRATIS</p>
-              </td>
-            </tr>
-          </tbody>
-        </Table>
+        <div
+          key={offer._id}
+          onClick={() => handleOfferClick(offer)}
+          className={`offer-card ${selectedOffer === offer && 'offer-card selected-offer'}`}
+        >
+          <div>
+            <h5>{`${offer.weekday.toUpperCase()} ${formatOfferDate(offer.date)}`}</h5>
+            <div className='text-offer'>
+              <p>{offer.from}h-{offer.to}h</p>
+              <p>GRATIS</p>
+            </div>
+          </div>
+        </div>
       ))}
     </div>
   );

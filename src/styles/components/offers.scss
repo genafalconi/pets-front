@@ -1,84 +1,55 @@
-.offers-table {
+@import '../variables';
+
+.offers-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
 
-  table {
-    border-collapse: collapse;
-    width: 100%;
+.offer-card {
+  flex: 0 0 calc(35% - 12px);
+  margin-bottom: 10px;
+  cursor: pointer;
+  margin: 1rem auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 15px;
+
+  h5 {
+    font-size: 1rem;
+    font-weight: bold;
+    white-space: nowrap;
   }
 
-  thead {
-    background-color: #f2f2f2;
-    border: 1px solid #ddd;
-  }
-
-  th {
-    text-align: center;
-    padding: 8px;
-    flex: 1;
-  }
-
-  tbody td {
+  .text-offer {
     display: flex;
     justify-content: space-around;
-    padding: 8px;
-    border: 1px solid #ddd;
-    text-align: center;
-
-    p {
-      margin: 0;
-    }
+    align-items: center;
+    font-size: 0.9rem;
   }
+}
 
-  tbody:hover {
-    cursor: pointer;
-  }
-
-  tbody:not(:last-child) {
-    margin-bottom: 8px;
-  }
+.offer-card:hover {
+  background-color: #E3E3E3;
 }
 
 .selected-offer {
-  border: 2px solid blue;
+  border: 2px solid $pets-violet;
   border-width: 2px;
 }
 
-/* Media queries for responsive design */
-
-@media only screen and (max-width: 768px) {
-
-  /* Adjust table styles for small screens */
-  table {
-    font-size: 16px;
-    width: 80%;
-  }
-
-  th,
-  td {
-    padding: 6px;
-  }
+.selected-offer:hover {
+  background-color: $background-color !important;
 }
 
-@media only screen and (max-width: 480px) {
-
-  /* Adjust table styles for phones */
-  table {
-    font-size: 14px;
-    width: 80%;
-  }
-
-  th,
-  td {
-    padding: 4px;
-  }
-
-  .offers-table {
+@media only screen and (max-width: 768px) {
+  .offers-container {
     flex-direction: column;
   }
 
-  tbody td {
-    align-items: center;
+  .offer-card {
+    width: 80%;
+    margin: 0.5rem auto;
   }
 }

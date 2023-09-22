@@ -114,10 +114,9 @@ export default function PaymentDate() {
                 <LazyComponent>
                   <Offers offers={offers} setSelectedOfferData={setSelectedOfferData} />
                 </LazyComponent>
-                <div className='mt-3'>
+                <div className='errors'>
                   {
-                    selectedOfferData ? ''
-                      : <span className="error-labels">Selecciona una oferta</span>
+                    !selectedOfferData && <span className="error-labels">Selecciona una fecha</span>
                   }
                 </div>
               </div>
@@ -139,10 +138,9 @@ export default function PaymentDate() {
                     <span className='.fs-6'>Transferencia</span>
                   </div>
                 </div>
-                <div className='mt-3'>
+                <div className='errors'>
                   {
-                    selectedPaymentType ? ''
-                      : <span className="error-labels">Selecciona un método de pago</span>
+                    !selectedPaymentType && <span className="error-labels">Selecciona un método</span>
                   }
                 </div>
               </div>

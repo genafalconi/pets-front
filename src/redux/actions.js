@@ -351,7 +351,7 @@ export const SET_USER_ADDRESS = createAsyncThunk(
 export const DELETE_USER_ADDRESS = createAsyncThunk(
   'DELETE_USER_ADDRESS', async (idAddress) => {
     try {
-      const res = await request(req_constants.DELETE, `${REACT_APP_AUTH}/user/address/${idAddress}`, null, null)
+      const res = await request(req_constants.DELETE, `${REACT_APP_AUTH}/user/address`, null, { _id: idAddress }, null)
       return res?.data
     } catch (error) {
       return errorHandler(error)

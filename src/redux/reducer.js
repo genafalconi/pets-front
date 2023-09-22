@@ -30,7 +30,7 @@ const initialState = {
 
 export const clientReducer = createReducer(initialState, (builder) => {
     builder.addCase(LOGIN_WITH_EMAIL.fulfilled, (state, action) => {
-        state.user = action.payload.data.user._id
+        state.user = action.payload.data.user?._id
         state.cart = action.payload.data.cart
         state.token = action.payload.token
         state.user_auth = true
