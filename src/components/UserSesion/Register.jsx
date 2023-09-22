@@ -21,7 +21,9 @@ export default function Register({ show, onHideLogin, onHideRegister, onModalClo
   const userLocal = localStorage.getItem('user');
   const cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : null;
 
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
+  const [validRegisterButton, setValidRegisterButton] = useState(true);
+  const [validGoogleButton, setValidGoogleButton] = useState(true);
 
   const validationSchema = yup.object().shape({
     email: yup.string().email('Correo electrónico inválido').required('Correo electrónico requerido'),
@@ -34,7 +36,9 @@ export default function Register({ show, onHideLogin, onHideRegister, onModalClo
   });
 
   const registerUser = (values) => {
-    setIsLoading(true)
+    setIsLoading(true);
+    setValidGoogleButton(false);
+    setValidRegisterButton(false);
 
     let modifiedCart = cart
     if (cart && Object.keys(cart).length > 0) {
@@ -64,11 +68,18 @@ export default function Register({ show, onHideLogin, onHideRegister, onModalClo
         const errorMessage = error.message;
         setIsLoading(false)
         return errorMessage
-      });
+      })
+      .finally((fin) => {
+        setIsLoading(false);
+        setValidRegisterButton(true);
+        setValidGoogleButton(true);
+      })
   }
 
   const registerWithGoogle = () => {
-    setIsLoading(true)
+    setIsLoading(true);
+    setValidRegisterButton(false);
+    setValidGoogleButton(false);
 
     let modifiedCart = cart
     if (cart && Object.keys(cart).length > 0) {
@@ -102,7 +113,9 @@ export default function Register({ show, onHideLogin, onHideRegister, onModalClo
         return errorMessage
       })
       .finally((fin) => {
-        setIsLoading(false)
+        setIsLoading(false);
+        setValidRegisterButton(true);
+        setValidGoogleButton(true);
       })
   }
 
@@ -226,12 +239,13 @@ export default function Register({ show, onHideLogin, onHideRegister, onModalClo
                     <Spinner as="span" animation="border" size='sm' role="status" aria-hidden="true" />
                   </Button>
                   :
-                  <Button className='modal-body_register' type="submit" disabled={!isValid}>Registrarse</Button>
+                  <Button className='modal-body_register' type="submit" disabled={!isValid && !validRegisterButton}>Registrarse</Button>
               }
             </Form>
           )}
         </Formik>
-        <AdvancedImage cldImg={cloudinaryImg(GOOGLE_PUBLIC_ID)} className='modal-body_google' alt="signInGoogle" onClick={registerWithGoogle} />
+        <AdvancedImage cldImg={cloudinaryImg(GOOGLE_PUBLIC_ID)} className='modal-body_google' alt="signInGoogle"
+          onClick={registerWithGoogle} disabled={!validGoogleButton} />
       </Modal.Body>
       <Modal.Footer className='modal-register-footer'>
         <p>Ya tenes cuenta?</p>

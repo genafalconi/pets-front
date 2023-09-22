@@ -21,8 +21,8 @@
 .cart-items {
   display: flex;
   flex-direction: column;
-  width: 50%;
-  margin-right: 10%;
+  width: 60%;
+  margin-right: 5%;
 }
 
 .cart-item {
@@ -35,6 +35,7 @@
   padding: 20px;
   margin-bottom: 16px;
   transition: transform 0.2s ease-in-out;
+  max-width: 35rem;
 }
 
 .cart-item:hover {

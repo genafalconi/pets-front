@@ -24,6 +24,11 @@ export default function UserAddresses() {
     extra: ''
   })
 
+  const handleChargeAddress = () => {
+    setModalAddress(true);
+    setEditAddress(null);
+  };
+
   const getUserAddresses = useCallback(() => {
     setIsLoading(true)
     dispatch(GET_USER_ADDRESS()).then((res) => {
@@ -73,7 +78,7 @@ export default function UserAddresses() {
             ) : (
               <>
                 {
-                  Array.isArray(addresses) &&
+                  Array.isArray(addresses) && addresses.length > 0 ?
                   addresses.map((elem) => {
                     return (
                       <LazyComponent key={elem._id}>
@@ -104,7 +109,15 @@ export default function UserAddresses() {
                       </LazyComponent>
                     )
                   })
+                  : (
+                    <div className="empty-direction">
+                      <p>No tenes direcciones cargadas</p>
+                    </div>
+                  )
                 }
+                <div className="secondary-button address-account">
+                  <button onClick={handleChargeAddress}>Cargar</button>
+                </div>
               </>
             )
           }
@@ -118,6 +131,7 @@ export default function UserAddresses() {
             updateAddress={null}
             fromCheckout={false}
             editAddress={editAddress}
+            fromAccount={true}
           />
         </LazyComponent>
       )}

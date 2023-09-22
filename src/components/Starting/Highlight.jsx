@@ -61,7 +61,7 @@ export default function Highlights({ setIsLoadingHighlight }) {
             <div className="subtitle d-flex justify-content-center">
               <h2>Ofertas</h2>
             </div>
-            <Carousel className="custom-carousel">
+            <Carousel className="custom-carousel highlight-carousel">
               {
                 chunkHighlights(highlights, itemsPerLine).map((chunk, index) => (
                   <Carousel.Item key={index}>

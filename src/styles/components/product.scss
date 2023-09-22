@@ -14,7 +14,8 @@
   align-items: center;
   justify-content: center;
   width: 98%;
-  margin: 0 2%;
+  margin: 0 auto;
+  padding: 1rem;
 }
 
 .product-card {
@@ -29,7 +30,7 @@
   overflow: hidden;
   height: 35vh;
   width: 45%;
-  margin: 1%;
+  margin: 0.5rem;
   z-index: 80;
 }
 
@@ -209,7 +210,6 @@
     }
   }
 }
-
 
 .cart-item-added {
   display: flex;

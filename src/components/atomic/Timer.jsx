@@ -67,8 +67,10 @@ export default function Timer() {
     const resetTimer = () => {
       setDuration(initialDuration);
       localStorage.setItem('timer_duration', initialDuration.toString())
+      console.log(initialDuration, localStorage.getItem('timer_duration'))
     };
-    resetTimer();
+    console.log(reset_timer, 'reseteo')
+    if (reset_timer) resetTimer();
   }, [reset_timer]);
 
   return (

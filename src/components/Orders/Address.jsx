@@ -10,7 +10,7 @@ import Form from 'react-bootstrap/Form';
 import { Col, Row } from 'react-bootstrap';
 import LazyComponent from '../../helpers/lazyComponents';
 
-export default function Address({ show, onHideAddress, updateAddress, fromCheckout, editAddress }) {
+export default function Address({ show, onHideAddress, updateAddress, fromCheckout, editAddress, fromAccount }) {
 
   const dispatch = useDispatch()
 
@@ -50,13 +50,13 @@ export default function Address({ show, onHideAddress, updateAddress, fromChecko
         if (Object.keys(res.payload).length !== 0) {
           setIsLoadingButton(false)
           if (updateAddress) updateAddress()
-          if (fromCheckout) {
+          if (fromCheckout || fromAccount) {
             onHideAddress()
           }
         }
       })
     }
-  }, [dispatch, address, fromCheckout, onHideAddress, updateAddress, validateInputs])
+  }, [dispatch, address, fromCheckout, fromAccount, onHideAddress, updateAddress, validateInputs])
 
   const handleEditAddress = useCallback(() => {
     const validation = validateInputs()
