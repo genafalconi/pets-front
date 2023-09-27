@@ -1,25 +1,29 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
-import { GET_ACTIVE_PRODUCTS, SEARCH_PRODUCTS } from "../../redux/actions";
+import { GET_PRODUCTS } from "../../redux/actions";
 import ProductCart from "./ProductCard";
 import LazyComponent from "../../helpers/lazyComponents";
-import getAnimalBySearch from "../../helpers/getAnimalBySearch";
 import CustomPagination from "../atomic/CustomPagination";
 import DogAnimation from "../atomic/DogAnimation";
+import ProductFilters from "../atomic/ProductFilters";
+import '../../styles/components/product.scss';
+import '../../styles/components/filters.scss';
 
 export default function Products() {
 
-  const input = new URLSearchParams(useLocation().search).get("input");
-  const animal = new URLSearchParams(useLocation().search).get("animal");
-
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { products, current_page, total_pages } = useSelector((state) => state.clientReducer);
+  const { products, current_page, total_pages, input } = useSelector((state) => state.clientReducer);
 
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(current_page);
-  const [selectedAnimal, setSelectedAnimal] = useState(animal);
+  const [showFilters, setShowFilters] = useState(false);
+  const [searchByFilter, setSearchByFilter] = useState(false);
+  const [selectedFilters, setSelectedFilters] = useState({
+    animal: [],
+    size: [],
+    age: [],
+    price: null
+  });
 
   const activeProducts = useMemo(() => {
     const productsToRender = products;
@@ -36,32 +40,24 @@ export default function Products() {
     }
   };
 
-  const getSearchedProducts = useCallback(() => {
+  const getProducts = useCallback(() => {
     setIsLoading(true)
-    dispatch(SEARCH_PRODUCTS({ input_value: input, page: currentPage, animal: animal })).then((res) => {
+    dispatch(GET_PRODUCTS({ filterData: selectedFilters, input: input, page: currentPage })).then((res) => {
       if (res.payload) setIsLoading(false);
     })
-  }, [dispatch, currentPage, input, animal])
+  }, [dispatch, selectedFilters, currentPage, input])
 
-  const getActiveProducts = useCallback(() => {
-    setIsLoading(true);
-    dispatch(GET_ACTIVE_PRODUCTS(currentPage)).then((res) => {
-      if (res.payload) setIsLoading(false);
-    });
-  }, [dispatch, currentPage]);
-
-  const handleAnimalSelected = useCallback((selectedAnimal) => {
-    setSelectedAnimal(selectedAnimal);
-    navigate(`/products?animal=${selectedAnimal}${input ? `&input=${input}` : ''}`)
-  }, [input, navigate]);
+  const resetPage = () => {
+    setCurrentPage(1);
+  };
 
   useEffect(() => {
-    if (!input && !animal) {
-      getActiveProducts();
-    } else {
-      getSearchedProducts();
-    }
-  }, [getActiveProducts, getSearchedProducts, input, animal]);
+    resetPage();
+  }, [input, selectedFilters]);
+
+  useEffect(() => {
+    getProducts();
+  }, [getProducts, searchByFilter]);
 
   return (
     <div className="content-page">
@@ -71,7 +67,21 @@ export default function Products() {
         <div className="products-container">
           <div className="title filter-title">
             <h1>Productos</h1>
-            {getAnimalBySearch(selectedAnimal, handleAnimalSelected)}
+            <div className="subprod__button filter-button">
+              <span className="info-filters">Realiza una busqueda facil, utiliza los filtros</span>
+              <button className="not-selected" onClick={() => setShowFilters(!showFilters)}>Filtros</button>
+            </div>
+            {
+              showFilters && (
+                <ProductFilters
+                  showFilters={showFilters}
+                  setShowFilters={setShowFilters}
+                  selectedFilters={selectedFilters}
+                  setSelectedFilters={setSelectedFilters}
+                  setSearchByFilter={setSearchByFilter}
+                />
+              )
+            }
           </div>
           <div className="list-products">
             {activeProducts && activeProducts.length !== 0 ? (

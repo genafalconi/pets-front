@@ -67,6 +67,9 @@
 
 .filter-title {
   top: 13%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .subtitle>h2 {
@@ -113,6 +116,16 @@
 
 .call-to-action_button button:focus-visible {
   box-shadow: 0 0 0 0.25rem rgba(123, 44, 191, .75);
+}
+
+.call-to-action_button button:disabled {
+  padding: 0.5rem;
+  background-color: $pets-violet;
+  border: none;
+  color: $primary-text-button-color;
+  font-size: 1.2rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease-in-out;
 }
 
 .content-page {

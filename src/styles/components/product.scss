@@ -80,6 +80,14 @@
   justify-content: center;
 }
 
+.filter-button {
+  align-items: center;
+  gap: 1rem;
+  button {
+    font-size: 1.1rem !important;
+  }
+}
+
 .subprod__button {
   display: flex;
   justify-content: center;

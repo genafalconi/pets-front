@@ -272,9 +272,15 @@ input[type="text"] {
 }
 
 .action-search-icon {
+  display: flex;
+  align-items: center;
   color: gray;
   cursor: pointer;
   margin-left: -35px;
+}
+
+.action-delete-icon {
+  margin-left: -55px;
 }
 
 .footer {
@@ -369,5 +375,11 @@ input[type="text"] {
   .data-text>ul {
     display: flex;
     justify-content: space-around;
+  }
+}
+
+@media (max-width: 768px) {
+  .user-nav {
+    margin: 0;
   }
 }
