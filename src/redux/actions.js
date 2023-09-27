@@ -280,25 +280,20 @@ export const SAVE_RE_ORDER_CART = createAsyncThunk(
   }
 )
 
-export const GET_ACTIVE_PRODUCTS = createAsyncThunk(
-  'GET_ACTIVE_PRODUCTS', async (page) => {
+export const GET_PRODUCTS = createAsyncThunk(
+  'GET_PRODUCTS', async ({ filterData, input, page }) => {
     try {
-      let param = ''
-      if (page && page !== 1) {
-        param = `?page=${page}`
-      }
-      const res = await request(req_constants.GET, `${REACT_APP_PROD}/products/active${param}`, null, null)
-      return res?.data
-    } catch (error) {
-      return errorHandler(error)
-    }
-  }
-);
+      const queryParams = new URLSearchParams({
+        page: String(page),
+      });
+      
+      if (input?.length > 0) queryParams.set('input', input);
+      if (filterData.age.length > 0) queryParams.set('age', filterData.age.join(','));
+      if (filterData.animal.length > 0) queryParams.set('animal', filterData.animal.join(','));
+      if (filterData.size.length > 0) queryParams.set('size', filterData.size.join(','));
+      if (filterData.price) queryParams.set('price', filterData.price);
 
-export const GET_FILTER_PRODUCTS = createAsyncThunk(
-  'GET_FILTER_PRODUCTS', async (filterData) => {
-    try {
-      const res = await request(req_constants.POST, `${REACT_APP_PROD}/products/filter`, null, filterData)
+      const res = await request(req_constants.GET, `${REACT_APP_PROD}/products?${queryParams.toString()}`, null, filterData)
       return res?.data
     } catch (error) {
       return errorHandler(error)
@@ -482,21 +477,6 @@ export const RESET_PASSWORD = createAsyncThunk(
   }
 )
 
-export const SEARCH_PRODUCTS = createAsyncThunk(
-  'SEARCH_PRODUCTS', async ({ input_value, page, animal }) => {
-    try {
-      if (!page) page = 1
-      let param = `?page=${page}`
-      if (animal) param += `&animal=${animal}`
-      if (input_value) param += `&input=${input_value}`
-      const res = await request(req_constants.GET, `${REACT_APP_PROD}/products/search${param}`, null, null, null)
-      return res?.data
-    } catch (error) {
-      return errorHandler(error)
-    }
-  }
-)
-
 export const GET_HIGHLIGHT_SUBPRODS = createAsyncThunk(
   'GET_HIGHLIGHT_SUBPRODS', async () => {
     try {
@@ -516,5 +496,11 @@ export const GET_LANDING_IMAGES = createAsyncThunk(
     } catch (error) {
       return errorHandler(error)
     }
+  }
+)
+
+export const SET_INPUT_SEARCH = createAsyncThunk(
+  'SET_INPUT_SEARCH', (input_value) => {
+    return input_value
   }
 )

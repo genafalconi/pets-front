@@ -7,13 +7,14 @@
   align-items: center;
 
   .modal-body_logo {
-    width: 15%;
+    width: 5rem;
+    max-width: 6rem;
     height: auto;
   }
 
   .modal-body_google {
-    max-width: 7%;
-    margin-bottom: $margin-input;
+    max-width: 2rem;
+    margin-bottom: 0.5rem;
     cursor: pointer;
   }
 
@@ -50,11 +51,11 @@
   }
 
   .modal-body_logo {
-    max-width: 30%;
+    max-width: 4rem !important;
   }
 
   .modal-body_google {
-    max-width: 15%;
+    max-width: 1.5rem !important;
   }
 
   .modal-body_form {

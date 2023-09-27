@@ -1,6 +1,7 @@
 import '../../styles/components/nav.scss'
 import { FiUserX } from 'react-icons/fi'
 import { MdSearch } from 'react-icons/md'
+import { RxCrossCircled } from 'react-icons/rx'
 import Form from 'react-bootstrap/Form';
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -10,7 +11,7 @@ import Register from '../UserSesion/Register'
 import Cart from './Cart'
 import Address from '../Orders/Address'
 import { useDispatch, useSelector } from 'react-redux'
-import { LOGOUT, VERIFY_TOKEN } from '../../redux/actions'
+import { LOGOUT, SET_INPUT_SEARCH, VERIFY_TOKEN } from '../../redux/actions'
 import eventBus from '../../helpers/event-bus'
 import { AdvancedImage } from '@cloudinary/react'
 import { cloudinaryImg } from '../../helpers/cloudinary'
@@ -32,9 +33,10 @@ export default function Nav() {
   const [showFilter, setShowFilter] = useState(true)
   const [searchInput, setSearchInput] = useState('')
   const [inputErrors, setInputErrors] = useState(null)
-  const inputRef = useRef(null)
+  const [showCross, setShowCross] = useState(false)
+  const inputRef = useRef('')
 
-  const animal = new URLSearchParams(useLocation().search).get("animal");
+  const input = new URLSearchParams(useLocation().search).get("input");
   const endpoint = window.location.pathname
   const token = localStorage.getItem('token')
   const userLocal = localStorage.getItem('user')
@@ -51,19 +53,23 @@ export default function Nav() {
     if (value) {
       query = `?input=${value}`;
     }
-    if (animal) {
-      if (query) {
-        query += `&animal=${animal}`;
-      } else {
-        query = `?animal=${animal}`;
-      }
-    }
+    dispatch(SET_INPUT_SEARCH(value));
     navigate(`/products${query}`);
+  }
+
+  const handleCrossInput = () => {
+    setShowCross(false)
+    inputRef.current.value = ''
+    setSearchInput('');
+    dispatch(SET_INPUT_SEARCH(''));
+    const baseUrl = window.location.href.split('?')[0];
+    window.history.replaceState({}, document.title, baseUrl);
   }
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
+      dispatch(SET_INPUT_SEARCH(e?.target?.value));
       handleSearchInput(e?.target?.value);
     }
     if (e.key === ' ') {
@@ -82,7 +88,6 @@ export default function Nav() {
   }
 
   const handleFiltersClick = (event) => {
-    console.log(event)
     navigate(event.target.id)
   }
 
@@ -131,6 +136,11 @@ export default function Nav() {
     handleCartDisplay(endpoint)
     handleFilters(endpoint)
 
+    if (input?.length !== 0) {
+      setSearchInput(input)
+      setShowCross(true)
+    }
+
     if (token && userReducer) {
       setActiveSesion(true)
     }
@@ -148,7 +158,7 @@ export default function Nav() {
     return () => {
       eventBus.off('expired-sesion', expiredSesionHandler)
     }
-  }, [token, userLocal, modalLogin, modalRegister, userReducer, dispatch, endpoint, handleCartDisplay, handleFilters])
+  }, [token, userLocal, modalLogin, modalRegister, userReducer, dispatch, endpoint, handleCartDisplay, handleFilters, input])
 
   return (
     <>
@@ -166,14 +176,27 @@ export default function Nav() {
                 placeholder='Buscar...'
                 ref={inputRef}
                 onKeyDown={handleKeyDown}
-                value={searchInput}
+                value={searchInput ? searchInput : ''}
                 maxLength={35}
-                onChange={(e) => validateInput(e.target.value)}
+                onChange={(e) => {
+                  validateInput(e.target.value);
+                  setShowCross(true);
+                  setSearchInput(e.target.value);
+                }}
               />
-              {
-                window.innerWidth > 768 &&
-                <MdSearch className='action-search-icon' size={25} onClick={() => handleSearchInput(inputRef.current.value)} />
-              }
+              <div className='action-search-icon'>
+                {window.innerWidth > 768 && (
+                  <>
+                    <MdSearch size={25} onClick={() => handleSearchInput(inputRef.current.value)} />
+                    {showCross && (
+                      <RxCrossCircled className='action-delete-icon' size={25}
+                        onClick={handleCrossInput}
+                      />
+                    )}
+                  </>
+                )}
+              </div>
+
             </div>
             {
               inputErrors?.length > 0 && <span>{inputErrors}</span>

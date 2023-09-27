@@ -94,3 +94,8 @@ export const carouelImages = [
     text: 'Suscribite a nuestra re-compra automatica'
   }
 ]
+
+export const animalFilter = 'Ppales/paws_4225928-removebg-preview_bcdaaf'
+export const sizeFilter = 'Ppales/bone_499299-removebg-preview_qmpmq1'
+export const ageFilter = 'Ppales/ADULTO__4_-removebg-preview_ljpmhg'
+export const priceFilter = 'Ppales/coin_3641465-removebg-preview_a5kmfk'

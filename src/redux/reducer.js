@@ -1,5 +1,5 @@
 import { createReducer } from "@reduxjs/toolkit"
-import { ADD_TO_CART, ADD_TO_LOCAL_CART, CREATE_USER_ADDRESS, CREATE_USER_ORDER, DELETE_USER_ADDRESS, GET_ACCOUNT_INFO, GET_ACCOUNT_ORDERS, GET_ACTIVE_PRODUCTS, GET_FILTER_PRODUCTS, GET_HIGHLIGHT_SUBPRODS, GET_LANDING_IMAGES, GET_OPEN_OFFERS, GET_USER_ADDRESS, GET_USER_CART, GET_USER_ORDER, LOCK_SUBPROD_USER, LOGIN_WITH_EMAIL, LOGIN_WITH_GOOGLE, LOGOUT, REGISTER_WITH_EMAIL, REMOVE_FROM_CART, REMOVE_FROM_LOCAL_CART, RESET_TIMER, SAVE_RE_ORDER_CART, SEARCH_PRODUCTS, SET_USER_ADDRESS, UPDATE_LOCAL_SUBPRODUCT_QUANTITY, UPDATE_SUBPRODUCT_QUANTITY, UPDATE_USER_ADDRESS, VERIFY_TOKEN } from "./actions"
+import { ADD_TO_CART, ADD_TO_LOCAL_CART, CREATE_USER_ADDRESS, CREATE_USER_ORDER, DELETE_USER_ADDRESS, GET_ACCOUNT_INFO, GET_ACCOUNT_ORDERS, GET_PRODUCTS, GET_HIGHLIGHT_SUBPRODS, GET_LANDING_IMAGES, GET_OPEN_OFFERS, GET_USER_ADDRESS, GET_USER_CART, GET_USER_ORDER, LOCK_SUBPROD_USER, LOGIN_WITH_EMAIL, LOGIN_WITH_GOOGLE, LOGOUT, REGISTER_WITH_EMAIL, REMOVE_FROM_CART, REMOVE_FROM_LOCAL_CART, RESET_TIMER, SAVE_RE_ORDER_CART, SET_USER_ADDRESS, UPDATE_LOCAL_SUBPRODUCT_QUANTITY, UPDATE_SUBPRODUCT_QUANTITY, UPDATE_USER_ADDRESS, VERIFY_TOKEN, SET_INPUT_SEARCH } from "./actions"
 
 const initialState = {
     token: localStorage.getItem('token'),
@@ -25,7 +25,8 @@ const initialState = {
     current_page: 1,
     total_pages: 0,
     total_products: 0,
-    reset_timer: false
+    reset_timer: false,
+    input: ''
 }
 
 export const clientReducer = createReducer(initialState, (builder) => {
@@ -81,14 +82,11 @@ export const clientReducer = createReducer(initialState, (builder) => {
     builder.addCase(REMOVE_FROM_LOCAL_CART.fulfilled, (state, action) => {
         state.cart = action.payload
     })
-    builder.addCase(GET_ACTIVE_PRODUCTS.fulfilled, (state, action) => {
+    builder.addCase(GET_PRODUCTS.fulfilled, (state, action) => {
         state.products = action.payload.subproducts
         state.current_page = action.payload.page
         state.total_pages = action.payload.total_pages
         state.total_products = action.payload.total_products
-    })
-    builder.addCase(GET_FILTER_PRODUCTS.fulfilled, (state, action) => {
-        state.products = action.payload
     })
     builder.addCase(GET_USER_ADDRESS.fulfilled, (state, action) => {
         state.addresses = action.payload
@@ -127,12 +125,6 @@ export const clientReducer = createReducer(initialState, (builder) => {
     builder.addCase(SAVE_RE_ORDER_CART.fulfilled, (state, action) => {
         state.cart = action.payload
     })
-    builder.addCase(SEARCH_PRODUCTS.fulfilled, (state, action) => {
-        state.products = action.payload.subproducts
-        state.current_page = action.payload.page
-        state.total_pages = action.payload.total_pages
-        state.total_products = action.payload.total_products
-    })
     builder.addCase(GET_HIGHLIGHT_SUBPRODS.fulfilled, (state, action) => {
         state.highlights = action.payload
     })
@@ -141,5 +133,8 @@ export const clientReducer = createReducer(initialState, (builder) => {
     })
     builder.addCase(RESET_TIMER.fulfilled, (state, action) => {
         state.reset_timer = action.payload
+    })
+    builder.addCase(SET_INPUT_SEARCH.fulfilled, (state, action) => {
+        state.input = action.payload
     })
 })

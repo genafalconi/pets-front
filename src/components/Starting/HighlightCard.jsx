@@ -6,7 +6,7 @@ import { AdvancedImage } from "@cloudinary/react";
 import { cloudinaryImg } from "../../helpers/cloudinary";
 import NewProd from "../Product/NewProd";
 
-export default function HighlightCard({ item, index }) {
+export default function HighlightCard({ item }) {
   const dispatch = useDispatch();
   const { highlights } = useSelector((state) => state.clientReducer);
 
@@ -15,6 +15,10 @@ export default function HighlightCard({ item, index }) {
   const [showNewProd, setShowNewProd] = useState(false);
   const [newProd, setNewProd] = useState(null);
 
+  const calculateDiscountPercentage = (sellPrice, salePrice) => {
+    return Math.floor(((sellPrice - salePrice) / sellPrice) * 100);
+  };
+
   const addToCart = useCallback((data) => {
     const subprod = highlights.find((item) => item._id === data._id)
 
@@ -22,7 +26,8 @@ export default function HighlightCard({ item, index }) {
       _id: subprod?._id,
       product: subprod?.product?._id,
       buy_price: subprod?.buy_price,
-      sell_price: subprod?.sell_price * 0.95,
+      sell_price: subprod?.sell_price,
+      sale_price: subprod.sale_price,
       size: subprod?.size,
       stock: subprod?.stock,
       image: subprod?.product?.image,
@@ -51,7 +56,7 @@ export default function HighlightCard({ item, index }) {
   return (
     <>
       <Card key={item._id} className="highlight-card">
-      <span className="label-highlight">OFERTA</span>
+        <span className="label-highlight">{calculateDiscountPercentage(item.sell_price, item.sale_price)}%</span>
         <div className="highlight-image">
           <AdvancedImage cldImg={cloudinaryImg(item.product.image)} />
         </div>
