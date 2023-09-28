@@ -17,7 +17,6 @@ export default function Products() {
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(current_page);
   const [showFilters, setShowFilters] = useState(false);
-  const [searchByFilter, setSearchByFilter] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState({
     animal: [],
     size: [],
@@ -57,7 +56,7 @@ export default function Products() {
 
   useEffect(() => {
     getProducts();
-  }, [getProducts, searchByFilter]);
+  }, [getProducts]);
 
   return (
     <div className="content-page">
@@ -78,7 +77,6 @@ export default function Products() {
                   setShowFilters={setShowFilters}
                   selectedFilters={selectedFilters}
                   setSelectedFilters={setSelectedFilters}
-                  setSearchByFilter={setSearchByFilter}
                 />
               )
             }

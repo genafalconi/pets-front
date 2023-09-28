@@ -62,10 +62,8 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
           dispatch(LOGIN_WITH_GOOGLE({ userdata: userLocal, cart: modifiedCart, token: result.user.accessToken }))
             .then((response) => {
               if (response.payload.status === 201) {
-                localStorage.setItem('token', user.accessToken);
                 onHideLogin();
               }
-              setValidGoogleButton(true);
             })
             .finally((fin) => {
               setIsLoading(false);
@@ -108,7 +106,6 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
         if (response.payload.status === 201) {
           onHideLogin();
         }
-        setValidLoginButton(true);
       })
       .finally(() => {
         setIsLoading(false);

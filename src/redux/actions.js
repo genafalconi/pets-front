@@ -78,8 +78,9 @@ export const LOGIN_WITH_EMAIL = createAsyncThunk(
 export const LOGIN_WITH_GOOGLE = createAsyncThunk(
   'LOGIN_WITH_GOOGLE', async ({ userdata, cart, token }) => {
     try {
-      const res = await request(req_constants.POST, `${REACT_APP_AUTH}/auth/login`, null, { user: userdata, cart })
+      const res = await request(req_constants.POST, `${REACT_APP_AUTH}/auth/register`, null, { user: userdata, cart }, token)
       if (res.status === 201) {
+        localStorage.setItem('token', token)
         localStorage.setItem('user', res?.data?.user?._id)
         localStorage.setItem('admin', res.data.user?.admin)
         localStorage.setItem('cart', JSON.stringify(res?.data?.cart))

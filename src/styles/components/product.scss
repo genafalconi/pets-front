@@ -13,7 +13,6 @@
   overflow-y: auto;
   align-items: center;
   justify-content: center;
-  width: 98%;
   margin: 0 auto;
   padding: 1rem;
 }
@@ -231,7 +230,7 @@
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   transform: translateX(-50%);
-  animation: fade-out 2s ease forwards;
+  animation: fade-out 1.5s ease forwards;
   z-index: 350;
   width: 25%;
 
