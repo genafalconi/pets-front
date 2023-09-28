@@ -85,6 +85,7 @@ export default function Nav() {
     } else {
       setInputErrors(validation.error)
     }
+    setShowCross(true)
   }
 
   const handleFiltersClick = (event) => {
@@ -136,7 +137,7 @@ export default function Nav() {
     handleCartDisplay(endpoint)
     handleFilters(endpoint)
 
-    if (input?.length !== 0) {
+    if (input && input.length !== 0) {
       setSearchInput(input)
       setShowCross(true)
     }
@@ -178,11 +179,7 @@ export default function Nav() {
                 onKeyDown={handleKeyDown}
                 value={searchInput ? searchInput : ''}
                 maxLength={35}
-                onChange={(e) => {
-                  validateInput(e.target.value);
-                  setShowCross(true);
-                  setSearchInput(e.target.value);
-                }}
+                onChange={(e) => { validateInput(e.target.value) }}
               />
               <div className='action-search-icon'>
                 {window.innerWidth > 768 && (
@@ -230,8 +227,6 @@ export default function Nav() {
         showFilter &&
         <nav className='nav filter'>
           <p id={'/products'} onClick={handleFiltersClick}>Productos</p>
-          <p id={'/products?animal=DOG'} onClick={handleFiltersClick}>Perro</p>
-          <p id={'/products?animal=CAT'} onClick={handleFiltersClick}>Gato</p>
         </nav>
       }
       {modalLogin && (

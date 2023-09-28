@@ -11,16 +11,16 @@ export default function ProductCart({ data }) {
 
   const dispatch = useDispatch()
   const user = localStorage.getItem('user')
+  const sortedSubproducts = [...data.subproducts].sort((a, b) => a.size - b.size);
 
-  const [prodSizeSelected, setProdSizeSelected] = useState(data?.subproducts[0]?._id)
+  const [prodSizeSelected, setProdSizeSelected] = useState(sortedSubproducts[0]._id)
   const [quantity, setQuantity] = useState(1)
   const [newProd, setNewProd] = useState(null)
   const [showNewProd, setShowNewProd] = useState(false)
-  const [sizeSelected, setSizeSelected] = useState(data?.subproducts[0]?._id)
+  const [sizeSelected, setSizeSelected] = useState(sortedSubproducts[0]._id)
   const [isLoading, setIsLoading] = useState(false)
   const [hasError, setHasError] = useState(false)
 
-  const sortedSubproducts = [...data.subproducts].sort((a, b) => a.size - b.size);
 
   const addToCart = useCallback((data) => {
     const subprod = data?.subproducts.find((elem) => elem._id === prodSizeSelected)

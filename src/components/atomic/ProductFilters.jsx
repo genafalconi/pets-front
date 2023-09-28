@@ -3,7 +3,7 @@ import '../../styles/components/product.scss';
 import '../../styles/components/filters.scss';
 import { useEffect, useState } from "react";
 
-export default function ProductFilters({ showFilters ,setShowFilters, selectedFilters, setSelectedFilters, setSearchByFilter }) {
+export default function ProductFilters({ showFilters, setShowFilters, selectedFilters, setSelectedFilters }) {
 
   const [filters, setFilters] = useState({
     animal: [],
@@ -30,7 +30,6 @@ export default function ProductFilters({ showFilters ,setShowFilters, selectedFi
 
   const handleSearch = () => {
     setShowFilters(false);
-    setSearchByFilter(true);
     setSelectedFilters({ ...filters });
     setFilters(filters)
   };
@@ -56,7 +55,7 @@ export default function ProductFilters({ showFilters ,setShowFilters, selectedFi
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className='modal-filters-body'>
-        <div className="prod-filters">
+        <div className="grid-filters">
           <div className="filter-row">
             <div className="filter-col">
               <span>Animal</span>
@@ -152,9 +151,9 @@ export default function ProductFilters({ showFilters ,setShowFilters, selectedFi
               </div>
             </div>
           </div>
-          <div className="call-to-action_button filter-btn">
-            <Button className="call-to-action_button" onClick={handleSearch}>Buscar</Button>
-          </div>
+        </div>
+        <div className="call-to-action_button filter-btn">
+          <Button className="call-to-action_button" onClick={handleSearch}>Buscar</Button>
         </div>
       </Modal.Body>
     </Modal>
