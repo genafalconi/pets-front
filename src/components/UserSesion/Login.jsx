@@ -196,7 +196,7 @@ export default function Login({ show, onHideLogin, onHideRegister, onModalClose 
                     <Spinner as="span" animation="border" size='sm' role="status" aria-hidden="true" />
                   </Button>
                   :
-                  <Button className='modal-body_login' type="submit" disabled={!isValid && !validLoginButton}>Iniciar Sesíon</Button>
+                  <Button className='modal-body_login' type="submit" disabled={!isValid && !validLoginButton}>Iniciar Sesión</Button>
               }
             </Form>
           )}

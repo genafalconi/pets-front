@@ -235,30 +235,24 @@
 
 @media screen and (max-width: 530px) {
   .dropdown-cart-items {
-    width: 90vw;
+    width: 22.5rem;
   }
 }
 
 @media screen and (min-width: 530px) and (max-width: 768px) {
   .dropdown-cart-items {
-    width: 70vw;
+    width: 28rem;
   }
 }
 
 @media screen and (min-width: 769px) and (max-width: 1000px) {
   .dropdown-cart-items {
-    width: 50vw;
+    width: 33rem;
   }
 }
 
-@media screen and (min-width: 1000px) and (max-width: 1200px) {
+@media screen and (min-width: 1000px) {
   .dropdown-cart-items {
-    width: 35vw;
-  }
-}
-
-@media screen and (min-width: 1200px) {
-  .dropdown-cart-items {
-    width: 25vw;
+    width: 30rem;
   }
 }

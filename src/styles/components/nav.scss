@@ -24,8 +24,8 @@
     cursor: pointer;
     text-decoration: none;
     color: #7B2CBF;
-    font-size: 1.2rem;
-    margin-top: -2px;
+    font-size: 1.5rem;
+    margin-top: -10px;
     padding: 0 10px;
   }
 
@@ -50,7 +50,7 @@
   img {
     height: 4rem;
     max-height: 5rem;
-    padding-left: 1.5%;
+    padding: 10px;
     width: auto;
     max-width: 5rem;
   }
@@ -380,6 +380,6 @@ input[type="text"] {
 
 @media (max-width: 768px) {
   .user-nav {
-    margin: 0;
+    margin: 0.5rem;
   }
 }

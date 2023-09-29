@@ -135,13 +135,14 @@ export default function ProductFilters({ showFilters, setShowFilters, selectedFi
               </div>
             </div>
             <div className="filter-col">
-              <span>Precio maximo</span>
+              <span>Precio máximo</span>
               <div className="ranges">
-                <span>{filters.price !== null && `$${filters.price}`}</span>
+                <span>{filters.price !== null ? `$${filters.price}` : `$${25000}`}</span>
                 <Form.Range
                   min={0}
                   max={50000}
                   step={500}
+                  defaultValue={filters.price !== null ? filters.price : 25000}
                   onChange={(e) => handleFilterClick("price", Number(e.target.value))}
                 />
                 <div className="range-labels">

@@ -9,7 +9,7 @@ export default function TextHomecoming() {
         <div className="data-text">
           <ul>
             <li><span>Evolucionamos</span> la manera de realizar pedidos.</li>
-            <li>Tu pago se realiza <span>unicamente</span> cuando recibis el pedido.</li>
+            <li>Tu pago se realiza <span>únicamente</span> cuando recibís el pedido.</li>
           </ul>
         </div>
       </Card.Body>

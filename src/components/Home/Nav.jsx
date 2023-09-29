@@ -20,7 +20,7 @@ import { endpoints } from '../../helpers/constants';
 import { validateSearchInput } from '../../helpers/validateInputs';
 import '../../styles/components/nav.scss';
 
-const LOGO_PUBLIC_ID = 'Ppales/Logo'
+const LOGO_PUBLIC_ID = 'Ppales/croplogo_ikxgit'
 
 export default function Nav() {
 
