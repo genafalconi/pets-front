@@ -86,12 +86,12 @@ export const carouelImages = [
   {
     name: 'Image4',
     img: 'Landing/CAROUSEL/cute-scottish-straight-gray-cat-hunting-playing_mn7pmx_sbbuva',
-    text: 'Pagas una vez que recibis tu pedido en condiciones'
+    text: 'Pagás una vez que recibís tu pedido en condiciones'
   },
   {
     name: 'Image5',
     img: 'Landing/CAROUSEL/hungry-white-brown-dog-with-big-ears-brown-eyes-ready-eat-bowl-full-food_cytspy_va5mrg',
-    text: 'Suscribite a nuestra re-compra automatica'
+    text: 'Suscribite a nuestra re-compra automática'
   }
 ]
 
