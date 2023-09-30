@@ -11,9 +11,18 @@ export default function Footer({ isLoadingHighlight }) {
   }
 
   const handleInstagram = () => {
-    const instagramURL = "instagram://user?username=pets___zone";
-    window.open(instagramURL, "_system", "location=yes");
-  }
+    const instagramUsername = 'pets___zone';
+    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (isMobileDevice) {
+      const instagramAppURL = `instagram://user?username=${instagramUsername}`;
+      window.location.href = instagramAppURL;
+    } else {
+      const instagramWebURL = `https://www.instagram.com/${instagramUsername}`;
+      window.open(instagramWebURL, '_blank');
+    }
+  };
+  
 
   const handleEmail = () => {
     const emailAddress = 'petszonee@gmail.com';
