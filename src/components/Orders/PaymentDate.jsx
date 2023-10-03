@@ -124,17 +124,17 @@ export default function PaymentDate() {
                 <div className="subtitle">
                   <h2>Método de pago</h2>
                 </div>
-                <div className='payment-type d-flex align-items-center justify-content-center'>
-                  <div className='d-flex flex-column'>
-                    <AdvancedImage cldImg={cloudinaryImg(CASH_PUBLIC_ID)} name='CASH' className={selectedPaymentType === 'CASH' ? 'selected-payment' : ''} onClick={handlePaymentType} />
+                <div className='payment-type'>
+                  <div className={`payment-card ${selectedPaymentType === 'CASH' ? 'selected-payment' : ''}`}>
+                    <AdvancedImage cldImg={cloudinaryImg(CASH_PUBLIC_ID)} name='CASH' onClick={handlePaymentType} />
                     <span className='.fs-6'>Efectivo</span>
                   </div>
-                  <div className='d-flex flex-column'>
-                    <AdvancedImage cldImg={cloudinaryImg(MP_PUBLIC_ID)} name='MP' className={selectedPaymentType === 'MP' ? 'selected-payment' : ''} onClick={handlePaymentType} />
+                  <div className={`payment-card ${selectedPaymentType === 'MP' ? 'selected-payment' : ''}`}>
+                    <AdvancedImage cldImg={cloudinaryImg(MP_PUBLIC_ID)} name='MP' onClick={handlePaymentType} />
                     <span className='.fs-6'>Tarjetas</span>
                   </div>
-                  <div className='d-flex flex-column'>
-                    <AdvancedImage cldImg={cloudinaryImg(TRANS_PUBLIC_ID)} name='TRANSFERENCIA' className={selectedPaymentType === 'TRANSFERENCIA' ? 'selected-payment' : ''} onClick={handlePaymentType} />
+                  <div className={`payment-card ${selectedPaymentType === 'TRANSFERENCIA' ? 'selected-payment' : ''}`}>
+                    <AdvancedImage cldImg={cloudinaryImg(TRANS_PUBLIC_ID)} name='TRANSFERENCIA' onClick={handlePaymentType} />
                     <span className='.fs-6'>Transferencia</span>
                   </div>
                 </div>
@@ -161,6 +161,8 @@ export default function PaymentDate() {
                   </div>
                 </div>
             }
+            <br />
+            <br />
           </>
         )
       }

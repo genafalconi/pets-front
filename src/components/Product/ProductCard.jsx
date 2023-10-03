@@ -114,9 +114,9 @@ export default function ProductCart({ data }) {
               <button onClick={changeQuantity} name='asc'>+</button>
             </div>
             <div className="subprod__price">
-              <p className="not-discount">
+              {/* <p className="not-discount">
                 ${(data?.subproducts.find((subProd) => subProd._id === prodSizeSelected)?.sell_price * 1.15).toFixed(2)}
-              </p>
+              </p> */}
               <p className="discount">
                 ${data?.subproducts.find((subProd) => subProd._id === prodSizeSelected)?.sell_price.toFixed(2)}
               </p>
