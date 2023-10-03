@@ -83,12 +83,14 @@ export default function Products() {
           </div>
           <div className="list-products">
             {activeProducts && activeProducts.length !== 0 ? (
-              activeProducts
+              <>
+                {activeProducts}
+                <CustomPagination currentPage={currentPage} totalPages={total_pages} handlePageClick={handlePageClick} />
+              </>
             ) : (
               <h2>No hay productos</h2>
             )}
           </div>
-          <CustomPagination currentPage={currentPage} totalPages={total_pages} handlePageClick={handlePageClick} />
         </div>
       )}
     </div>

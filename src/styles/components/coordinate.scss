@@ -63,10 +63,10 @@
   img {
     max-width: 5rem;
     height: 5rem;
-    width: auto;
     margin: 10px;
     padding: 5px;
     border-radius: 10px;
+    object-fit: contain;
   }
 }
 
@@ -75,14 +75,30 @@ img:hover {
 }
 
 .payment-type {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
   span {
     font-size: 0.85rem;
     font-style: italic;
   }
 }
 
+.payment-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  width: 6rem;
+}
+
+.payment-card:hover {
+  background-color: #E3E3E3;
+}
+
 .selected-payment {
-  border: 2px solid blue;
+  border: 2px solid $pets-violet;
+  border-width: 2px;
 }
 
 .errors {

@@ -53,8 +53,9 @@ export default function Nav() {
     if (value) {
       query = `?input=${value}`;
     }
-    dispatch(SET_INPUT_SEARCH(value));
-    navigate(`/products${query}`);
+    dispatch(SET_INPUT_SEARCH(value)).then(() => {
+      navigate(`/products${query}`);
+    })
   }
 
   const handleCrossInput = () => {
