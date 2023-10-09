@@ -47,9 +47,9 @@ export default function Order() {
                 </div>
                 <div className="product-order">
                   {
-                    order.cart?.subproducts?.map((elem) => {
+                    order.products?.map((elem) => {
                       return (
-                        <div className='product-order_item' key={elem.subproduct._id}>
+                        <div className='product-order_item' key={elem._id}>
                           <div className="product-name">
                             <p>{elem.subproduct.product.name} {elem.subproduct.size}kg</p>
                           </div>
@@ -59,9 +59,9 @@ export default function Order() {
                             </div>
                             <div className="prod-price">
                               <p>Precio: ${
-                                elem.subproduct.highlight ?
-                                  elem.subproduct.sell_price.toFixed(2)
-                                  : elem.subproduct.sale_price.toFixed(2)
+                                elem.highlight ?
+                                  elem.sale_price.toFixed(2)
+                                  : elem.sell_price.toFixed(2)
                               }</p>
                             </div>
                           </div>

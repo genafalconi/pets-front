@@ -21,7 +21,6 @@ export default function HighlightCard({ item }) {
 
   const addToCart = useCallback((data) => {
     const subprod = highlights.find((item) => item._id === data._id)
-
     const subProdToAdd = {
       _id: subprod?._id,
       product: subprod?.product?._id,
@@ -30,6 +29,7 @@ export default function HighlightCard({ item }) {
       sale_price: subprod.sale_price,
       size: subprod?.size,
       stock: subprod?.stock,
+      highlight: true,
       image: subprod?.product?.image,
       quantity: 1,
       name: subprod?.product?.name

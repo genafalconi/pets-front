@@ -8,7 +8,7 @@ export const removeFromCart = (subprod, cart) => {
 
   let newTotalP = 0, newCant = 0
   cart?.subproducts?.forEach((elem) => {
-    let subProdTotal = elem.quantity * elem.subproduct?.sell_price
+    let subProdTotal = elem.quantity * (elem.subproduct.highlight ? elem.subproduct.sale_price : elem.subproduct.sell_price)
     newTotalP += subProdTotal
     newCant += elem.quantity
   })

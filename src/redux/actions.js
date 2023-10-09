@@ -266,15 +266,13 @@ export const ADD_TO_LOCAL_CART = createAsyncThunk(
 )
 
 export const SAVE_RE_ORDER_CART = createAsyncThunk(
-  'SAVE_RE_ORDER_CART', async (cart) => {
+  'SAVE_RE_ORDER_CART', async (cartId) => {
     try {
-      const idUser = localStorage.getItem('user')
-      if (idUser) {
-        cart.user = idUser
+      const res = await request(req_constants.GET, `${REACT_APP_AUTH}/user/re-order/cart/${cartId}`, null, null, null)
+      if (res.data) {
+        localStorage.setItem('cart', JSON.stringify(res?.data))
       }
-      cart.active = true
-      localStorage.setItem('cart', JSON.stringify(cart))
-      return cart
+      return res?.data
     } catch (error) {
       return errorHandler(error)
     }
@@ -287,7 +285,7 @@ export const GET_PRODUCTS = createAsyncThunk(
       const queryParams = new URLSearchParams({
         page: String(page),
       });
-      
+
       if (input?.length > 0) queryParams.set('input', input);
       if (filterData.age.length > 0) queryParams.set('age', filterData.age.join(','));
       if (filterData.animal.length > 0) queryParams.set('animal', filterData.animal.join(','));
