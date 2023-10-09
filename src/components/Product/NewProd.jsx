@@ -15,7 +15,7 @@ export default function NewProd({ product }) {
             {product.quantity} un
           </div>
           <div className="product-price">
-            <p>${product.sell_price.toFixed(2)}</p>
+            <p>${product.highlight ? product.sale_price.toFixed(2) : product.sell_price.toFixed(2)}</p>
           </div>
         </div>
       </div>

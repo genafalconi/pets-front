@@ -46,10 +46,46 @@ export default function UserOrders() {
     }
   }
 
-  const handleReOrder = useCallback(async (cart) => {
+  //   {
+  //     "subproducts": [
+  //         {
+  //             "subproduct": {
+  //                 "_id": "642796b645c4f4313461456a",
+  //                 "product": {
+  //                     "_id": "64278fec45c4f43134614452",
+  //                     "name": "Eukanuba Puppy Medium Breed",
+  //                     "image": "Productos/Eukanuba/ar-l-eukanuba-packshot-puppy-medium-breed-removebg-preview_mid8de"
+  //                 },
+  //                 "size": 15,
+  //                 "sell_price": 25734
+  //             },
+  //             "quantity": 1,
+  //             "profit": 5674
+  //         },
+  //         {
+  //             "subproduct": {
+  //                 "_id": "650b1aefcb08e1823be7634a",
+  //                 "product": {
+  //                     "_id": "650b1acbcb08e1823be76347",
+  //                     "name": "Dog Chow Puppy Medium and Large",
+  //                     "image": "Productos/DogChow/dog-chow-adultos-med-gnd-front.png-removebg-preview_tdfftw"
+  //                 },
+  //                 "size": 21,
+  //                 "sell_price": 24000
+  //             },
+  //             "quantity": 1,
+  //             "profit": 2343
+  //         }
+  //     ],
+  //     "total_products": 2,
+  //     "total_price": 46447,
+  //     "user": "652326d840d3dd31a337c76e",
+  //     "active": true
+  // }
+
+  const handleReOrder = useCallback((cartId) => {
     setIsLoading(true)
-    const { _id, ...newCart } = cart;
-    dispatch(SAVE_RE_ORDER_CART(newCart)).then((res) => {
+    dispatch(SAVE_RE_ORDER_CART(cartId)).then((res) => {
       navigate('/checkout/re-order')
     })
     setIsLoading(false)
@@ -111,11 +147,15 @@ export default function UserOrders() {
                               </tr>
                             </thead>
                             <tbody className='table-body'>
-                              {ord?.cart?.subproducts?.map((sub) => (
-                                <tr key={sub?.subproduct?._id}>
+                              {ord?.products?.map((sub) => (
+                                <tr key={sub?._id}>
                                   <td>{`${sub?.subproduct?.product?.name} ${sub?.subproduct?.size}kg`}</td>
                                   <td>{sub?.quantity}</td>
-                                  <td>${sub?.subproduct?.sell_price?.toFixed(2)}</td>
+                                  <td>${
+                                    sub?.highlight ?
+                                      sub?.sale_price?.toFixed(2)
+                                      : sub?.sell_price?.toFixed(2)
+                                  }</td>
                                 </tr>
                               ))}
                             </tbody>
@@ -129,7 +169,7 @@ export default function UserOrders() {
                                     <Spinner as="span" animation="border" size='sm' role="status" aria-hidden="true" />
                                   </Button>
                                   :
-                                  <Button variant="success" onClick={() => handleReOrder(ord?.cart)}>Re-compra</Button>
+                                  <Button variant="success" onClick={() => handleReOrder(ord?.cart._id)}>Re-compra</Button>
                               }
                             </div>
                           }

@@ -30,10 +30,12 @@ export default function ProductCart({ data }) {
         _id: subprod?._id,
         product: data?._id,
         buy_price: subprod?.buy_price,
+        sale_price: subprod.sale_price,
         sell_price: subprod?.sell_price,
         size: subprod?.size,
         stock: subprod?.stock,
         image: data?.image,
+        highlight: subprod?.highlight,
         quantity: quantity,
         name: data.name
       }
