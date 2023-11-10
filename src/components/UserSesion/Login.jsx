@@ -15,7 +15,7 @@ import * as yup from 'yup';
 import { type_ord } from '../../helpers/constants';
 
 const GOOGLE_PUBLIC_ID = 'Ppales/Google';
-const LOGO_PUBLIC_ID = 'Ppales/Logo';
+const LOGO_PUBLIC_ID = 'Ppales/croplogo_ikxgit';
 
 export default function Login({ show, onHideLogin, onHideRegister, onModalClose }) {
   const dispatch = useDispatch();
