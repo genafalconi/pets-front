@@ -14,6 +14,8 @@ export default function Order() {
   const orderId = localStorage.getItem('order')
   const user = localStorage.getItem('user')
   const [isLoading, setIsLoading] = useState(true)
+  const dateToShow = new Date(order?.offer?.date)
+  const finalDate = dateToShow.setHours(dateToShow.getHours() + 3)
 
   useEffect(() => {
     if (!orderId) navigate('/')
@@ -22,6 +24,7 @@ export default function Order() {
         await dispatch(GET_USER_ORDER(orderId))
           .then((res) => {
             setIsLoading(false)
+
           })
       }
     }
@@ -104,7 +107,7 @@ export default function Order() {
                   </div>
                   <div className="offer-order">
                     <div className="order-details">
-                      <p>Fecha: {order.offer?.weekday.charAt(0).toUpperCase() + order.offer?.weekday.slice(1)} {new Date(order.offer?.date).toLocaleDateString()}</p>
+                      <p>Fecha: {order.offer?.weekday.charAt(0).toUpperCase() + order.offer?.weekday.slice(1)} {new Date(finalDate).toLocaleDateString()}</p>
                       <p>Horario: {order.offer?.from} a {order.offer?.to}</p>
                     </div>
                   </div>
